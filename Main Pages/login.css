@@ -1,0 +1,12 @@
+/* 
+    Made by Treasure Chandler
+
+    This is the CSS file that will style this login page.
+*/
+
+/* Sets the background image */
+html {
+    background-image: url('/Assets/lightmodewithwildcat.png');
+    background-size: 100vw 100vh;
+    background-repeat: no-repeat;
+}
