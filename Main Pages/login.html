@@ -1,18 +1,18 @@
 <!--
     Made by Treasure Chandler
 
-    The main login page for Anxiriley, which includes gmail authentation and Firebase integration
+    The main login page for Anxiriley, which includes Gmail authentation and Firebase integration
     for account handling.
 -->
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login</title>
         <link rel="stylesheet" href="login.css">
-        <link rel="icon" href="/Media/dogwithglasses.jpg">
+        <link rel="icon" href="/Assets/anxirileyicon.png">
         
         <!-- "Poppins" font from Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +20,29 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
     </head>
     <body>
-        
+        <main>
+            <div class="login-height">
+                <!-- Welcome text -->
+                <h1 class="poppins-semibold">Welcome to Anxiriley!</h1>
+                <h3 class="poppins-regular" id="larger-bottom-margin">Your safe space in the classroom</h3>
+    
+                <!-- Sign up and login buttons -->
+                <button class="buttons vertical">Sign Up</button>
+                <button class="buttons vertical">Log In</button>
+    
+                <!-- Translate option -->
+                <div class="right-side">
+                    <h3 class="translate-style">
+                        ¿Necesitas cambiar al español? ¡Haga clic en este engranaje para ir a la configuración de idioma!
+                    </h3>
+                    <a href="#" id="translate-settings"></a>
+                </div>
+
+                <!-- Login footer -->
+                <footer>
+                    <p>Contact us at: <a href="mailto:anxirileyrhs@gmail.com" id="hyperlink">anxirileyrhs@gmail.com</a></p> 
+                </footer>
+            </div>
+        </main>
     </body>
 </html>

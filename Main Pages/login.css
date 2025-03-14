@@ -1,12 +1,119 @@
 /* 
     Made by Treasure Chandler
 
-    This is the CSS file that will style this login page.
+    This is the CSS file that will style the login page.
 */
+
+/* Styling the two login buttons */
+.buttons {
+    background-color: #3a42bd;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    width: 28em;
+}
+
+/* Login div styling */
+.login-height {
+    height: 84.7vh;
+    margin-top: 5.3em;
+    position: relative;
+    text-align: center;
+}
+
+/* Font configuration */
+.poppins-regular {
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.poppins-semibold {
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+}
+
+/* Align the div containing the translation question and the gear to the right */
+.right-side {
+    position: absolute;
+    right: 10px;
+    text-align: right;
+    top: 33em; 
+    width: 30em;
+}
+
+/* Style the translation question */
+.translate-style {
+    font-family: "Poppins", sans-serif;
+    font-size: 1.75em;
+    font-weight: 400;
+}
+
+/* Align the sign up and login buttons vertically */
+.vertical {
+    display: block;
+    margin: 20px auto;
+}
+
+/* Change the hyperlink color */
+#hyperlink {
+    color: #60b4ef;
+}
+
+/* Gives the secondary text a slightly larger bottom margin */
+#larger-bottom-margin {
+    margin-bottom: 1.05em;
+}
+
+/* Styling the translation gear */
+#translate-settings {
+    background-image: url(/Assets/settings.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    float: right;
+    height: 80px;
+    width: 80px;
+    transition: background-image 0.3s ease-in-out;
+}
+
+#translate-settings:hover {
+    background-image: url(/Assets/settingshover.png);
+}
+
+/* Styling the footer */
+footer {
+    font-family: "Poppins", sans-serif;
+    font-size: 1.5em;
+    font-weight: 400;
+    margin-top: 13.5em;
+    text-align: center;
+}
 
 /* Sets the background image */
 html {
     background-image: url('/Assets/lightmodewithwildcat.png');
     background-size: 100vw 100vh;
     background-repeat: no-repeat;
+}
+
+/* Styling the welcome text */
+h1 {
+    font-size: 6em;
+    margin-bottom: -0.5em;
+}
+
+/* Styling the secondary text */
+h3 {
+    font-size: 3.1em;
 }
