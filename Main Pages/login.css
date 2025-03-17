@@ -17,9 +17,15 @@
     font-style: normal;
     font-weight: 400;
     padding: 15px 32px;
+    transition: background-color 0.3s ease-in-out;
     text-align: center;
     text-decoration: none;
     width: 28em;
+}
+
+/* Give the buttons a lighter color upon hovering */
+.buttons:hover {
+    background-color: #7078ec;
 }
 
 /* Login div styling */
@@ -43,6 +49,56 @@
     font-weight: 600;
 }
 
+/* Align the div containing the help question and the question mark to the left */
+.left-side {
+    position: absolute;
+    left: 10px;
+    text-align: left;
+    top: 33em;
+    width: 30em;
+}
+
+/* Add the question mark to the page so it can be hoverable */
+.help-tooltip-img {
+    background-image: url(../Assets/help.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: help;
+    display: block;
+    float: left;
+    height: 80px;
+    width: 80px;
+}
+
+/* Help tooltip text */
+.help-tooltip-img .help-tooltip-text {
+    background-color: #f5f5f5;
+    border: 5px solid #4a90e2;
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+    font-size: 1.27em;
+    height: 210px;
+    padding: 10px;
+    width: 180px;
+    visibility: hidden;
+
+    /* Position the actual tooltip text */
+    bottom: 100%;
+    margin-left: 60px;
+    position: absolute;
+    z-index: 1;
+
+    /* Make the tooptip fade in */
+    opacity: 0;
+    transition: opacity 0.6s;
+}
+
+/* Show the tooltip when the user hovers over it with the mouse */
+.help-tooltip-img:hover .help-tooltip-text {
+    opacity: 1;
+    visibility: visible;
+}
+
 /* Align the div containing the translation question and the gear to the right */
 .right-side {
     position: absolute;
@@ -52,8 +108,8 @@
     width: 30em;
 }
 
-/* Style the translation question */
-.translate-style {
+/* Style the translation question and the help question */
+.questions-style {
     font-family: "Poppins", sans-serif;
     font-size: 1.75em;
     font-weight: 400;
@@ -77,7 +133,7 @@
 
 /* Styling the translation gear */
 #translate-settings {
-    background-image: url(/Assets/settings.png);
+    background-image: url(../Assets/settings.png);
     background-repeat: no-repeat;
     background-size: cover;
     display: block;
@@ -88,7 +144,7 @@
 }
 
 #translate-settings:hover {
-    background-image: url(/Assets/settingshover.png);
+    background-image: url(../Assets/settingshover.png);
 }
 
 /* Styling the footer */
@@ -102,7 +158,7 @@ footer {
 
 /* Sets the background image */
 html {
-    background-image: url('/Assets/lightmodewithwildcat.png');
+    background-image: url(../Assets/lightmodewithwildcat.png);
     background-size: 100vw 100vh;
     background-repeat: no-repeat;
 }
