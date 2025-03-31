@@ -54,8 +54,8 @@
     position: absolute;
     left: 10px;
     text-align: left;
-    top: 28em;
-    width: 26em;
+    top: 56vh;
+    width: 46vh;
 }
 
 /* Add the question mark to the page so it can be hoverable */
@@ -75,7 +75,7 @@
     background-color: #f5f5f5;
     border: 5px solid #4a90e2;
     border-radius: 10px;
-    color: rgb(0, 0, 0);
+    color: #000000;
     font-size: 1.27em;
     height: 210px;
     padding: 10px;
@@ -104,8 +104,8 @@
     position: absolute;
     right: 10px;
     text-align: right;
-    top: 28em; 
-    width: 28em;
+    top: 56vh; 
+    width: 42vh;
 }
 
 /* Style the translation question and the help question */
@@ -148,12 +148,67 @@
     background-image: url(../Assets/settingshover.png);
 }
 
+/* Sign Up Popup Section */
+/* Add styling to the form container */
+.signup-container {
+    background-color: #f5f5f5;
+    max-width: 300px;
+    padding: 10px;
+}
+
+/* Styling the input fields */
+.signup-container input[type=text], .signup-container input[type=password] {
+    background: #f1f1f1;
+    border: none;
+    margin: 5px 0 22px 0;
+    padding: 15px;
+    width: 100%;
+}
+
+/* Change the design of the inputs when they are clicked on */
+.signup-container input[type=text]:focus, .signup-container input[type=password]:focus {
+    background: #ddd;
+    outline: none;
+}
+
+/* Add styling to the buttons in the container */
+.signup-container .signup-button {
+    background-color: #3a42bd;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    padding: 15px 32px;
+    transition: background-color 0.3s ease-in-out;
+    text-align: center;
+    text-decoration: none;
+    width: 28em;
+}
+
+.signup-container .signup-button:hover {
+    background-color: #7078ec;
+}
+
+/* Sign up popup - hidden by default */
+.signup-form {
+    border: 5px solid #4a90e2;
+    border-radius: 10px;
+    display: none;
+    position: fixed;
+}
+/* End of the Sign Up Popup Section*/
+
 /* Styling the footer */
 footer {
     font-family: "Poppins", sans-serif;
     font-size: 1.5em;
     font-weight: 400;
-    margin-top: 10rem;
+    margin-top: 31vh;
     text-align: center;
 }
 

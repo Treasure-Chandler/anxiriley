@@ -27,7 +27,7 @@
                 <h3 class="poppins-regular" id="larger-bottom-margin">Your safe space in the classroom</h3>
     
                 <!-- Sign up and login buttons -->
-                <button class="buttons vertical">Sign Up</button>
+                <button class="buttons vertical" onclick="openSignUp()">Sign Up</button>
                 <button class="buttons vertical">Log In</button>
     
                 <!-- Translate option -->
@@ -54,11 +54,11 @@
                 <!-- Pop up for for signing up -->
                 <div class="signup-form" id="signUp">
                     <form action="/action_page.php" class="signup-container">
-                        <button type="button" class="signup-button close" onclick="closeForm()">Close</button>
+                        <button type="button" class="signup-button close" onclick="closeSignUp()">Close</button>
 
                         <input type="text" placeholder="First, enter your first and last name..." name="firstAndLastName" required>
                         <input type="text" placeholder="Then, enter your email..." name="email" required>
-                        <input type="text" placeholder="Then, enter your password..." name="psw" required>
+                        <input type="password" placeholder="Then, enter your password..." name="psw" required>
 
                         <button type="submit" class="signup-button">Create Account</button>
                     </form>
