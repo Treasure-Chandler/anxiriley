@@ -149,25 +149,41 @@
 }
 
 /* Sign Up Popup Section */
+/* Adding the "X" button */
+.close {
+    
+}
+
 /* Add styling to the form container */
 .signup-container {
-    background-color: #f5f5f5;
-    max-width: 300px;
+    align-items: center;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
     padding: 10px;
 }
 
 /* Styling the input fields */
 .signup-container input[type=text], .signup-container input[type=password] {
-    background: #f1f1f1;
+    background: #f0f0f3;
     border: none;
-    margin: 5px 0 22px 0;
+    border-radius: 5px;
+    font-family: "Poppins", sans-serif;
+    height: 20%;
+    margin: 5px 0 2px 0;
     padding: 15px;
-    width: 100%;
+    width: 90%;
+}
+
+.signup-container input[type=text]::placeholder, .signup-container input[type=password]::placeholder {
+    color: #817d80;
 }
 
 /* Change the design of the inputs when they are clicked on */
 .signup-container input[type=text]:focus, .signup-container input[type=password]:focus {
-    background: #ddd;
+    background: #e0e0e0;
     outline: none;
 }
 
@@ -178,16 +194,16 @@
     border-radius: 15px;
     color: white;
     cursor: pointer;
-    display: inline-block;
+    display: block;
     font-family: "Poppins", sans-serif;
-    font-size: 24px;
+    font-size: 18px;
     font-style: normal;
     font-weight: 400;
     padding: 15px 32px;
     transition: background-color 0.3s ease-in-out;
     text-align: center;
     text-decoration: none;
-    width: 28em;
+    width: 12em;
 }
 
 .signup-container .signup-button:hover {
@@ -196,10 +212,17 @@
 
 /* Sign up popup - hidden by default */
 .signup-form {
+    background-color: #ffffff;
     border: 5px solid #4a90e2;
     border-radius: 10px;
-    display: none;
+    display: block;
+    height: 500px;
+    left: 50%;
     position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    z-index: 1000;
 }
 /* End of the Sign Up Popup Section*/
 

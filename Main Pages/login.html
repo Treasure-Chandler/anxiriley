@@ -27,7 +27,7 @@
                 <h3 class="poppins-regular" id="larger-bottom-margin">Your safe space in the classroom</h3>
     
                 <!-- Sign up and login buttons -->
-                <button class="buttons vertical" onclick="openSignUp()">Sign Up</button>
+                <button class="buttons vertical" id="signUpButton">Sign Up</button>
                 <button class="buttons vertical">Log In</button>
     
                 <!-- Translate option -->
@@ -54,13 +54,14 @@
                 <!-- Pop up for for signing up -->
                 <div class="signup-form" id="signUp">
                     <form action="/action_page.php" class="signup-container">
-                        <button type="button" class="signup-button close" onclick="closeSignUp()">Close</button>
+                        <button type="button" class="close" id="closeSignUpButton">Close</button>
 
                         <input type="text" placeholder="First, enter your first and last name..." name="firstAndLastName" required>
                         <input type="text" placeholder="Then, enter your email..." name="email" required>
                         <input type="password" placeholder="Then, enter your password..." name="psw" required>
 
                         <button type="submit" class="signup-button">Create Account</button>
+                        <button class="signup-button" style="width: 16em;">Already a user? Log in!</button>
                     </form>
                 </div>
 
@@ -68,6 +69,7 @@
                 <footer>
                     <p>Contact us at: <a href="mailto:anxirileyrhs@gmail.com" id="hyperlink">anxirileyrhs@gmail.com</a></p> 
                 </footer>
+                <script src="login.js"></script>
             </div>
         </main>
     </body>
