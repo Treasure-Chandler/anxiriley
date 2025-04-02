@@ -237,15 +237,13 @@
 
 /* Styling the footer */
 footer {
-    align-items: center;
     bottom: 0;
     font-family: "Poppins", sans-serif;
     font-size: 1.5em;
     font-weight: 400;
-    display: flex;
-    justify-content: center;
-    margin-top: 31vh;
-    text-align: center;
+    margin-bottom: 5vh;
+    position: fixed;
+    width: 100%;
 }
 
 /* Sets the background image */
@@ -267,14 +265,20 @@ h3 {
 }
 
 /* Positioning of elements on smaller screens */
-@media (max-width: 1360px) {
+@media only screen and (max-width: 1360px) {
     footer {
-        margin-top: 21vh;
+        margin-bottom: 7vh;
     }
 }
 
-@media (max-height: 768px) {
+@media only screen and (min-height: 768px) {
     footer {
-        margin-top: 21vh;
+        margin-bottom: 7vh;
+    }
+}
+
+@media only screen and (min-height: 1080px) {
+    footer {
+        margin-bottom: 5vh;
     }
 }
