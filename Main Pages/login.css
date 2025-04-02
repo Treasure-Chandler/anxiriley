@@ -51,21 +51,24 @@
 
 /* Align the div containing the help question and the question mark to the left */
 .left-side {
+    align-items: center;
+    display: block;
+    float: left;
     position: absolute;
     left: 10px;
     text-align: left;
     top: 56vh;
     width: 46vh;
+    z-index: 999;
 }
 
 /* Add the question mark to the page so it can be hoverable */
 .help-tooltip-img {
     background-image: url(../Assets/help.png);
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: 100% 100%;
     cursor: help;
-    display: block;
-    float: left;
+    display: inline-flex;
     height: 75px;
     width: 75px;
 }
@@ -101,11 +104,15 @@
 
 /* Align the div containing the translation question and the gear to the right */
 .right-side {
+    align-items: center;
+    display: block;
+    float: right;
     position: absolute;
     right: 10px;
     text-align: right;
     top: 56vh; 
     width: 23vw;
+    z-index: 999;
 }
 
 /* Style the translation question and the help question */
@@ -136,17 +143,33 @@
 #translate-settings {
     background-image: url(../Assets/settings.png);
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: 100% 100%;
     cursor: pointer;
-    display: block;
-    float: right;
+    display: inline-flex;
     height: 75px;
     width: 75px;
     transition: background-image 0.3s ease-in-out;
+    z-index: 1000;
 }
 
 #translate-settings:hover {
     background-image: url(../Assets/settingshover.png);
+}
+
+/* Black background image that will appear when either popup is opened */
+.black-overlay {
+    align-items: center;
+    display: flex;
+    opacity: 0;
+    position: fixed;
+    height: 100%;
+    justify-content: center;
+    left: 0;
+    visibility: hidden;
+    width: 100%;
+    top: 0;
+    transition: opacity 0.6s ease, visibility 0s 0.6s;
+    z-index: 999;
 }
 
 /* Sign Up Popup Section */
@@ -159,8 +182,71 @@
     border: none;
     cursor: pointer;
     display: block;
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    position: absolute;
+    right: 20px;
+    top: 14px;
+    width: 60px;
+}
+
+/* Style the labels accompanying the radio buttons */
+.radioes {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    align-items: center;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.1em;
+    font-weight: 390;
+    margin: 0 50px;
+    position: relative;
+    user-select: none;
+}
+
+/* Hide the default radio buttons */
+.radioes input {
+    cursor: pointer;
+    height: 0;
+    opacity: 0;
+    position: absolute;
+    width: 0;
+}
+
+/* Style the custom radio button */
+.radio-option {
+    background-color: #c5c5c5;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    position: relative;
+    margin: 10px 0;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+/* Change the button's color to gray when hovered */
+.radioes:hover input ~ .radio-option {
+    background-color: #999999;
+}
+
+/* Change color when the radio button is checked */
+.radioes input:checked ~ .radio-option {
+    background-color: #e0bd1d;
+}
+
+/* Inner dot of the custom radio button when checked */
+.radioes input:checked ~ .radio-option::after {
+    background-color: #ffffff;
+    border-radius: 50%;
+    content: "";
+    left: 50%;
+    height: 16px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
 }
 
 /* Add styling to the form container */
@@ -205,10 +291,10 @@
     cursor: pointer;
     display: block;
     font-family: "Poppins", sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 400;
-    padding: 15px 32px;
+    padding: 14px 30px;
     transition: background-color 0.3s ease-in-out;
     text-align: center;
     text-decoration: none;
@@ -225,12 +311,15 @@
     border: 5px solid #4a90e2;
     border-radius: 10px;
     display: none;
-    height: 500px;
+    height: fit-content;
     left: 50%;
+    opacity: 0;
     position: fixed;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 600px;
+    transition: opacity 0.6s ease, visibility 0s 0.6s;
+    visibility: hidden;
+    width: 550px;
     z-index: 1000;
 }
 /* End of the Sign Up Popup Section*/
@@ -266,19 +355,11 @@ h3 {
 
 /* Positioning of elements on smaller screens */
 @media only screen and (max-width: 1360px) {
-    footer {
-        margin-bottom: 7vh;
+    .left-side {
+        top: 54vh;
     }
-}
 
-@media only screen and (min-height: 768px) {
-    footer {
-        margin-bottom: 7vh;
-    }
-}
-
-@media only screen and (min-height: 1080px) {
-    footer {
-        margin-bottom: 5vh;
+    .right-side {
+        top: 54vh;
     }
 }

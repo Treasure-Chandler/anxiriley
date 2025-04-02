@@ -51,14 +51,33 @@
                     </a>
                 </div>
 
+                <!-- Black image that will open in the background upon either popup opening -->
+                <div id="black-overlay" class="black-overlay">
+                    <img src="../Assets/black.png" id="black-overlay-image" style="height: 1080px; width: 1920px; opacity: 50%;">
+                </div>
+
                 <!-- Pop up for for signing up -->
                 <div class="signup-form" id="signUp">
                     <form action="/action_page.php" class="signup-container">
                         <button type="button" class="close" id="closeSignUpButton"></button>
+                        <img src="../Assets/popup.png" width="190" height="190">
 
                         <input type="text" placeholder="First, enter your first and last name..." name="firstAndLastName" required>
                         <input type="text" placeholder="Then, enter your email..." name="email" required>
                         <input type="password" placeholder="Then, enter your password..." name="psw" required>
+
+                        <div style="align-items: center; display: inline-block;">
+                            <label class="radioes">
+                                <input type="radio" id="isStudent" name="studentOrTeacherButton" value="Student">
+                                <span class="radio-option"></span>
+                                Are you a student?
+                            </label>
+                            <label class="radioes">
+                                <input type="radio" id="isTeacher" name="studentOrTeacherButton" value="Teacher">
+                                <span class="radio-option"></span>
+                                Are you a teacher?
+                            </label>
+                        </div>                        
 
                         <button type="submit" class="signup-button">Create Account</button>
                         <button class="signup-button" style="width: 16em;">Already a user? Log in!</button>

@@ -5,21 +5,42 @@
  * for account handling.
  */
 
-// Initialize an event listener for all of the buttons on the page
-document.addEventListener('DOMContentLoaded', function() {
-    // Sign up button
-    document.getElementById('signUpButton').addEventListener('click', openSignUp);
+// Show sign up form and overlay when the sign up button is clicked
+document.getElementById('signUpButton').addEventListener('click', function() {
+    const signUpForm = document.getElementById('signUp');
+    const blackOverlay = document.getElementById('black-overlay');
 
-    // Close sign up button
-    document.getElementById('closeSignUpButton').addEventListener('click', closeSignUp);
+    // Show the black overlay
+    blackOverlay.style.visibility = 'visible';
+    blackOverlay.style.opacity = 1;
+
+    // Show the sign up form
+    signUpForm.style.visibility = 'visible';
+    signUpForm.style.opacity = 1;
+    signUpForm.style.display = 'block'; // Make it visible
+
+    // Delay the transition so opacity can take effect
+    setTimeout(() => {
+        blackOverlay.style.transition = 'opacity 0.6s ease';
+        signUpForm.style.transition = 'opacity 0.6s ease';
+    }, 10);
 });
 
-// Open the sign up form when the "Sign Up" button is clicked
-function openSignUp() {
-    document.getElementById("signUp").style.display = "block";
-}
+// Close the sign-up form and hide the overlay when the "X" button is clicked
+document.getElementById('closeSignUpButton').addEventListener('click', function() {
+    const signUpForm = document.getElementById('signUp');
+    const blackOverlay = document.getElementById('black-overlay');
 
-// Close the sign up form when the "X" button is clicked
-function closeSignUp() {
-    document.getElementById("signUp").style.display = "none";
-}
+    // Hide the black overlay with transition
+    blackOverlay.style.opacity = 0;
+    blackOverlay.style.visibility = 'hidden';
+
+    // Hide the sign-up form with transition
+    signUpForm.style.opacity = 0;
+    signUpForm.style.visibility = 'hidden';
+
+    // Delay hiding the sign-up form to allow for opacity transition
+    setTimeout(() => {
+        signUpForm.style.display = 'none';
+    }, 600); // Match the duration of the transition (0.6s)
+});
