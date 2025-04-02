@@ -105,7 +105,7 @@
     right: 10px;
     text-align: right;
     top: 56vh; 
-    width: 42vh;
+    width: 23vw;
 }
 
 /* Style the translation question and the help question */
@@ -137,6 +137,7 @@
     background-image: url(../Assets/settings.png);
     background-repeat: no-repeat;
     background-size: cover;
+    cursor: pointer;
     display: block;
     float: right;
     height: 75px;
@@ -151,7 +152,15 @@
 /* Sign Up Popup Section */
 /* Adding the "X" button */
 .close {
-    
+    background-color: transparent;
+    background-image: url(../Assets/close.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: none;
+    cursor: pointer;
+    display: block;
+    height: 50px;
+    width: 50px;
 }
 
 /* Add styling to the form container */
@@ -215,7 +224,7 @@
     background-color: #ffffff;
     border: 5px solid #4a90e2;
     border-radius: 10px;
-    display: block;
+    display: none;
     height: 500px;
     left: 50%;
     position: fixed;
@@ -228,9 +237,13 @@
 
 /* Styling the footer */
 footer {
+    align-items: center;
+    bottom: 0;
     font-family: "Poppins", sans-serif;
     font-size: 1.5em;
     font-weight: 400;
+    display: flex;
+    justify-content: center;
     margin-top: 31vh;
     text-align: center;
 }
@@ -251,4 +264,17 @@ h1 {
 /* Styling the secondary text */
 h3 {
     font-size: 3.1em;
+}
+
+/* Positioning of elements on smaller screens */
+@media (max-width: 1360px) {
+    footer {
+        margin-top: 21vh;
+    }
+}
+
+@media (max-height: 768px) {
+    footer {
+        margin-top: 21vh;
+    }
 }
