@@ -28,7 +28,7 @@
     
                 <!-- Sign up and login buttons -->
                 <button class="buttons vertical" id="signUpButton">Sign Up</button>
-                <button class="buttons vertical">Log In</button>
+                <button class="buttons vertical" id="logInButton">Log In</button>
     
                 <!-- Translate option -->
                 <div class="right-side">
@@ -81,6 +81,28 @@
 
                         <button type="submit" class="signup-button">Create Account</button>
                         <button class="signup-button" style="width: 16em;">Already a user? Log in!</button>
+                    </form>
+                </div>
+
+                <!-- Popup for logging in -->
+                <div class="login-form" id="logIn">
+                    <form action="/action_page.php" class="login-container">
+                        <button type="button" class="close" id="closeLogInButton"></button>
+                        <img src="../Assets/popup.png" width="190" height="190">
+
+                        <input type="text" placeholder="First, enter your email..." name="email" required>
+                        <input type="password" placeholder="Then, enter your password..." name="psw" required>
+
+                        <div style="align-items: center; display: inline-block;">
+                            <label class="remember">
+                                <input type="checkbox" id="stayLoggedIn" checked="checked">
+                                <span class="remember-check"></span>
+                                Stay logged in?
+                            </label>
+                        </div>
+
+                        <button type="submit" class="login-button">Log In</button>
+                        <button class="forgotPassword">Forgot your password?</button>
                     </form>
                 </div>
 

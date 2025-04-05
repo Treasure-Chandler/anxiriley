@@ -324,6 +324,169 @@
 }
 /* End of the Sign Up Popup Section*/
 
+/* Log In Popup Section */
+/* Adding the "X" button */
+.close {
+    background-color: transparent;
+    background-image: url(../Assets/close.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: none;
+    cursor: pointer;
+    display: block;
+    height: 60px;
+    position: absolute;
+    right: 20px;
+    top: 14px;
+    width: 60px;
+}
+
+/* Add styling to the form container */
+.login-container {
+    align-items: center;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    padding: 10px;
+}
+
+/* Styling the input fields */
+.login-container input[type=text], .login-container input[type=password] {
+    background: #f0f0f3;
+    border: none;
+    border-radius: 5px;
+    font-family: "Poppins", sans-serif;
+    height: 20%;
+    margin: 5px 0 2px 0;
+    padding: 15px;
+    width: 90%;
+}
+
+.login-container input[type=text]::placeholder, .login-container input[type=password]::placeholder {
+    color: #817d80;
+}
+
+/* Change the design of the inputs when they are clicked on */
+.login-container input[type=text]:focus, .login-container input[type=password]:focus {
+    background: #e0e0e0;
+    outline: none;
+}
+
+/* Add styling to the log in button in the container */
+.login-container .login-button {
+    background-color: #3a42bd;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    cursor: pointer;
+    display: block;
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    padding: 14px 30px;
+    transition: background-color 0.3s ease-in-out;
+    text-align: center;
+    text-decoration: none;
+    width: 12em;
+}
+
+.login-container .login-button:hover {
+    background-color: #7078ec;
+}
+
+/* Log in popup - hidden by default */
+.login-form {
+    background-color: #ffffff;
+    border: 5px solid #4a90e2;
+    border-radius: 10px;
+    display: block;
+    height: fit-content;
+    left: 50%;
+    opacity: 0;
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.6s ease, visibility 0s 0.6s;
+    visibility: hidden;
+    width: 550px;
+    z-index: 1000;
+}
+
+/* Customize the label accompanying the checkbox */
+.remember {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    align-items: center;
+    color: #5c9ce9;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.1em;
+    font-weight: 390;
+    margin: 0 50px;
+    position: relative;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.remember input {
+    cursor: pointer;
+    height: 0;
+    opacity: 0;
+    position: 0;
+    width: 0;
+}
+
+/* Create the custom checkbox */
+.remember-check {
+    background-color: #c5c5c5;
+    height: 30px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 30px;
+}
+
+/* Change the checkbox's color to gray when hovered */
+.remember:hover input ~ .remember-check {
+    background-color: #999999;
+}
+
+/* Change color when the checkbox is checked */
+.remember input:checked ~ .remember-check {
+    background-color: #377cca;
+}
+
+/* Create the checkmark/indicator (hidden when its not checked) */
+.remember-check:after {
+    content: "";
+    display: none;
+    position: absolute;
+}
+
+/* Show the checkmark when checked */
+.remember input:checked ~ .remember-check:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.remember .remember-check:after {
+    -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    border: solid white;
+    border-width: 0 4.5px 4.5px 0;
+    height: 12px;
+    left: 10px;
+    top: 5px;
+    transform: rotate(45deg);
+    width: 6px;
+}
+/* End of the Log In Popup Section */
+
 /* Styling the footer */
 footer {
     bottom: 0;
