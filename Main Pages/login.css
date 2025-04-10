@@ -9,7 +9,7 @@
     background-color: #3a42bd;
     border: none;
     border-radius: 15px;
-    color: white;
+    color: #ffffff;
     cursor: pointer;
     display: inline-block;
     font-family: "Poppins", sans-serif;
@@ -287,7 +287,7 @@
     background-color: #3a42bd;
     border: none;
     border-radius: 15px;
-    color: white;
+    color: #ffffff;
     cursor: pointer;
     display: block;
     font-family: "Poppins", sans-serif;
@@ -374,12 +374,35 @@
     outline: none;
 }
 
+/* Add styling to the forgot password button in the container */
+.login-container .forgot-password-button {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 15px;
+    color: #3e84ff;
+    cursor: pointer;
+    display: block;
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    padding: 2px 30px;
+    transition: color 0.3s ease-in-out;
+    text-align: center;
+    text-decoration: none;
+
+}
+
+.login-container .forgot-password-button:hover {
+    color: #181f7d;
+}
+
 /* Add styling to the log in button in the container */
 .login-container .login-button {
     background-color: #3a42bd;
     border: none;
     border-radius: 15px;
-    color: white;
+    color: #ffffff;
     cursor: pointer;
     display: block;
     font-family: "Poppins", sans-serif;
@@ -402,7 +425,7 @@
     background-color: #ffffff;
     border: 5px solid #4a90e2;
     border-radius: 10px;
-    display: block;
+    display: none;
     height: fit-content;
     left: 50%;
     opacity: 0;
@@ -410,7 +433,7 @@
     top: 50%;
     transform: translate(-50%, -50%);
     transition: opacity 0.6s ease, visibility 0s 0.6s;
-    visibility: hidden;
+    visibility: visible;
     width: 550px;
     z-index: 1000;
 }
@@ -425,9 +448,10 @@
     cursor: pointer;
     display: inline-flex;
     font-family: "Poppins", sans-serif;
-    font-size: 1.1em;
-    font-weight: 390;
+    font-size: 1.3em;
+    font-weight: 400;
     margin: 0 50px;
+    padding-left: 40px;
     position: relative;
     user-select: none;
 }
@@ -458,7 +482,7 @@
 
 /* Change color when the checkbox is checked */
 .remember input:checked ~ .remember-check {
-    background-color: #377cca;
+    background-color: #d9c919;
 }
 
 /* Create the checkmark/indicator (hidden when its not checked) */
@@ -477,7 +501,7 @@
 .remember .remember-check:after {
     -ms-transform: rotate(45deg);
     -webkit-transform: rotate(45deg);
-    border: solid white;
+    border: solid #ffffff;
     border-width: 0 4.5px 4.5px 0;
     height: 12px;
     left: 10px;
