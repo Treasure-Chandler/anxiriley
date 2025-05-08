@@ -10,20 +10,29 @@ document.getElementById('signUpButton').addEventListener('click', function() {
     const signUpForm = document.getElementById('signUp');
     const blackOverlay = document.getElementById('black-overlay');
 
-    // Show the black overlay
+    // Give the black overlay a transition
+    blackOverlay.style.transition = 'opacity 0.6s ease';
+    blackOverlay.style.opacity = 0;
     blackOverlay.style.visibility = 'visible';
+    blackOverlay.style.pointerEvents = 'auto';
+
+    // Force a reflow to register initial opacity before changing it
+    void blackOverlay.offsetWidth;
+
+    // Fade in the black overlay
     blackOverlay.style.opacity = 1;
 
-    // Show the sign up form
-    signUpForm.style.visibility = 'visible';
-    signUpForm.style.opacity = 1;
+    // Show and transition the log in form
     signUpForm.style.display = 'block';
+    signUpForm.style.transition = 'opacity 0.6s ease';
+    signUpForm.style.opacity = 0;
+    signUpForm.style.visibility = 'visible';
 
-    // Delay the transition so the opacity can take effect
-    setTimeout(() => {
-        blackOverlay.style.transition = 'opacity 0.6s ease';
-        signUpForm.style.transition = 'opacity 0.6s ease';
-    }, 10);
+    // Force a reflow for login form as well
+    void signUpForm.offsetWidth;
+
+    // Fade in the log in form
+    signUpForm.style.opacity = 1;
 });
 
 // Close the sign up form and hide the overlay when the "X" button is clicked
@@ -31,18 +40,17 @@ document.getElementById('closeSignUpButton').addEventListener('click', function(
     const signUpForm = document.getElementById('signUp');
     const blackOverlay = document.getElementById('black-overlay');
 
-    // Hide the black overlay with transition
+    // Start a fade-out transition
     blackOverlay.style.opacity = 0;
-    blackOverlay.style.visibility = 'hidden';
-
-    // Hide the sign up form with transition
     signUpForm.style.opacity = 0;
-    signUpForm.style.visibility = 'hidden';
 
-    // Delay hiding the sign up form to allow for opacity transition
+    // Wait for transition to finish before hiding elements
     setTimeout(() => {
+        blackOverlay.style.visibility = 'hidden';
+        blackOverlay.style.pointerEvents = 'none';
+        signUpForm.style.visibility = 'hidden';
         signUpForm.style.display = 'none';
-    }, 600);
+    }, 600); 
 });
 
 // Show log in form and overlay when the log in button is clicked
@@ -50,20 +58,29 @@ document.getElementById('logInButton').addEventListener('click', function() {
     const logInForm = document.getElementById('logIn');
     const blackOverlay = document.getElementById('black-overlay');
 
-    // Show the black overlay
+    // Give the black overlay a transition
+    blackOverlay.style.transition = 'opacity 0.6s ease';
+    blackOverlay.style.opacity = 0;
     blackOverlay.style.visibility = 'visible';
+    blackOverlay.style.pointerEvents = 'auto';
+
+    // Force a reflow to register initial opacity before changing it
+    void blackOverlay.offsetWidth;
+
+    // Fade in the black overlay
     blackOverlay.style.opacity = 1;
 
-    // Show the log in form
-    logInForm.style.visibility = 'visible';
-    logInForm.style.opacity = 1;
+    // Show and transition the log in form
     logInForm.style.display = 'block';
+    logInForm.style.transition = 'opacity 0.6s ease';
+    logInForm.style.opacity = 0;
+    logInForm.style.visibility = 'visible';
 
-    // Delay the transisiton so the opacity can take effect
-    setTimeout(() => {
-        blackOverlay.style.transition = 'opacity 0.6s ease';
-        logInForm.style.transition = 'opacity 0.6s ease';
-    }, 10);
+    // Force a reflow for login form as well
+    void logInForm.offsetWidth;
+
+    // Fade in the log in form
+    logInForm.style.opacity = 1;
 });
 
 // Close the log in form and hide the overlay when the "X" button is clicked
@@ -71,16 +88,60 @@ document.getElementById('closeLogInButton').addEventListener('click', function()
     const logInForm = document.getElementById('logIn');
     const blackOverlay = document.getElementById('black-overlay');
 
-    // Hide the black overlay with transition
+    // Start a fade-out transition
     blackOverlay.style.opacity = 0;
-    blackOverlay.style.visibility = 'hidden';
+    logInForm.style.opacity = 0;
 
-    // Hide the log in form with transition
+    // Wait for transition to finish before hiding elements
+    setTimeout(() => {
+        blackOverlay.style.visibility = 'hidden';
+        blackOverlay.style.pointerEvents = 'none';
+        logInForm.style.visibility = 'hidden';
+        logInForm.style.display = 'none';
+    }, 600); 
+});
+
+// When the "Forgot Password?" button is clicked, open the forgot password popup
+document.getElementById('forgotPasswordButton').addEventListener('click', function(event) {
+    const logInForm = document.getElementById('logIn');
+    const forgotPasswordForm = document.getElementById('forgotPassword');
+
+    event.preventDefault();
+
+    // Show and transition the log in form
+    forgotPasswordForm.style.display = 'block';
+    forgotPasswordForm.style.transition = 'opacity 0.6s ease';
+    forgotPasswordForm.style.opacity = 0;
+    forgotPasswordForm.style.visibility = 'visible';
+
+    // Force a reflow for login form as well
+    void forgotPasswordForm.offsetWidth;
+
+    // Fade in the log in form
+    forgotPasswordForm.style.opacity = 1;
+
+    // Hide the log in form
     logInForm.style.opacity = 0;
     logInForm.style.visibility = 'hidden';
+});
 
-    // Delay hiding the sign-up form to allow for opacity transition
+
+// Close the forgot password form and hide the overlay when the "X" button is clicked
+document.getElementById('closeForgotPasswordButton').addEventListener('click', function(event) {
+    const logInForm = document.getElementById('logIn');
+    const forgotPasswordForm = document.getElementById('forgotPassword');
+
+    // Start a fade-out transition
+    forgotPasswordForm.style.opacity = 0;
+
+    // Wait for transition to finish before hiding elements
     setTimeout(() => {
-        logInForm.style.display = 'none';
-    }, 600);
+        forgotPasswordForm.style.visibility = 'hidden';
+        forgotPasswordForm.style.display = 'none';
+    }, 600); 
+
+    // Then, show the log in form again
+    logInForm.style.visibility = 'visible';
+    logInForm.style.opacity = 1;
+    logInForm.style.display = 'block';
 });

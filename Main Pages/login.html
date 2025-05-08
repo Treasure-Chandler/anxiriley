@@ -102,14 +102,22 @@
                         </div>
 
                         <button type="submit" class="login-button">Log In</button>
-                        <button class="forgot-password-button">Forgot your password?</button>
+                        <button type="button" class="forgot-password-button" id="forgotPasswordButton">Forgot your password?</button>
                     </form>
                 </div>
 
                 <!-- Popup for forgetting your password -->
-                 <div>
-                    
-                 </div>
+                <div class="forgot-password-form" id="forgotPassword">
+                    <form action="/action_page.php" class="forgot-password-container">
+                        <button type="button" class="close" id="closeForgotPasswordButton"></button>
+                        <img src="../Assets/popup.png" width="190" height="190" style="margin-top: 10px;">
+
+                        <label class="forgot-psw-hint">Enter your account's email to send a verification link!</label>
+
+                        <input type="text" placeholder="Enter your email..." name="email" required>
+                        <button type="submit" class="forgot-psw-button">Send Password Reset Email</button>
+                    </form>
+                </div>
 
                 <!-- Login footer -->
                 <footer>
