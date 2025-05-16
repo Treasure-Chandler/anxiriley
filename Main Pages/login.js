@@ -125,9 +125,8 @@ document.getElementById('forgotPasswordButton').addEventListener('click', functi
     logInForm.style.visibility = 'hidden';
 });
 
-
 // Close the forgot password form and hide the overlay when the "X" button is clicked
-document.getElementById('closeForgotPasswordButton').addEventListener('click', function(event) {
+document.getElementById('closeForgotPasswordButton').addEventListener('click', function() {
     const logInForm = document.getElementById('logIn');
     const forgotPasswordForm = document.getElementById('forgotPassword');
 
@@ -145,3 +144,41 @@ document.getElementById('closeForgotPasswordButton').addEventListener('click', f
     logInForm.style.opacity = 1;
     logInForm.style.display = 'block';
 });
+
+/* Alerts section */
+document.addEventListener("DOMContentLoaded", function() {
+    /* 
+    * The "OK" button is linked to each popup; this event listener is defined for all "OK"
+    * buttons so they can close their respective popups
+    */
+    const okBtns = document.querySelectorAll('.ok');
+
+    okBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const dialog = btn.closest('dialog');
+            if (dialog) dialog.close();
+        });
+    });
+
+    document.getElementById('suButton').addEventListener('click', function() {
+        // Declaring variables
+        const nameAlert = document.getElementById('nameAlert');
+        const stuEmailAlert = document.getElementById('stuEmailAlert');
+        const name = document.getElementById('name').value;
+        const signUpEmail = document.getElementById('signUpEmail').value;
+        const signUpPassword = document.getElementById('signUpPassword').value;
+        const isStudent = document.getElementById('isStudent');
+        const isTeacher = document.getElementById('isTeacher');
+
+        // If there is only one name instead of two upon signing up
+        if (!name.includes(" ")) nameAlert.showModal();
+
+        // If the email does not contain the correct email address upon signing up
+        if (isStudent.checked) {
+            stuEmailAlert.showModal();
+        }
+    });
+});
+
+
+/* End of alerts section */
