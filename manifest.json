@@ -3,11 +3,16 @@
   "description": "This Chrome extension is meant to manage the stress and mental health of teachers and students at Riley High School!",
   "version": "1.0",
   "manifest_version": 3,
-  "permissions": [
-    "tabs"
-  ],
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["https://*.firebaseio.com/", "https://*.firebaseapp.com/"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "Main Popup/hello.html",
     "default_icon": "Assets/anxirileyicon.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
   }
 }

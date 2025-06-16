@@ -5,6 +5,9 @@
  * for account handling.
  */
 
+// Imports
+import { auth, signInWithEmailAndPassword } from "./firebase-init.js";
+
 // Show sign up form and overlay when the sign up button is clicked
 document.getElementById('signUpButton').addEventListener('click', function() {
     const signUpForm = document.getElementById('signUp');
@@ -145,7 +148,7 @@ document.getElementById('closeForgotPasswordButton').addEventListener('click', f
     logInForm.style.display = 'block';
 });
 
-/* Alerts section */
+// When the page is loaded
 document.addEventListener("DOMContentLoaded", function() {
     /* 
     * The "OK" button is linked to each popup; this event listener is defined for all "OK"
@@ -160,25 +163,68 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // Events for signing up
     document.getElementById('suButton').addEventListener('click', function() {
         // Declaring variables
         const nameAlert = document.getElementById('nameAlert');
         const stuEmailAlert = document.getElementById('stuEmailAlert');
+        const teaEmailAlert = document.getElementById('teaEmailAlert');
+        const emailAlert = document.getElementById('emailAlert');
+        const passwordLengthAlert = document.getElementById('passwordLengthAlert');
         const name = document.getElementById('name').value;
         const signUpEmail = document.getElementById('signUpEmail').value;
         const signUpPassword = document.getElementById('signUpPassword').value;
         const isStudent = document.getElementById('isStudent');
         const isTeacher = document.getElementById('isTeacher');
 
+        /* Alert events section */
         // If there is only one name instead of two upon signing up
         if (!name.includes(" ")) nameAlert.showModal();
 
         // If the email does not contain the correct email address upon signing up
-        if (isStudent.checked) {
+        if (isStudent.checked && (!signUpEmail.includes("@gmail.com"))) {
             stuEmailAlert.showModal();
+        } else if (isTeacher.checked && (!signUpEmail.includes("@gmail.com"))) {
+            teaEmailAlert.showModal();
+        } else if (!signUpEmail.includes("@gmail.com") && !signUpEmail.includes("@sbcsc.k12.in.us")) {
+            emailAlert.showModal();
         }
+
+        // If the password is not of the required length
+        if (signUpPassword.length < 6) passwordLengthAlert.showModal();
+        /* End of alert events section */
+    });
+
+    // Events for logging in
+    document.getElementById('liButton').addEventListener('click', function() {
+        // Declaring variables
+        const emailAlert = document.getElementById('emailAlert');
+        const passwordAlert = document.getElementById('incorrectPassword');
+        const logInEmail = document.getElementById('logInEmail').value;
+        const logInPassword = document.getElementById('logInPassword').value;
+
+        /* Alert events section */
+        // If the email does not contain the correct email address upon logging in
+        if (!logInEmail.includes("@gmail.com")) {
+            emailAlert.showModal();
+            return;
+        }
+        /* End of alert events section */
+
+        // Signing in with Firebase
+        signInWithEmailAndPassword(auth, logInEmail, logInPassword)
+            .then((userCredential) => {
+                console.log("Logged in:", userCredential.user);
+            })
+            .catch((error) => {
+                console.error(error.code, error.message);
+                if (error.code === 'auth/wrong-password') {
+                    passwordAlert.showModal();
+                } else if (error.code === 'auth/user-not-found') {
+                    emailAlert.showModal();
+                } else {
+                    alert("Login error: " + error.message);
+                }
+            })
     });
 });
-
-
-/* End of alerts section */

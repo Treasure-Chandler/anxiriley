@@ -91,8 +91,8 @@
                         <button type="button" class="close" id="closeLogInButton"></button>
                         <img src="../Assets/popup.png" width="190" height="190">
 
-                        <input type="text" placeholder="First, enter your email..." name="email" required>
-                        <input type="password" placeholder="Then, enter your password..." name="psw" required>
+                        <input type="text" placeholder="First, enter your email..." name="email" id="logInEmail" required>
+                        <input type="password" placeholder="Then, enter your password..." name="psw" id="logInPassword" required>
 
                         <div style="align-items: center; display: inline-block; margin-bottom: 30px; margin-top: 20px;">
                             <label class="remember">
@@ -102,7 +102,7 @@
                             </label>
                         </div>
 
-                        <button type="submit" class="login-button">Log In</button>
+                        <button type="button" class="login-button" id="liButton">Log In</button>
                         <button type="button" class="forgot-password-button" id="forgotPasswordButton">Forgot your password?</button>
                     </form>
                 </div>
@@ -127,6 +127,11 @@
             </div>
 
             <!-- Login alerts -->
+            <dialog closedby="closerequest" id="credIssues">
+                <p>One or more fields appear to be empty. Fill out all empty spaces!</p>
+                <button class="ok">OK</button>
+            </dialog>
+            
             <dialog closedby="closerequest" id="nameAlert">
                 <h2>Incorrect Name</h2>
                 <p>You must have your first AND last name!</p>
@@ -136,6 +141,30 @@
             <dialog closedby="closerequest" id="stuEmailAlert">
                 <h2>Incorrect Student Email</h2>
                 <p>You must enter your student email!</p>
+                <button class="ok">OK</button>
+            </dialog>
+
+            <dialog closedby="closerequest" id="teaEmailAlert">
+                <h2>Incorrect Teacher Email</h2>
+                <p>You must enter your teacher email!</p>
+                <button class="ok">OK</button>
+            </dialog>
+
+            <dialog closedby="closerequest" id="emailAlert">
+                <h2>Incorrect Email</h2>
+                <p>You must enter a school email!</p>
+                <button class="ok">OK</button>
+            </dialog>
+
+            <dialog closedby="closerequest" id="passwordLengthAlert">
+                <h2>Password not Long Enough</h2>
+                <p>Your password must be 6 or more characters long!</p>
+                <button class="ok">OK</button>
+            </dialog>
+
+            <dialog closedby="closerequest" id="incorrectPassword">
+                <h2>Incorrect Password</h2>
+                <p>Your password is incorrect. You can try retyping it or resetting it.</p>
                 <button class="ok">OK</button>
             </dialog>
         </main>
