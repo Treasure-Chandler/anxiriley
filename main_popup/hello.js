@@ -6,5 +6,5 @@
 
 // Open event
 document.getElementById('openLogin').addEventListener('click', function() {
-    chrome.tabs.create({ url: '/Main Pages/login.html' });
+    chrome.tabs.create({ url: '/main_pages/login.html' });
 });
