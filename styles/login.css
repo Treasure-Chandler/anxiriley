@@ -619,6 +619,12 @@
 }
 /* End of Forgot Password Popup Section */
 
+/* Styling the login alert popups */
+.login-alert {
+    border: 5px solid #4a90e2;
+    border-radius: 10px;
+}
+
 /* Styling the footer */
 footer {
     bottom: 0;

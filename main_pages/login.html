@@ -11,9 +11,10 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Log In</title>
-        <script src="login.js" defer></script>
-        <link rel="stylesheet" href="login.css">
-        <link rel="icon" href="/assets/anxirileyicon.png">
+        <script type="module" src="/scripts/firebase-init.js"></script>
+        <script type="module" src="/scripts/login.js"></script>
+        <link rel="stylesheet" href="/styles/login.css">
+        <link rel="icon" href="../assets/anxirileyicon.png">
         
         <!-- "Poppins" font from Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,42 +128,42 @@
             </div>
 
             <!-- Login alerts -->
-            <dialog closedby="closerequest" id="credIssues">
+            <dialog closedby="closerequest" class="login-alert" id="credIssues">
                 <p>One or more fields appear to be empty. Fill out all empty spaces!</p>
                 <button class="ok">OK</button>
             </dialog>
             
-            <dialog closedby="closerequest" id="nameAlert">
+            <dialog closedby="closerequest" class="login-alert" id="nameAlert">
                 <h2>Incorrect Name</h2>
                 <p>You must have your first AND last name!</p>
                 <button class="ok">OK</button>
             </dialog>
 
-            <dialog closedby="closerequest" id="stuEmailAlert">
+            <dialog closedby="closerequest" class="login-alert" id="stuEmailAlert">
                 <h2>Incorrect Student Email</h2>
                 <p>You must enter your student email!</p>
                 <button class="ok">OK</button>
             </dialog>
 
-            <dialog closedby="closerequest" id="teaEmailAlert">
+            <dialog closedby="closerequest" class="login-alert" id="teaEmailAlert">
                 <h2>Incorrect Teacher Email</h2>
                 <p>You must enter your teacher email!</p>
                 <button class="ok">OK</button>
             </dialog>
 
-            <dialog closedby="closerequest" id="emailAlert">
+            <dialog closedby="closerequest" class="login-alert" id="emailAlert">
                 <h2>Incorrect Email</h2>
                 <p>You must enter a school email!</p>
                 <button class="ok">OK</button>
             </dialog>
 
-            <dialog closedby="closerequest" id="passwordLengthAlert">
+            <dialog closedby="closerequest" class="login-alert" id="passwordLengthAlert">
                 <h2>Password not Long Enough</h2>
                 <p>Your password must be 6 or more characters long!</p>
                 <button class="ok">OK</button>
             </dialog>
 
-            <dialog closedby="closerequest" id="incorrectPassword">
+            <dialog closedby="closerequest" class="login-alert" id="incorrectPassword">
                 <h2>Incorrect Password</h2>
                 <p>Your password is incorrect. You can try retyping it or resetting it.</p>
                 <button class="ok">OK</button>

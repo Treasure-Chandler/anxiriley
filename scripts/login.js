@@ -6,7 +6,7 @@
  */
 
 // Imports
-import { auth, signInWithEmailAndPassword } from "./firebase-init.js";
+import { auth } from "./firebase-init.js";
 
 // Show sign up form and overlay when the sign up button is clicked
 document.getElementById('signUpButton').addEventListener('click', function() {
