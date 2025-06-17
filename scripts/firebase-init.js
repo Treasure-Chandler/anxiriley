@@ -1,22 +1,17 @@
-// Import needed functions from needed SDKs
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDXEB2oZz8OfuYE7LaNpK6i2d0o3WtehA0",
+  apiKey: "AIzaSyCssALozqYnM3bknK7hPxLWUZtTtz6bLeY",
   authDomain: "anxiriley-cf0bf.firebaseapp.com",
   databaseURL: "https://anxiriley-cf0bf-default-rtdb.firebaseio.com",
   projectId: "anxiriley-cf0bf",
   storageBucket: "anxiriley-cf0bf.firebasestorage.app",
   messagingSenderId: "762933477632",
-  appId: "1:762933477632:web:c87475d7531eaf818573e5",
-  measurementId: "G-ETSWT6VVL6"
+  appId: "1:762933477632:web:eeb61395c3d111d58573e5",
+  measurementId: "G-K0YCLZ26NV"
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+firebase.initializeApp(firebaseConfig);
 
-// Export for other scripts
-export { auth };
+// Set global auth
+window.auth = firebase.auth();
