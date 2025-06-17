@@ -619,10 +619,34 @@
 }
 /* End of Forgot Password Popup Section */
 
-/* Styling the login alert popups */
+/* Styling the login alert popups and the "OK" button */
+.ok {
+    background-color: #c7bd3a;
+    border: none;
+    border-radius: 15px;
+    color: #000000;
+    cursor: pointer;
+    font-family: "Poppins", sans-serif;
+    font-size: 12.5px;
+    font-style: normal;
+    font-weight: 400;
+    height: 2.5em;
+    transition: background-color 0.3s ease-in-out;
+    text-decoration: none;
+    width: 4em;
+}
+
+.ok:hover {
+    background-color: #ece359;
+}
+
 .login-alert {
-    border: 5px solid #4a90e2;
-    border-radius: 10px;
+    border: 5px solid #28507e;
+    border-radius: 8px;
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
 }
 
 /* Styling the footer */

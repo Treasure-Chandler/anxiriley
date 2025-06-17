@@ -166,8 +166,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const nameAlert = document.getElementById('nameAlert');
         const stuEmailAlert = document.getElementById('stuEmailAlert');
         const teaEmailAlert = document.getElementById('teaEmailAlert');
-        const emailAlert = document.getElementById('emailAlert');
         const passwordLengthAlert = document.getElementById('passwordLengthAlert');
+        const credAlert = document.getElementById('credIssues');
         const name = document.getElementById('name').value;
         const signUpEmail = document.getElementById('signUpEmail').value;
         const signUpPassword = document.getElementById('signUpPassword').value;
@@ -175,20 +175,23 @@ document.addEventListener("DOMContentLoaded", function () {
         const isTeacher = document.getElementById('isTeacher');
 
         /* Alert events section */
-        // If there is only one name instead of two upon signing up
-        if (!name.includes(" ")) nameAlert.showModal();
+        // If one or more of the fields are empty
+        if ((name.length == 0) || (signUpEmail.length == 0) || (signUpPassword.length == 0)) {
+            credAlert.showModal();
+        } else {
+            // If there is only one name instead of two upon signing up
+            if (!name.includes(" ")) nameAlert.showModal();
 
-        // If the email does not contain the correct email address upon signing up
-        if (isStudent.checked && (!signUpEmail.includes("@gmail.com"))) {
-            stuEmailAlert.showModal();
-        } else if (isTeacher.checked && (!signUpEmail.includes("@gmail.com"))) {
-            teaEmailAlert.showModal();
-        } else if (!signUpEmail.includes("@gmail.com") && !signUpEmail.includes("@sbcsc.k12.in.us")) {
-            emailAlert.showModal();
+            // If the email does not contain the correct email address upon signing up
+            if (isStudent.checked && (!signUpEmail.includes("@gmail.com"))) {
+                stuEmailAlert.showModal();
+            } else if (isTeacher.checked && (!signUpEmail.includes("@gmail.com"))) {
+                teaEmailAlert.showModal();
+            }
+
+            // If the password is not of the required length
+            if (signUpPassword.length < 6) passwordLengthAlert.showModal();
         }
-
-        // If the password is not of the required length
-        if (signUpPassword.length < 6) passwordLengthAlert.showModal();
         /* End of alert events section */
     });
 
@@ -197,14 +200,20 @@ document.addEventListener("DOMContentLoaded", function () {
         // Declaring variables
         const emailAlert = document.getElementById('emailAlert');
         const passwordAlert = document.getElementById('incorrectPassword');
+        const credAlert = document.getElementById('credIssues');
         const logInEmail = document.getElementById('logInEmail').value;
         const logInPassword = document.getElementById('logInPassword').value;
 
         /* Alert events section */
-        // If the email does not contain the correct email address upon logging in
-        if (!logInEmail.includes("@gmail.com")) {
-            emailAlert.showModal();
-            return;
+        // If one or more of the fields are empty
+        if ((logInEmail.length == 0) || (logInPassword.length == 0)) {
+            credAlert.showModal();
+        } else {
+            // If the email does not contain the correct email address upon logging in
+            if (!logInEmail.includes("@gmail.com")) {
+                emailAlert.showModal();
+                return;
+            }
         }
         /* End of alert events section */
 

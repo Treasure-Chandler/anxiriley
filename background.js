@@ -6,7 +6,7 @@
 
 // Installed alert
 chrome.runtime.onInstalled.addListener(() => {
-  console.log("Anxiriley installed");
+  console.log("Anxiriley loaded");
 });
 
 // Loaded alert
