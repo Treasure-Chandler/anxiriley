@@ -4,15 +4,23 @@
   "version": "1.0",
   "manifest_version": 3,
   "permissions": ["tabs", "storage"],
-  "host_permissions": ["https://*.firebaseio.com/", "https://*.firebaseapp.com/"],
+  "host_permissions": [
+    "https://*.firebaseio.com/",
+    "https://*.firebaseapp.com/",
+    "https://*.googleapis.com/",
+    "https://identitytoolkit.googleapis.com/"
+  ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
-    "default_popup": "Main Popup/hello.html",
-    "default_icon": "Assets/anxirileyicon.png"
+    "default_popup": "main_popup/hello.html",
+    "default_icon": "assets/anxirileyicon.png"
   },
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self';"
+  "icons": {
+    "16": "assets/anxirileyicon.png",
+    "48": "assets/anxirileyicon.png",
+    "128": "assets/anxirileyicon.png"
   }
 }

@@ -64,7 +64,7 @@
 
 /* Add the question mark to the page so it can be hoverable */
 .help-tooltip-img {
-    background-image: url(../Assets/help.png);
+    background-image: url(../assets/help.png);
     background-repeat: no-repeat;
     background-size: 100% 100%;
     cursor: help;
@@ -141,7 +141,7 @@
 
 /* Styling the translation gear */
 #translate-settings {
-    background-image: url(../Assets/settings.png);
+    background-image: url(../assets/settings.png);
     background-repeat: no-repeat;
     background-size: 100% 100%;
     cursor: pointer;
@@ -153,7 +153,7 @@
 }
 
 #translate-settings:hover {
-    background-image: url(../Assets/settingshover.png);
+    background-image: url(../assets/settingshover.png);
 }
 
 /* Black background image that will appear when either popup is opened */
@@ -176,7 +176,7 @@
 /* Adding the "X" button */
 .close {
     background-color: transparent;
-    background-image: url(../Assets/close.png);
+    background-image: url(../assets/close.png);
     background-repeat: no-repeat;
     background-size: cover;
     border: none;
@@ -329,7 +329,7 @@
 /* Adding the "X" button */
 .close {
     background-color: transparent;
-    background-image: url(../Assets/close.png);
+    background-image: url(../assets/close.png);
     background-repeat: no-repeat;
     background-size: cover;
     border: none;
@@ -517,7 +517,7 @@
 /* Adding the "X" button */
 .close {
     background-color: transparent;
-    background-image: url(../Assets/close.png);
+    background-image: url(../assets/close.png);
     background-repeat: no-repeat;
     background-size: cover;
     border: none;
@@ -632,7 +632,7 @@ footer {
 
 /* Sets the background image */
 html {
-    background-image: url(../Assets/lightmodewithwildcat.png);
+    background-image: url(../assets/lightmodewithwildcat.png);
     background-size: 100vw 100vh;
     background-repeat: no-repeat;
 }
