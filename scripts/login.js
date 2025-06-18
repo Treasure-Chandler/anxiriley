@@ -168,6 +168,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const teaEmailAlert = document.getElementById('teaEmailAlert');
         const passwordLengthAlert = document.getElementById('passwordLengthAlert');
         const credAlert = document.getElementById('credIssues');
+        const dupeEmailAlert = document.getElementById('duplicateEmailAlert');
+        const noOptionAlert = document.getElementById('noRadioCheckedAlert');
+
         const name = document.getElementById('name').value;
         const signUpEmail = document.getElementById('signUpEmail').value;
         const signUpPassword = document.getElementById('signUpPassword').value;
@@ -178,21 +181,63 @@ document.addEventListener("DOMContentLoaded", function () {
         // If one or more of the fields are empty
         if ((name.length == 0) || (signUpEmail.length == 0) || (signUpPassword.length == 0)) {
             credAlert.showModal();
+            return;
         } else {
             // If there is only one name instead of two upon signing up
-            if (!name.includes(" ")) nameAlert.showModal();
-
-            // If the email does not contain the correct email address upon signing up
-            if (isStudent.checked && (!signUpEmail.includes("@gmail.com"))) {
-                stuEmailAlert.showModal();
-            } else if (isTeacher.checked && (!signUpEmail.includes("@gmail.com"))) {
-                teaEmailAlert.showModal();
+            if (!name.includes(" ")) {
+                nameAlert.showModal();
+                return;
             }
 
             // If the password is not of the required length
-            if (signUpPassword.length < 6) passwordLengthAlert.showModal();
+            if (signUpPassword.length < 6) {
+                passwordLengthAlert.showModal();
+                return;
+            }
+
+            // Email validation
+            if ((isStudent || isTeacher) && (!signUpEmail.includes("@gmail.com"))) {
+                (isStudent ? stuEmailAlert : teaEmailAlert).showModal();
+                return;
+            }
+
+            // If neither radio buttons are checked
+            if (!isStudent.checked && !isTeacher.checked) {
+                noOptionAlert.showModal();
+                return;
+            }
         }
         /* End of alert events section */
+
+        // Signing up with Firebase
+        firebase.auth().createUserWithEmailAndPassword(signUpEmail, signUpPassword)
+        .then((userCredential) => {
+            const uid = userCredential.user.uid;
+
+            // Send data to the User Data sheet
+            fetch('https://script.google.com/macros/s/AKfycbylzFXiRgxOdHl2VMobX8jSW2ZLVzXPliilsZyYBZwFbq7chy9-zZUdvVvCS58IbpYTJw/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: signUpEmail,
+                    uid: uid,
+                    role: isTeacher.checked ? "Teacher" : "Student"
+                })
+                })
+                .then(() => console.log("Data sent"))
+                .catch(err => console.error("Send failed", err));
+
+        }).catch((error) => {
+            // Log errors in console
+            if (error.code === 'auth/email-already-in-use') {
+                dupeEmailAlert.showModal();
+                return;
+            }
+        });
     });
 
     // Events for logging in
@@ -201,6 +246,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const emailAlert = document.getElementById('emailAlert');
         const passwordAlert = document.getElementById('incorrectPassword');
         const credAlert = document.getElementById('credIssues');
+
         const logInEmail = document.getElementById('logInEmail').value;
         const logInPassword = document.getElementById('logInPassword').value;
 
@@ -208,6 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // If one or more of the fields are empty
         if ((logInEmail.length == 0) || (logInPassword.length == 0)) {
             credAlert.showModal();
+            return;
         } else {
             // If the email does not contain the correct email address upon logging in
             if (!logInEmail.includes("@gmail.com")) {
