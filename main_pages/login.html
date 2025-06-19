@@ -168,7 +168,7 @@
                 <button class="ok">OK</button>
             </dialog>
 
-            <dialog closedby="closerequest" class="login-alert" id="incorrectPassword">
+            <dialog closedby="closerequest" class="login-alert" id="incorrectPasswordAlert">
                 <h2>Incorrect Password</h2>
                 <p>Your password is incorrect. You can try retyping it or resetting it.</p>
                 <button class="ok">OK</button>
@@ -183,6 +183,23 @@
             <dialog closedby="closerequest" class="login-alert" id="noRadioCheckedAlert">
                 <h2>No Option Selected</h2>
                 <p>You need to select if you are a student or a teacher!</p>
+                <button class="ok">OK</button>
+            </dialog>
+
+            <dialog closedby="closerequest" class="login-alert" id="emailNotUsedAlert">
+                <h2>Email Not Used</h2>
+                <p>This email is not used! Why not try creating an account?</p>
+                <button class="ok">OK</button>
+            </dialog>
+
+            <dialog closedby="closerequest" class="login-alert" id="weakPasswordAlert">
+                <h2>Weak Password</h2>
+                <p>
+                    You will need a stronger password with this account!<br><br>
+                    A strong password requires at least one uppercase letter,<br>
+                    one lowercase letter, a number, and must be at least 6<br>
+                    characters long.
+                </p>
                 <button class="ok">OK</button>
             </dialog>
         </main>

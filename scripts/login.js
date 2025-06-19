@@ -160,6 +160,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // Initialize strong password requirements
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', function () {
         // Declaring variables
@@ -170,6 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const credAlert = document.getElementById('credIssues');
         const dupeEmailAlert = document.getElementById('duplicateEmailAlert');
         const noOptionAlert = document.getElementById('noRadioCheckedAlert');
+        const nonStrongPasswordAlert = document.getElementById('weakPasswordAlert');
 
         const name = document.getElementById('name').value;
         const signUpEmail = document.getElementById('signUpEmail').value;
@@ -177,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const isStudent = document.getElementById('isStudent');
         const isTeacher = document.getElementById('isTeacher');
 
-        /* Alert events section */
+        /* Custom alert events section */
         // If one or more of the fields are empty
         if ((name.length == 0) || (signUpEmail.length == 0) || (signUpPassword.length == 0)) {
             credAlert.showModal();
@@ -206,14 +210,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 noOptionAlert.showModal();
                 return;
             }
+
+            // If the password is too weak
+            if (!strongPasswordRegex.test(signUpPassword)) {
+                nonStrongPasswordAlert.showModal();
+                return;
+            }
         }
-        /* End of alert events section */
+        /* End of custom alert events section */
 
         // Signing up with Firebase
         firebase.auth().createUserWithEmailAndPassword(signUpEmail, signUpPassword)
         .then((userCredential) => {
+            // Initialize the user ID
             const uid = userCredential.user.uid;
-
+            
             // Send data to the User Data sheet
             fetch('https://script.google.com/macros/s/AKfycbylzFXiRgxOdHl2VMobX8jSW2ZLVzXPliilsZyYBZwFbq7chy9-zZUdvVvCS58IbpYTJw/exec', {
                 method: 'POST',
@@ -228,13 +239,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     role: isTeacher.checked ? "Teacher" : "Student"
                 })
                 })
-                .then(() => console.log("Data sent"))
-                .catch(err => console.error("Send failed", err));
+
+            // Redirect to the confirmation screen
 
         }).catch((error) => {
-            // Log errors in console
+            // Log any Firebase errors
             if (error.code === 'auth/email-already-in-use') {
+                // If the email is already in use
                 dupeEmailAlert.showModal();
+                return;
+            } else if (error.code === 'auth/weak-password') {
+                // If the password is too weak
+                nonStrongPasswordAlert.showModal();
                 return;
             }
         });
@@ -244,14 +260,15 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('liButton').addEventListener('click', function () {
         // Declaring variables
         const emailAlert = document.getElementById('emailAlert');
-        const passwordAlert = document.getElementById('incorrectPassword');
+        const passwordAlert = document.getElementById('incorrectPasswordAlert');
         const credAlert = document.getElementById('credIssues');
+        const unusedEmailAlert = document.getElementById('emailNotUsedAlert');
 
         const logInEmail = document.getElementById('logInEmail').value;
         const logInPassword = document.getElementById('logInPassword').value;
 
-        /* Alert events section */
-        // If one or more of the fields are empty
+        /* Custom alert events section */
+        // If one or both of the fields are empty
         if ((logInEmail.length == 0) || (logInPassword.length == 0)) {
             credAlert.showModal();
             return;
@@ -262,22 +279,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
         }
-        /* End of alert events section */
+        /* End of custom alert events section */
 
-        // Signing in with Firebase
-        signInWithEmailAndPassword(auth, logInEmail, logInPassword)
-            .then((userCredential) => {
-                console.log("Logged in:", userCredential.user);
+        // Logging in with Firebase
+        firebase.auth().signInWithEmailAndPassword(logInEmail, logInPassword)
+            .then(() => {
+                // Redirect to the home screen
+
             })
             .catch((error) => {
-                console.error(error.code, error.message);
-                if (error.code === 'auth/wrong-password') {
+                // Log any Firebase errors
+                if (error.code === 'auth/user-not-found') {
+                    // If the email is not used
+                    unusedEmailAlert.showModal();
+                    return;
+                } else if (error.code === 'auth/wrong-password') {
+                    // If the password is incorrect
                     passwordAlert.showModal();
-                } else if (error.code === 'auth/user-not-found') {
-                    emailAlert.showModal();
-                } else {
-                    alert("Login error: " + error.message);
+                    return;
                 }
-            })
+            });
     });
 });
