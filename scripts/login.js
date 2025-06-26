@@ -7,6 +7,11 @@
 
 // When the page is loaded, execute these events
 document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById('confirm').addEventListener('click', function () {
+        // window.location.replace("confirmation.html");
+        location.href = 'confirmation.html';
+    });
+
     // Show sign up form and overlay when the sign up button is clicked
     document.getElementById('signUpButton').addEventListener('click', function () {
         const signUpForm = document.getElementById('signUp');
