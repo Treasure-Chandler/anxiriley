@@ -7,6 +7,23 @@
 
 // When the page is loaded, execute these events
 document.addEventListener("DOMContentLoaded", function () {
+    // Declaring variables
+    const nameAlert = document.getElementById('nameAlert');
+    const stuEmailAlert = document.getElementById('stuEmailAlert');
+    const teaEmailAlert = document.getElementById('teaEmailAlert');
+    const credAlert = document.getElementById('credIssues');
+    const dupeEmailAlert = document.getElementById('duplicateEmailAlert');
+    const noOptionAlert = document.getElementById('noRadioCheckedAlert');
+    const nonStrongPasswordAlert = document.getElementById('weakPasswordAlert');
+    const emailAlert = document.getElementById('emailAlert');
+    const passwordAlert = document.getElementById('incorrectPasswordAlert');
+    const unusedEmailAlert = document.getElementById('emailNotUsedAlert');
+
+    let storedStudentInfo, storedTeacherInfo, firstTimeSigningIn, firstTimeSigningInTour, numOfStudentClasses,
+        numOfTeacherClasses, langPref;
+
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
     document.getElementById('confirm').addEventListener('click', function () {
         // window.location.replace("confirmation.html");
         location.href = 'confirmation.html';
@@ -165,59 +182,40 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Initialize strong password requirements
-    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
-
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', function () {
-        // Declaring variables
-        const nameAlert = document.getElementById('nameAlert');
-        const stuEmailAlert = document.getElementById('stuEmailAlert');
-        const teaEmailAlert = document.getElementById('teaEmailAlert');
-        const passwordLengthAlert = document.getElementById('passwordLengthAlert');
-        const credAlert = document.getElementById('credIssues');
-        const dupeEmailAlert = document.getElementById('duplicateEmailAlert');
-        const noOptionAlert = document.getElementById('noRadioCheckedAlert');
-        const nonStrongPasswordAlert = document.getElementById('weakPasswordAlert');
-
-        const name = document.getElementById('name').value;
-        const signUpEmail = document.getElementById('signUpEmail').value;
-        const signUpPassword = document.getElementById('signUpPassword').value;
-        const isStudent = document.getElementById('isStudent');
-        const isTeacher = document.getElementById('isTeacher');
-
         /* Custom alert events section */
         // If one or more of the fields are empty
-        if ((name.length == 0) || (signUpEmail.length == 0) || (signUpPassword.length == 0)) {
+        if ((!document.getElementById('name').value) || (!document.getElementById('signUpEmail').value)
+            || (!document.getElementById('signUpPassword').value)) {
             credAlert.showModal();
             return;
         } else {
             // If there is only one name instead of two upon signing up
-            if (!name.includes(" ")) {
+            if (!document.getElementById('name').value.includes(" ")) {
                 nameAlert.showModal();
                 return;
             }
 
-            // If the password is not of the required length
-            if (signUpPassword.length < 6) {
-                passwordLengthAlert.showModal();
-                return;
-            }
-
             // Email validation
-            if ((isStudent || isTeacher) && (!signUpEmail.includes("@gmail.com"))) {
-                (isStudent ? stuEmailAlert : teaEmailAlert).showModal();
+            if ((document.getElementById('isStudent').checked &&
+                (!document.getElementById('signUpEmail').value.includes("@gmail.com")))) {
+                stuEmailAlert.showModal();
+                return;
+            } else if ((document.getElementById('isTeacher').checked &&
+                        (!document.getElementById('signUpEmail').value.includes("@gmail.com")))) {
+                teaEmailAlert.showModal();
                 return;
             }
 
             // If neither radio buttons are checked
-            if (!isStudent.checked && !isTeacher.checked) {
+            if (!document.getElementById('isStudent').checked && !document.getElementById('isTeacher').checked) {
                 noOptionAlert.showModal();
                 return;
             }
 
             // If the password is too weak
-            if (!strongPasswordRegex.test(signUpPassword)) {
+            if (!strongPasswordRegex.test(document.getElementById('signUpPassword').value)) {
                 nonStrongPasswordAlert.showModal();
                 return;
             }
@@ -225,7 +223,8 @@ document.addEventListener("DOMContentLoaded", function () {
         /* End of custom alert events section */
 
         // Signing up with Firebase
-        firebase.auth().createUserWithEmailAndPassword(signUpEmail, signUpPassword)
+        firebase.auth().createUserWithEmailAndPassword(document.getElementById('signUpEmail').value,
+                                                        document.getElementById('signUpPassword').value)
         .then((userCredential) => {
             // Initialize the user ID
             const uid = userCredential.user.uid;
@@ -238,10 +237,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    name: name,
-                    email: signUpEmail,
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('signUpEmail').value,
                     uid: uid,
-                    role: isTeacher.checked ? "Teacher" : "Student"
+                    role: document.getElementById('isTeacher').checked ? "Teacher" : "Student"
                 })
                 })
 
@@ -263,23 +262,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Events for logging in
     document.getElementById('liButton').addEventListener('click', function () {
-        // Declaring variables
-        const emailAlert = document.getElementById('emailAlert');
-        const passwordAlert = document.getElementById('incorrectPasswordAlert');
-        const credAlert = document.getElementById('credIssues');
-        const unusedEmailAlert = document.getElementById('emailNotUsedAlert');
-
-        const logInEmail = document.getElementById('logInEmail').value;
-        const logInPassword = document.getElementById('logInPassword').value;
-
         /* Custom alert events section */
         // If one or both of the fields are empty
-        if ((logInEmail.length == 0) || (logInPassword.length == 0)) {
+        if ((!document.getElementById('logInEmail').value) || (!document.getElementById('logInPassword').value)) {
             credAlert.showModal();
             return;
         } else {
             // If the email does not contain the correct email address upon logging in
-            if (!logInEmail.includes("@gmail.com")) {
+            if (!document.getElementById('logInEmail').value.includes("@gmail.com")) {
                 emailAlert.showModal();
                 return;
             }
@@ -287,10 +277,11 @@ document.addEventListener("DOMContentLoaded", function () {
         /* End of custom alert events section */
 
         // Logging in with Firebase
-        firebase.auth().signInWithEmailAndPassword(logInEmail, logInPassword)
+        firebase.auth().signInWithEmailAndPassword(document.getElementById('logInEmail').value,
+                                                    document.getElementById('logInPassword').value)
             .then(() => {
                 // Redirect to the home screen
-
+                alert("success");
             })
             .catch((error) => {
                 // Log any Firebase errors
