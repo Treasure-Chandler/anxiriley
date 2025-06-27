@@ -19,8 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const passwordAlert = document.getElementById('incorrectPasswordAlert');
     const unusedEmailAlert = document.getElementById('emailNotUsedAlert');
 
-    let storedStudentInfo, storedTeacherInfo, firstTimeSigningIn, firstTimeSigningInTour, numOfStudentClasses,
-        numOfTeacherClasses, langPref;
+    let tempObject = {};
+    let userRole, storedStudentInfo, studentID, teacherID, storedTeacherInfo, firstTimeSigningIn,
+        firstTimeSigningInTour, numOfStudentClasses, numOfTeacherClasses, langPref;
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
@@ -182,6 +183,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // Toggle persistent login
+    let keepMeLoggedIn = document.getElementById('stayLoggedIn').checked;
+
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', function () {
         /* Custom alert events section */
@@ -214,6 +218,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            // Declare the user role
+            userRole = document.getElementById('isTeacher').checked ? "Teacher" : "Student";
+
             // If the password is too weak
             if (!strongPasswordRegex.test(document.getElementById('signUpPassword').value)) {
                 nonStrongPasswordAlert.showModal();
@@ -227,7 +234,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                                         document.getElementById('signUpPassword').value)
         .then((userCredential) => {
             // Initialize the user ID
-            const uid = userCredential.user.uid;
+            if (document.getElementById('isStudent').checked) {
+                studentID = userCredential.user.uid;
+            } else {
+                teacherID = userCredential.user.uid;
+            }
             
             // Send data to the User Data sheet
             fetch('https://script.google.com/macros/s/AKfycbylzFXiRgxOdHl2VMobX8jSW2ZLVzXPliilsZyYBZwFbq7chy9-zZUdvVvCS58IbpYTJw/exec', {
@@ -240,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     name: document.getElementById('name').value,
                     email: document.getElementById('signUpEmail').value,
                     uid: uid,
-                    role: document.getElementById('isTeacher').checked ? "Teacher" : "Student"
+                    role: userRole
                 })
                 })
 
@@ -276,6 +287,21 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         /* End of custom alert events section */
 
+        // Remember details if it is toggled
+        if (keepMeLoggedIn) {
+            if (userRole == "Student") {
+                storedStudentInfo = {
+                    email: document.getElementById('logInEmail').value,
+                    password: document.getElementById('logInPassword').value
+                }
+            } else if (userRole == "Teacher") {
+                storedTeacherInfo = {
+                    email: document.getElementById('logInEmail').value,
+                    password: document.getElementById('logInPassword').value
+                }
+            }
+        }
+
         // Logging in with Firebase
         firebase.auth().signInWithEmailAndPassword(document.getElementById('logInEmail').value,
                                                     document.getElementById('logInPassword').value)
@@ -296,4 +322,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
     });
+
+    // Automatically redirect to the home screen if details are remembered
+    if (keepMeLoggedIn) {
+        if (userRole != null) {
+            if (userRole == "Student") {
+                if (storedStudentInfo != null) {
+                    firebase.auth().signInWithEmailAndPassword(storedStudentInfo.email, storedStudentInfo.password)
+                        .then((userCredential) => {
+                            studentID = userCredential.user.uid;
+                        });
+                }
+            }
+        }
+    }
 });
