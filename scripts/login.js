@@ -19,8 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const passwordAlert = document.getElementById('incorrectPasswordAlert');
     const unusedEmailAlert = document.getElementById('emailNotUsedAlert');
 
-    let tempObject = {};
-    let userRole, storedStudentInfo, studentID, teacherID, storedTeacherInfo, firstTimeSigningIn,
+    let tempObject, userRole, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo, firstTimeSigningIn,
         firstTimeSigningInTour, numOfStudentClasses, numOfTeacherClasses, langPref;
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
@@ -183,9 +182,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Toggle persistent login
-    let keepMeLoggedIn = document.getElementById('stayLoggedIn').checked;
-
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', function () {
         /* Custom alert events section */
@@ -218,9 +214,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Declare the user role
-            userRole = document.getElementById('isTeacher').checked ? "Teacher" : "Student";
-
             // If the password is too weak
             if (!strongPasswordRegex.test(document.getElementById('signUpPassword').value)) {
                 nonStrongPasswordAlert.showModal();
@@ -229,19 +222,25 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         /* End of custom alert events section */
 
+        // Declare and store the user role
+        userRole = document.getElementById('isTeacher').checked ? "Teacher" : "Student";
+        localStorage.setItem("userRole", userRole);
+
         // Signing up with Firebase
         firebase.auth().createUserWithEmailAndPassword(document.getElementById('signUpEmail').value,
                                                         document.getElementById('signUpPassword').value)
         .then((userCredential) => {
             // Initialize the user ID
+            const uid = userCredential.user.uid;
+
             if (document.getElementById('isStudent').checked) {
-                studentID = userCredential.user.uid;
-            } else {
-                teacherID = userCredential.user.uid;
+                studentID = uid;
+            } else if (document.getElementById('isTeacher').checked) {
+                teacherID = uid;
             }
-            
+
             // Send data to the User Data sheet
-            fetch('https://script.google.com/macros/s/AKfycbzvzKd3GMSLrqGrUiqSC9OLozPxIG4HorGrtrOkcsbPZ9lpUKm2ySWnSG1_MonaMD3mig/exec', {
+            fetch('https://script.google.com/macros/s/AKfycbyeTR-8SN6GunTg5O5GMuB8jn_ey_Dx1N7nb6MmhjObBnFKmCGt8vVi48LfQbbepHyF-w/exec', {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: {
@@ -253,10 +252,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     uid: uid,
                     role: userRole
                 })
-                })
-
-            // Redirect to the confirmation screen
-
+            });
         }).catch((error) => {
             // Log any Firebase errors
             if (error.code === 'auth/email-already-in-use') {
@@ -273,6 +269,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Events for logging in
     document.getElementById('liButton').addEventListener('click', function () {
+        // Toggle persistent log in
+        let keepMeLoggedIn = document.getElementById('stayLoggedIn').checked;
+
         /* Custom alert events section */
         // If one or both of the fields are empty
         if ((!document.getElementById('logInEmail').value) || (!document.getElementById('logInPassword').value)) {
@@ -294,11 +293,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     email: document.getElementById('logInEmail').value,
                     password: document.getElementById('logInPassword').value
                 }
+
+                localStorage.setItem("studentEmail", storedStudentInfo.email);
+                localStorage.setItem("studentPassword", storedStudentInfo.password);
             } else if (userRole == "Teacher") {
                 storedTeacherInfo = {
                     email: document.getElementById('logInEmail').value,
                     password: document.getElementById('logInPassword').value
                 }
+
+                localStorage.setItem("teacherEmail", storedTeacherInfo.email);
+                localStorage.setItem("teacherPassword", storedTeacherInfo.password);
             }
         }
 
@@ -306,6 +311,20 @@ document.addEventListener("DOMContentLoaded", function () {
         firebase.auth().signInWithEmailAndPassword(document.getElementById('logInEmail').value,
                                                     document.getElementById('logInPassword').value)
             .then(() => {
+                userRole = document.getElementById('isStudent').checked ? "Student" : "Teacher";
+                localStorage.setItem("userRole", userRole);
+
+                // Save to localStorage if "Keep me logged in" is checked
+                if (keepMeLoggedIn) {
+                    if (userRole === "Student") {
+                        localStorage.setItem("studentEmail", document.getElementById('logInEmail').value);
+                        localStorage.setItem("studentPassword", document.getElementById('logInPassword').value);
+                    } else if (userRole === "Teacher") {
+                        localStorage.setItem("teacherEmail", document.getElementById('logInEmail').value);
+                        localStorage.setItem("teacherPassword", document.getElementById('logInPassword').value);
+                    }
+                }
+
                 // Redirect to the home screen
                 alert("success");
             })
@@ -324,45 +343,41 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Automatically redirect to the home screen if details are remembered
-    if (keepMeLoggedIn) {
-        if (userRole != null) {
-            if (userRole == "Student") {
-                if (storedStudentInfo != null) {
-                    firebase.auth().signInWithEmailAndPassword(storedStudentInfo.email, storedStudentInfo.password)
-                        .then((userCredential) => {
-                            studentID = userCredential.user.uid;
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            let firebaseUID = user.uid;
 
-                            firebase.auth().onAuthStateChanged((user) => {
-                            if (user) {
-                                const uid = user.uid;
+            // Get persisted login info
+            const storedRole = localStorage.getItem("userRole");
+            let storedEmail, storedPassword;
 
-                                fetch('https://script.google.com/macros/s/AKfycbz3Icf7pBrXesvXWPPoh43bXAAwY1M3ALeTTUJvVvYcs4Mc2s4fiovheL2YtCOLoa3d7A/exec', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    action: "getUserRow",
-                                    uid: uid,
-                                    role: userRole
-                                })
-                                })
-                                .then(res => res.json())
-                                .then(response => {
-                                if (response.status === "success") {
-                                    tempObject = response.data;
-                                    console.log("Row Object:", tempObject);
-                                } else {
-                                    console.warn("User not found in sheet.");
-                                }
-                                })
-                                .catch(err => console.error("Error fetching row:", err));
-                            }
+            if (storedRole === "Student") {
+                storedEmail = localStorage.getItem("studentEmail");
+                storedPassword = localStorage.getItem("studentPassword");
+            } else if (storedRole === "Teacher") {
+                storedEmail = localStorage.getItem("teacherEmail");
+                storedPassword = localStorage.getItem("teacherPassword");
+            }
 
-                            });
-                        });
-                }
+            if (storedRole === "Student" && storedEmail && storedPassword) {
+                fetch("https://script.google.com/macros/s/AKfycbw933FT1M7rC7oTnpzr5oKPNoy7H54iZ1JbB1ra8QDKIBRaQaAwOuBvWv9Xvgtqt-dn-w/exec")
+                .then(res => res.json())
+                .then(data => {
+                    const relevantRows = data.slice(2);
+                    tempObject = relevantRows.find(student => student["Student ID"] === firebaseUID);
+
+                    if (tempObject) {
+                        userName = tempObject["Student Name"];
+                        numOfStudentClasses = tempObject["Number of Classes"];
+                        langPref = tempObject["Language Preference"];
+
+                        location.href = 'confirmation.html';
+                    } else {
+                        console.warn("No matching student found");
+                    }
+                })
+                .catch(err => console.error("Fetch error:", err));
             }
         }
-    }
+    });
 });
