@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             
             // Send data to the User Data sheet
-            fetch('https://script.google.com/macros/s/AKfycbylzFXiRgxOdHl2VMobX8jSW2ZLVzXPliilsZyYBZwFbq7chy9-zZUdvVvCS58IbpYTJw/exec', {
+            fetch('https://script.google.com/macros/s/AKfycbzvzKd3GMSLrqGrUiqSC9OLozPxIG4HorGrtrOkcsbPZ9lpUKm2ySWnSG1_MonaMD3mig/exec', {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: {
@@ -331,6 +331,35 @@ document.addEventListener("DOMContentLoaded", function () {
                     firebase.auth().signInWithEmailAndPassword(storedStudentInfo.email, storedStudentInfo.password)
                         .then((userCredential) => {
                             studentID = userCredential.user.uid;
+
+                            firebase.auth().onAuthStateChanged((user) => {
+                            if (user) {
+                                const uid = user.uid;
+
+                                fetch('https://script.google.com/macros/s/AKfycbz3Icf7pBrXesvXWPPoh43bXAAwY1M3ALeTTUJvVvYcs4Mc2s4fiovheL2YtCOLoa3d7A/exec', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    action: "getUserRow",
+                                    uid: uid,
+                                    role: userRole
+                                })
+                                })
+                                .then(res => res.json())
+                                .then(response => {
+                                if (response.status === "success") {
+                                    tempObject = response.data;
+                                    console.log("Row Object:", tempObject);
+                                } else {
+                                    console.warn("User not found in sheet.");
+                                }
+                                })
+                                .catch(err => console.error("Error fetching row:", err));
+                            }
+
+                            });
                         });
                 }
             }
