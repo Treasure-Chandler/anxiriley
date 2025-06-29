@@ -311,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
         firebase.auth().signInWithEmailAndPassword(document.getElementById('logInEmail').value,
                                                     document.getElementById('logInPassword').value)
             .then(() => {
-                userRole = document.getElementById('isStudent').checked ? "Student" : "Teacher";
+                // userRole = document.getElementById('isStudent').checked ? "Student" : "Teacher";
                 localStorage.setItem("userRole", userRole);
 
                 // Save to localStorage if "Keep me logged in" is checked
@@ -344,7 +344,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Automatically redirect to the home screen if details are remembered
     firebase.auth().onAuthStateChanged(function(user) {
+        console.log("onAuthStateChanged triggered", user);
+
         if (user) {
+            console.log("User is logged in:", user);
             let firebaseUID = user.uid;
 
             // Get persisted login info
@@ -359,25 +362,65 @@ document.addEventListener("DOMContentLoaded", function () {
                 storedPassword = localStorage.getItem("teacherPassword");
             }
 
+            console.log("Stored role:", storedRole);
+            console.log("Stored email:", storedEmail);
+            console.log("Stored password:", storedPassword);
+
             if (storedRole === "Student" && storedEmail && storedPassword) {
                 fetch("https://script.google.com/macros/s/AKfycbw933FT1M7rC7oTnpzr5oKPNoy7H54iZ1JbB1ra8QDKIBRaQaAwOuBvWv9Xvgtqt-dn-w/exec")
-                .then(res => res.json())
-                .then(data => {
-                    const relevantRows = data.slice(2);
-                    tempObject = relevantRows.find(student => student["Student ID"] === firebaseUID);
-
-                    if (tempObject) {
-                        userName = tempObject["Student Name"];
-                        numOfStudentClasses = tempObject["Number of Classes"];
-                        langPref = tempObject["Language Preference"];
-
-                        location.href = 'confirmation.html';
-                    } else {
-                        console.warn("No matching student found");
+                    .then(res => {
+                    console.log("Got response:", res);
+                    return res.text(); // test if we even get a body
+                    })
+                    .then(text => {
+                    console.log("Raw response text:", text);
+                    try {
+                        const json = JSON.parse(text);
+                        console.log("Parsed JSON:", json);
+                    } catch (e) {
+                        console.error("Could not parse JSON", e);
                     }
-                })
-                .catch(err => console.error("Fetch error:", err));
+                    })
+                    .catch(err => {
+                    console.error("Top-level fetch error:", err);
+                    })
+                    .then(data => {
+                        const relevantRows = data.slice(2);
+                        console.log("Fetched data:", data);
+                        console.log("Firebase UID:", firebaseUID);
+                        console.log("Relevant rows:", relevantRows);
+
+                        relevantRows.forEach(student => {
+                            console.log("Student ID in row:", student["Student ID"]);
+                        });
+
+
+                        tempObject = relevantRows.find(student => student["Student ID"] === firebaseUID);
+
+                        console.log("Does this match?", student["Student ID"] === firebaseUID);
+
+                        if (!tempObject) {
+                            console.warn("No matching student found for UID:", firebaseUID);
+                            return;
+                        }
+
+
+                        if (tempObject) {
+                            userName = tempObject["Student Name"];
+                            numOfStudentClasses = tempObject["Number of Classes"];
+                            langPref = tempObject["Language Preference"];
+
+                            location.href = 'confirmation.html';
+                        } else {
+                            console.warn("No matching student found");
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Fetch error (caught):", err);
+                    });
             }
+        } else {
+            console.log("No user is logged in");
         }
     });
 });
