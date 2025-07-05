@@ -5,6 +5,8 @@
  * for account handling.
  */
 
+const { default: firebase } = require("firebase/compat/app");
+
 // When the page is loaded, execute these events
 document.addEventListener("DOMContentLoaded", function () {
     // Declaring variables
@@ -20,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const unusedEmailAlert = document.getElementById('emailNotUsedAlert');
 
     let tempObject, userRole, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo, firstTimeSigningIn,
-        firstTimeSigningInTour, numOfStudentClasses, numOfTeacherClasses, langPref;
+        firstTimeSigningInTour, numOfStudentClasses, numOfTeacherClasses, langPref, signedInLang;
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
@@ -184,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /**
      * Checks if the user's name is valid
+     * 
      * @param {string} name     User's name
      * @returns                 Validity
      */
@@ -232,22 +235,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         /* End of custom alert events section */
 
-        // Declare and store the user role for future login
-        // userRole = document.getElementById('isTeacher').checked ? "Teacher" : "Student";
-        // localStorage.setItem("userRole", userRole);
-
         // Signing up with Firebase
         firebase.auth().createUserWithEmailAndPassword(document.getElementById('signUpEmail').value,
                                                         document.getElementById('signUpPassword').value)
         .then((userCredential) => {
-            // Initialize the user ID
-            const uid = userCredential.user.uid;
+            // Initialize the user
+            const user = userCredential.user;
 
-            if (document.getElementById('isStudent').checked) {
-                studentID = uid;
-            } else if (document.getElementById('isTeacher').checked) {
-                teacherID = uid;
-            }
+            // Tell the system this is the user's first time signing in
+            firstTimeSigningIn = true;
+
+            // Declare and store the user role for future login
+            userRole = document.getElementById('isTeacher').checked ? "Teacher" : "Student";
+            localStorage.setItem("userRole", userRole);
+
+            // Store the user's name
+            userName = document.getElementById('name').value;
+            localStorage.setItem("userName", userName);
+
+            // Send verification email
+            user.sendEmailVerification().then(() => {
+                // Redirect to the confirmation page
+                location.href = "confirmation.html";
+            });
         }).catch((error) => {
             // Log any Firebase errors
             if (error.code === 'auth/email-already-in-use') {
@@ -262,79 +272,329 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    /**
+     * Returns the user's name from the corresponding Google Sheet
+     * 
+     * @param {string} firebaseUID      User ID
+     * @param {string} userRole         User's role
+     * @returns                         User's name
+     */
+    async function fetchUserName(firebaseUID, userRole) {
+        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
+
+        try {
+            const response = await fetch(`${userSheetURL}?role=${userRole}`);
+            const data = await response.json();
+
+            const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
+            const nameKey = userRole === "Teacher" ? "Teacher Name" : "Student Name";
+
+            const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
+
+            if (matchingEntry) {
+                return matchingEntry[nameKey];
+            } else {
+                console.warn(`User ID not found in ${userRole} data.`);
+                return null;
+            }
+        } catch (err) {
+            console.error("Error fetching user data:", err);
+            return null;
+        }
+    }
+
+    /**
+     * Returns the user's amount of classes from the corresponding Google Sheet
+     * 
+     * @param {string} firebaseUID      User ID
+     * @param {string} userRole         User's role
+     * @returns                         User's class amount
+     */
+    async function fetchClassAmount(firebaseUID, userRole) {
+        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
+
+        try {
+            const response = await fetch(`${userSheetURL}?role=${userRole}`);
+            const data = await response.json();
+
+            const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
+            const numClassesKey = "Number of Classes";
+
+            const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
+
+            if (matchingEntry) {
+                return matchingEntry[numClassesKey];
+            } else {
+                console.warn(`User ID not found in ${userRole} data.`);
+                return null;
+            }
+        } catch (err) {
+            console.error("Error fetching user data:", err);
+            return null;
+        }
+    }
+
+    /**
+     * Returns the user's language preference from the corresponding Google Sheet
+     * 
+     * @param {string} firebaseUID      User ID
+     * @param {string} userRole         User's role
+     * @returns                         User's language preference
+     */
+    async function fetchLangPref(firebaseUID, userRole) {
+        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
+
+        try {
+            const response = await fetch(`${userSheetURL}?role=${userRole}`);
+            const data = await response.json();
+
+            const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
+            const langKey = "Language Preference";
+
+            const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
+
+            if (matchingEntry) {
+                return matchingEntry[langKey];
+            } else {
+                console.warn(`User ID not found in ${userRole} data.`);
+                return null;
+            }
+        } catch (err) {
+            console.error("Error fetching user data:", err);
+            return null;
+        }
+    }
+
+    /**
+     * Returns the user's role depending on where their ID is located
+     * 
+     * @param {string} firebaseUID                  User's ID
+     * @returns                                     User's role
+     */
+    async function fetchUserRole(firebaseUID) {
+        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
+
+        try {
+            const [studentRes, teacherRes] = await Promise.all([
+                fetch(`${userSheetURL}?role=Student`).then(res => res.json()),
+                fetch(`${userSheetURL}?role=Teacher`).then(res => res.json())
+            ]);
+
+            const isStudent = studentRes.some(entry => entry["Student ID"] === firebaseUID);
+            if (isStudent) return "Student";
+
+            const isTeacher = teacherRes.some(entry => entry["Teacher ID"] === firebaseUID);
+            if (isTeacher) return "Teacher";
+
+            return null;
+        } catch (err) {
+            console.error("Error fetching user role:", err);
+            return null;
+        }
+    }
+
     // Events for logging in
-    // document.getElementById('liButton').addEventListener('click', function () {
-    //     // Toggle persistent log in
-    //     let keepMeLoggedIn = document.getElementById('stayLoggedIn').checked;
+    document.getElementById('liButton').addEventListener('click', function () {
+        // Toggle persistent log in
+        let keepMeLoggedIn = document.getElementById('stayLoggedIn').checked;
 
-    //     /* Custom alert events section */
-    //     // If one or both of the fields are empty
-    //     if ((!document.getElementById('logInEmail').value) || (!document.getElementById('logInPassword').value)) {
-    //         credAlert.showModal();
-    //         return;
-    //     } else {
-    //         // If the email does not contain the correct email address upon logging in
-    //         if (!document.getElementById('logInEmail').value.includes("@gmail.com")) {
-    //             emailAlert.showModal();
-    //             return;
-    //         }
-    //     }
-    //     /* End of custom alert events section */
+        /* Custom alert events section */
+        // If one or both of the fields are empty
+        if ((!document.getElementById('logInEmail').value) || (!document.getElementById('logInPassword').value)) {
+            credAlert.showModal();
+            return;
+        } else {
+            // If the email does not contain the correct email address upon logging in
+            if (!document.getElementById('logInEmail').value.includes("@gmail.com")) {
+                emailAlert.showModal();
+                return;
+            }
+        }
+        /* End of custom alert events section */
 
-    //     // Remember details if it is toggled
-    //     if (keepMeLoggedIn) {
-    //         if (userRole == "Student") {
-    //             storedStudentInfo = {
-    //                 email: document.getElementById('logInEmail').value,
-    //                 password: document.getElementById('logInPassword').value
-    //             }
+        // Remember details if it is toggled
+        const persistence = keepMeLoggedIn
+                            ? firebase.auth.Auth.Persistence.LOCAL    // LOCAL stays after the tab closes
+                            : firebase.auth.Auth.Persistence.SESSION; // SESSION clears when the tab closes
 
-    //             localStorage.setItem("studentEmail", storedStudentInfo.email);
-    //             localStorage.setItem("studentPassword", storedStudentInfo.password);
-    //         } else if (userRole == "Teacher") {
-    //             storedTeacherInfo = {
-    //                 email: document.getElementById('logInEmail').value,
-    //                 password: document.getElementById('logInPassword').value
-    //             }
+        // Logging in with Firebase
+        firebase.auth().setPersistence(persistence)
+            .then(() => {
+                return firebase.auth().signInWithEmailAndPassword(document.getElementById('logInEmail').value,
+                                                                    document.getElementById('logInPassword').value)
+            })
+            .then(() => {
+                // Optional for the user: store the role and email
+                if (userRole === "Student") {
+                    storedStudentInfo = {
+                        role: userRole,
+                        email: document.getElementById('logInEmail').value
+                    };
+                } else if (userRole === "Teacher") {
+                    storedTeacherInfo = {
+                        role: userRole,
+                        email: document.getElementById('logInEmail').value
+                    };
+                }
 
-    //             localStorage.setItem("teacherEmail", storedTeacherInfo.email);
-    //             localStorage.setItem("teacherPassword", storedTeacherInfo.password);
-    //         }
-    //     }
+                // Role dependent conditionals
+                if (userRole === "Student") {
+                    // Set the user's ID
+                    studentID = firebase.user.uid;
 
-    //     // Logging in with Firebase
-    //     firebase.auth().signInWithEmailAndPassword(document.getElementById('logInEmail').value,
-    //                                                 document.getElementById('logInPassword').value)
-    //         .then(() => {
-    //             localStorage.setItem("userRole", userRole);
+                    // Add user's data to the User and Class Data sheets
+                    if (firstTimeSigningIn) {
+                        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
 
-    //             // Save to localStorage if "Keep me logged in" is checked
-    //             if (keepMeLoggedIn) {
-    //                 if (userRole === "Student") {
-    //                     localStorage.setItem("studentEmail", document.getElementById('logInEmail').value);
-    //                     localStorage.setItem("studentPassword", document.getElementById('logInPassword').value);
-    //                 } else if (userRole === "Teacher") {
-    //                     localStorage.setItem("teacherEmail", document.getElementById('logInEmail').value);
-    //                     localStorage.setItem("teacherPassword", document.getElementById('logInPassword').value);
-    //                 }
-    //             }
+                        fetch(`${userSheetURL}?role=${userRole}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                // Check if user already exists in User Data sheet
+                                const exists = data.some(entry => entry[`${userRole} ID`] === studentID);
+                                if (!exists) {
+                                    // If not, first, add to User Data
+                                    fetch(userSheetURL, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            role: userRole,
+                                            name: userName,
+                                            email: document.getElementById('logInEmail').value,
+                                            uid: studentID
+                                        })
+                                    });
 
-    //             // Redirect to the home screen
-    //             alert("success");
-    //         })
-    //         .catch((error) => {
-    //             // Log any Firebase errors
-    //             if (error.code === 'auth/user-not-found') {
-    //                 // If the email is not used
-    //                 unusedEmailAlert.showModal();
-    //                 return;
-    //             } else if (error.code === 'auth/wrong-password') {
-    //                 // If the password is incorrect
-    //                 passwordAlert.showModal();
-    //                 return;
-    //             }
-    //         });
-    // });
+                                    // Then, add to Class Data
+                                    const classSheetURL = "https://script.google.com/macros/s/AKfycbyhOx0KbBRdR5-mSdHMiZ1Zttp8NQNlOUZc3Y_jMhIoAdpki819ql7F1RD13INCq3hsPg/exec";
+                                    fetch(classSheetURL, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            action: "addToClassSheet",
+                                            userID: studentID,
+                                            inboxCount: 0,
+                                            class1: "x",
+                                            class2: "x",
+                                            class3: "x",
+                                            class4: "x",
+                                            class5: "x",
+                                            class6: "x",
+                                            class7: "x",
+                                        })
+                                    });
+                                } else {
+                                    fetchUserName(studentID, "Student");
+                                }
+                            });
+                    }
+
+                    // Set user's number of classes
+                    numOfStudentClasses = fetchClassAmount(studentID, "Student");
+
+                    // Set user's language preference
+                    langPref = fetchLangPref(studentID, "Student");
+
+                    // Set user's role
+                    userRole = fetchUserRole(studentID);
+
+                    // Set signedInLang
+                    signedInLang = true;
+
+                    // Store the info if they want it stored
+                    if (keepMeLoggedIn) {
+                        localStorage.setItem("studentInfo", JSON.stringify(storedStudentInfo));
+                    } else {
+                        localStorage.removeItem("studentInfo");
+                    }
+
+                    // TODO: Navigate to home
+                    alert('s');
+                } else if (userRole === "Teacher") {
+                    // Set the user's ID
+                    teacherID = firebase.user.uid;
+
+                    // Add user's data to the User and Class Data sheets
+                    if (firstTimeSigningIn) {
+                        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
+
+                        fetch(`${userSheetURL}?role=${userRole}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                // Check if user already exists in User Data sheet
+                                const exists = data.some(entry => entry[`${userRole} ID`] === teacherID);
+                                if (!exists) {
+                                    // If not, first, add to User Data
+                                    fetch(userSheetURL, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            role: userRole,
+                                            name: userName,
+                                            email: document.getElementById('logInEmail').value,
+                                            uid: teacherID
+                                        })
+                                    });
+
+                                    // Then, add to Class Data
+                                    const classSheetURL = "https://script.google.com/macros/s/AKfycbyhOx0KbBRdR5-mSdHMiZ1Zttp8NQNlOUZc3Y_jMhIoAdpki819ql7F1RD13INCq3hsPg/exec";
+                                    fetch(classSheetURL, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            action: "addToClassSheet",
+                                            userID: teacherID,
+                                            inboxCount: 0,
+                                            class1: "x",
+                                            class2: "x",
+                                            class3: "x",
+                                            class4: "x",
+                                            class5: "x",
+                                            class6: "x",
+                                            class7: "x",
+                                        })
+                                    });
+                                }
+                            });
+                    } else {
+                        fetchUserName(teacherID, "Teacher");
+                    }
+
+                    // Set user's number of classes
+                    numOfTeacherClasses = fetchClassAmount(teacherID, "Teacher");
+
+                    // Set user's language preference
+                    langPref = fetchLangPref(teacherID, "Teacher");
+
+                    // Set user's role
+                    userRole = fetchUserRole(teacherID);
+
+                    // Set signedInLang
+                    signedInLang = true;
+
+                    // Store the info if they want it stored
+                    if (keepMeLoggedIn) {
+                        localStorage.setItem("teacherInfo", JSON.stringify(storedTeacherInfo));
+                    } else {
+                        localStorage.removeItem("teacherInfo");
+                    }
+
+                    // TODO: Navigate to home
+                    alert('s');
+                }
+            })
+            .catch((error) => {
+                // Log any Firebase errors
+                if (error.code === 'auth/user-not-found') {
+                    // If the email is not used
+                    unusedEmailAlert.showModal();
+                    return;
+                } else if (error.code === 'auth/wrong-password') {
+                    // If the password is incorrect
+                    passwordAlert.showModal();
+                    return;
+                }
+            });
+    });
 
     // // Automatically redirect to the home screen if details are remembered
     // firebase.auth().onAuthStateChanged(function(user) {
