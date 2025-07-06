@@ -5,8 +5,6 @@
  * for account handling.
  */
 
-const { default: firebase } = require("firebase/compat/app");
-
 // When the page is loaded, execute these events
 document.addEventListener("DOMContentLoaded", function () {
     // Declaring variables
@@ -21,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const passwordAlert = document.getElementById('incorrectPasswordAlert');
     const unusedEmailAlert = document.getElementById('emailNotUsedAlert');
 
-    let tempObject, userRole, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo, firstTimeSigningIn,
+    let tempObject, userRole, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo,
         firstTimeSigningInTour, numOfStudentClasses, numOfTeacherClasses, langPref, signedInLang;
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
@@ -242,14 +240,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // Initialize the user
             const user = userCredential.user;
 
-            // Tell the system this is the user's first time signing in
-            firstTimeSigningIn = true;
-
             // Declare and store the user role for future login
             userRole = document.getElementById('isTeacher').checked ? "Teacher" : "Student";
             localStorage.setItem("userRole", userRole);
 
-            // Store the user's name
+            // Declare and store the user name for future login
             userName = document.getElementById('name').value;
             localStorage.setItem("userName", userName);
 
@@ -437,150 +432,170 @@ document.addEventListener("DOMContentLoaded", function () {
                     };
                 }
 
+                // Retrieve the user name and user role from local storage
+                userRole = localStorage.getItem("userRole");
+                userName = localStorage.getItem("userName");
+
                 // Role dependent conditionals
                 if (userRole === "Student") {
                     // Set the user's ID
-                    studentID = firebase.user.uid;
+                    studentID = firebase.auth().currentUser.uid;
 
                     // Add user's data to the User and Class Data sheets
-                    if (firstTimeSigningIn) {
-                        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
+                    const userSheetURL = "https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec";
 
-                        fetch(`${userSheetURL}?role=${userRole}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                // Check if user already exists in User Data sheet
-                                const exists = data.some(entry => entry[`${userRole} ID`] === studentID);
-                                if (!exists) {
-                                    // If not, first, add to User Data
-                                    fetch(userSheetURL, {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({
-                                            role: userRole,
-                                            name: userName,
-                                            email: document.getElementById('logInEmail').value,
-                                            uid: studentID
-                                        })
-                                    });
+                    fetch(`${userSheetURL}?role=${userRole}`)
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error(`HTTP error! Status: ${res.status}`);
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            // Check if user already exists in User Data sheet
+                            const exists = data.some(entry => entry[`${userRole} ID`] === studentID);
+                            if (!exists) {
+                                // If not, first, add to User Data
+                                fetch(userSheetURL, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        role: userRole,
+                                        name: userName,
+                                        email: document.getElementById('logInEmail').value,
+                                        uid: studentID
+                                    })
+                                });
 
-                                    // Then, add to Class Data
-                                    const classSheetURL = "https://script.google.com/macros/s/AKfycbyhOx0KbBRdR5-mSdHMiZ1Zttp8NQNlOUZc3Y_jMhIoAdpki819ql7F1RD13INCq3hsPg/exec";
-                                    fetch(classSheetURL, {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({
-                                            action: "addToClassSheet",
-                                            userID: studentID,
-                                            inboxCount: 0,
-                                            class1: "x",
-                                            class2: "x",
-                                            class3: "x",
-                                            class4: "x",
-                                            class5: "x",
-                                            class6: "x",
-                                            class7: "x",
-                                        })
-                                    });
+                                // Then, add to Class Data
+                                const classSheetURL = "https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec";
+                                fetch(classSheetURL, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        role: userRole,
+                                        action: "addToClassSheet",
+                                        userID: studentID,
+                                        inboxCount: 0,
+                                        class1: "x",
+                                        class2: "x",
+                                        class3: "x",
+                                        class4: "x",
+                                        class5: "x",
+                                        class6: "x",
+                                        class7: "x",
+                                    })
+                                });
+
+                                // TODO: Then, navigate to home
+                                location.href = 'confirmation.html';
+                            } else {
+                                // Fetch the user's name
+                                fetchUserName(studentID, "Student");
+
+                                // Set user's number of classes
+                                numOfStudentClasses = fetchClassAmount(studentID, "Student");
+
+                                // Set user's language preference
+                                langPref = fetchLangPref(studentID, "Student");
+
+                                // Set user's role
+                                userRole = fetchUserRole(studentID);
+
+                                // Set signedInLang
+                                signedInLang = true;
+
+                                // Store the info if they want it stored
+                                if (keepMeLoggedIn) {
+                                    localStorage.setItem("studentInfo", JSON.stringify(storedStudentInfo));
                                 } else {
-                                    fetchUserName(studentID, "Student");
+                                    localStorage.removeItem("studentInfo");
                                 }
-                            });
-                    }
 
-                    // Set user's number of classes
-                    numOfStudentClasses = fetchClassAmount(studentID, "Student");
-
-                    // Set user's language preference
-                    langPref = fetchLangPref(studentID, "Student");
-
-                    // Set user's role
-                    userRole = fetchUserRole(studentID);
-
-                    // Set signedInLang
-                    signedInLang = true;
-
-                    // Store the info if they want it stored
-                    if (keepMeLoggedIn) {
-                        localStorage.setItem("studentInfo", JSON.stringify(storedStudentInfo));
-                    } else {
-                        localStorage.removeItem("studentInfo");
-                    }
-
-                    // TODO: Navigate to home
-                    alert('s');
+                                // TODO: Navigate to home
+                                location.href = 'confirmation.html';
+                            }
+                        });
                 } else if (userRole === "Teacher") {
                     // Set the user's ID
-                    teacherID = firebase.user.uid;
+                    teacherID = firebase.auth().currentUser.uid;
 
                     // Add user's data to the User and Class Data sheets
-                    if (firstTimeSigningIn) {
-                        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
+                    const userSheetURL = "https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec";
 
-                        fetch(`${userSheetURL}?role=${userRole}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                // Check if user already exists in User Data sheet
-                                const exists = data.some(entry => entry[`${userRole} ID`] === teacherID);
-                                if (!exists) {
-                                    // If not, first, add to User Data
-                                    fetch(userSheetURL, {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({
-                                            role: userRole,
-                                            name: userName,
-                                            email: document.getElementById('logInEmail').value,
-                                            uid: teacherID
-                                        })
-                                    });
+                    fetch(`${userSheetURL}?role=${userRole}`)
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error(`HTTP error! Status: ${res.status}`);
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            // Check if user already exists in User Data sheet
+                            const exists = data.some(entry => entry[`${userRole} ID`] === teacherID);
+                            if (!exists) {
+                                // If not, first, add to User Data
+                                fetch(userSheetURL, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        role: userRole,
+                                        name: userName,
+                                        email: document.getElementById('logInEmail').value,
+                                        uid: teacherID
+                                    })
+                                });
 
-                                    // Then, add to Class Data
-                                    const classSheetURL = "https://script.google.com/macros/s/AKfycbyhOx0KbBRdR5-mSdHMiZ1Zttp8NQNlOUZc3Y_jMhIoAdpki819ql7F1RD13INCq3hsPg/exec";
-                                    fetch(classSheetURL, {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({
-                                            action: "addToClassSheet",
-                                            userID: teacherID,
-                                            inboxCount: 0,
-                                            class1: "x",
-                                            class2: "x",
-                                            class3: "x",
-                                            class4: "x",
-                                            class5: "x",
-                                            class6: "x",
-                                            class7: "x",
-                                        })
-                                    });
+                                // Then, add to Class Data
+                                const classSheetURL = "https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec";
+                                fetch(classSheetURL, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        role: userRole,
+                                        action: "addToClassSheet",
+                                        userID: teacherID,
+                                        inboxCount: 0,
+                                        class1: "x",
+                                        class2: "x",
+                                        class3: "x",
+                                        class4: "x",
+                                        class5: "x",
+                                        class6: "x",
+                                        class7: "x",
+                                    })
+                                });
+
+                                // TODO: Then, navigate to home
+                                location.href = 'confirmation.html';
+                            } else {
+                                // Fetch the user's name
+                                fetchUserName(teacherID, "Teacher");
+
+                                // Set user's number of classes
+                                numOfStudentClasses = fetchClassAmount(teacherID, "Teacher");
+
+                                // Set user's language preference
+                                langPref = fetchLangPref(teacherID, "Teacher");
+
+                                // Set user's role
+                                userRole = fetchUserRole(teacherID);
+
+                                // Set signedInLang
+                                signedInLang = true;
+
+                                // Store the info if they want it stored
+                                if (keepMeLoggedIn) {
+                                    localStorage.setItem("teacherInfo", JSON.stringify(storedTeacherInfo));
+                                } else {
+                                    localStorage.removeItem("teacherInfo");
                                 }
-                            });
-                    } else {
-                        fetchUserName(teacherID, "Teacher");
-                    }
 
-                    // Set user's number of classes
-                    numOfTeacherClasses = fetchClassAmount(teacherID, "Teacher");
-
-                    // Set user's language preference
-                    langPref = fetchLangPref(teacherID, "Teacher");
-
-                    // Set user's role
-                    userRole = fetchUserRole(teacherID);
-
-                    // Set signedInLang
-                    signedInLang = true;
-
-                    // Store the info if they want it stored
-                    if (keepMeLoggedIn) {
-                        localStorage.setItem("teacherInfo", JSON.stringify(storedTeacherInfo));
-                    } else {
-                        localStorage.removeItem("teacherInfo");
-                    }
-
-                    // TODO: Navigate to home
-                    alert('s');
-                }
+                                // TODO: Navigate to home
+                                location.href = 'confirmation.html';
+                            }
+                        });
+                }            
             })
             .catch((error) => {
                 // Log any Firebase errors
@@ -596,85 +611,24 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
-    // // Automatically redirect to the home screen if details are remembered
-    // firebase.auth().onAuthStateChanged(function(user) {
-    //     console.log("onAuthStateChanged triggered", user);
-
-    //     if (user) {
-    //         console.log("User is logged in:", user);
-    //         let firebaseUID = user.uid;
-
-    //         // Get persisted login info
-    //         const storedRole = localStorage.getItem("userRole");
-    //         let storedEmail, storedPassword;
-
-    //         if (storedRole === "Student") {
-    //             storedEmail = localStorage.getItem("studentEmail");
-    //             storedPassword = localStorage.getItem("studentPassword");
-    //         } else if (storedRole === "Teacher") {
-    //             storedEmail = localStorage.getItem("teacherEmail");
-    //             storedPassword = localStorage.getItem("teacherPassword");
-    //         }
-
-    //         console.log("Stored role:", storedRole);
-    //         console.log("Stored email:", storedEmail);
-    //         console.log("Stored password:", storedPassword);
-
-    //         if (storedRole === "Student" && storedEmail && storedPassword) {
-    //             fetch("https://script.google.com/macros/s/AKfycbw933FT1M7rC7oTnpzr5oKPNoy7H54iZ1JbB1ra8QDKIBRaQaAwOuBvWv9Xvgtqt-dn-w/exec")
-    //                 .then(res => {
-    //                 console.log("Got response:", res);
-    //                 return res.text(); // test if we even get a body
-    //                 })
-    //                 .then(text => {
-    //                 console.log("Raw response text:", text);
-    //                 try {
-    //                     const json = JSON.parse(text);
-    //                     console.log("Parsed JSON:", json);
-    //                 } catch (e) {
-    //                     console.error("Could not parse JSON", e);
-    //                 }
-    //                 })
-    //                 .catch(err => {
-    //                 console.error("Top-level fetch error:", err);
-    //                 })
-    //                 .then(data => {
-    //                     const relevantRows = data.slice(2);
-    //                     console.log("Fetched data:", data);
-    //                     console.log("Firebase UID:", firebaseUID);
-    //                     console.log("Relevant rows:", relevantRows);
-
-    //                     relevantRows.forEach(student => {
-    //                         console.log("Student ID in row:", student["Student ID"]);
-    //                     });
-
-
-    //                     tempObject = relevantRows.find(student => student["Student ID"] === firebaseUID);
-
-    //                     console.log("Does this match?", student["Student ID"] === firebaseUID);
-
-    //                     if (!tempObject) {
-    //                         console.warn("No matching student found for UID:", firebaseUID);
-    //                         return;
-    //                     }
-
-
-    //                     if (tempObject) {
-    //                         userName = tempObject["Student Name"];
-    //                         numOfStudentClasses = tempObject["Number of Classes"];
-    //                         langPref = tempObject["Language Preference"];
-
-    //                         location.href = 'confirmation.html';
-    //                     } else {
-    //                         console.warn("No matching student found");
-    //                     }
-    //                 })
-    //                 .catch(err => {
-    //                     console.error("Fetch error (caught):", err);
-    //                 });
-    //         }
-    //     } else {
-    //         console.log("No user is logged in");
-    //     }
-    // });
+    // Automatically redirect to the home screen if details are remembered
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            // User is signed in
+            // Check if their email is verified
+            if (user.emailVerified) {
+                // Navigate to home page or dashboard
+                window.location.href = "home.html";
+            } else {
+                // Force email verification before redirecting
+                user.sendEmailVerification().then(() => {
+                    // Redirect to the confirmation page
+                    location.href = "confirmation.html";
+                });
+            }
+        } else {
+            // No user is signed in, stay on login
+            console.log("No user is currently signed in.");
+        }
+    });
 });
