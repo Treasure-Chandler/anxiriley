@@ -24,11 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
-    document.getElementById('confirm').addEventListener('click', function () {
-        // window.location.replace("confirmation.html");
-        location.href = 'confirmation.html';
-    });
-
     // Show sign up form and overlay when the sign up button is clicked
     document.getElementById('signUpButton').addEventListener('click', function () {
         const signUpForm = document.getElementById('signUp');
@@ -75,6 +70,29 @@ document.addEventListener("DOMContentLoaded", function () {
             signUpForm.style.visibility = 'hidden';
             signUpForm.style.display = 'none';
         }, 600);
+    });
+
+    // When the "Already a User?" button is clicked, open the log in form
+    document.getElementById('alreadyUser').addEventListener('click', function () {
+        const logInForm = document.getElementById('logIn');
+        const signupForm = document.getElementById('signUp');
+
+        // Show and transition the log in form
+        logInForm.style.display = 'block';
+        logInForm.style.transition = 'opacity 0.6s ease';
+        logInForm.style.opacity = 0;
+        logInForm.style.visibility = 'visible';
+
+        // Force a reflow for login form as well
+        void logInForm.offsetWidth;
+
+        // Fade in the log in form
+        logInForm.style.opacity = 1;
+
+        // Hide the log in form
+        signupForm.style.opacity = 0;
+        signupForm.style.visibility = 'hidden';
+
     });
 
     // Show log in form and overlay when the log in button is clicked
@@ -125,23 +143,28 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 600);
     });
 
-    // When the "Forgot Password?" button is clicked, open the forgot password popup
+    // When the "Forgot Password?" button is clicked, open the forgot password form
     document.getElementById('forgotPasswordButton').addEventListener('click', function (event) {
         const logInForm = document.getElementById('logIn');
         const forgotPasswordForm = document.getElementById('forgotPassword');
+        const blackOverlay = document.getElementById('black-overlay');
 
         event.preventDefault();
 
-        // Show and transition the log in form
+        // Show and transition forgot password form
         forgotPasswordForm.style.display = 'block';
         forgotPasswordForm.style.transition = 'opacity 0.6s ease';
         forgotPasswordForm.style.opacity = 0;
         forgotPasswordForm.style.visibility = 'visible';
 
+        // Show and activate overlay
+        blackOverlay.style.visibility = 'visible';
+        blackOverlay.style.pointerEvents = 'auto';
+
         // Force a reflow for login form as well
         void forgotPasswordForm.offsetWidth;
 
-        // Fade in the log in form
+        // Fade in the forgot password form
         forgotPasswordForm.style.opacity = 1;
 
         // Hide the log in form
@@ -234,37 +257,46 @@ document.addEventListener("DOMContentLoaded", function () {
         /* End of custom alert events section */
 
         // Signing up with Firebase
-        firebase.auth().createUserWithEmailAndPassword(document.getElementById('signUpEmail').value,
-                                                        document.getElementById('signUpPassword').value)
-        .then((userCredential) => {
-            // Initialize the user
-            const user = userCredential.user;
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+            .then(() => {
+                return firebase.auth().createUserWithEmailAndPassword(
+                    document.getElementById('signUpEmail').value,
+                    document.getElementById('signUpPassword').value
+                );
+            })
+            .then((userCredential) => {
+                // Initialize the user
+                const user = userCredential.user;
 
-            // Declare and store the user role for future login
-            userRole = document.getElementById('isTeacher').checked ? "Teacher" : "Student";
-            localStorage.setItem("userRole", userRole);
+                // Declare and store the user role for future login
+                userRole = document.getElementById('isTeacher').checked ? "Teacher" : "Student";
+                localStorage.setItem("userRole", userRole);
 
-            // Declare and store the user name for future login
-            userName = document.getElementById('name').value;
-            localStorage.setItem("userName", userName);
+                // Declare and store the user name for future login
+                userName = document.getElementById('name').value;
+                localStorage.setItem("userName", userName);
 
-            // Send verification email
-            user.sendEmailVerification().then(() => {
-                // Redirect to the confirmation page
-                location.href = "confirmation.html";
+                // Send verification email
+                user.sendEmailVerification().then(() => {
+                    // Sign the user out immediately after sending the email
+                    return firebase.auth().signOut();
+                }).then(() => {
+                    // Redirect to the confirmation page
+                    location.href = "confirmation.html";
+                });
+            })
+            .catch((error) => {
+                // Log any Firebase errors
+                if (error.code === 'auth/email-already-in-use') {
+                    // If the email is already in use
+                    dupeEmailAlert.showModal();
+                    return;
+                } else if (error.code === 'auth/weak-password') {
+                    // If the password is too weak
+                    nonStrongPasswordAlert.showModal();
+                    return;
+                }
             });
-        }).catch((error) => {
-            // Log any Firebase errors
-            if (error.code === 'auth/email-already-in-use') {
-                // If the email is already in use
-                dupeEmailAlert.showModal();
-                return;
-            } else if (error.code === 'auth/weak-password') {
-                // If the password is too weak
-                nonStrongPasswordAlert.showModal();
-                return;
-            }
-        });
     });
 
     /**
@@ -419,6 +451,22 @@ document.addEventListener("DOMContentLoaded", function () {
                                                                     document.getElementById('logInPassword').value)
             })
             .then(() => {
+                // Initialize current user
+                const user = firebase.auth().currentUser;
+
+                // Check if email is verified
+                if (!user.emailVerified) {
+                    emailNotVerifiedAlert.showModal();
+
+                    // Sign out unverified users
+                    firebase.auth().signOut();
+                    return;
+                }
+
+                // Retrieve the user name and user role from local storage
+                userRole = localStorage.getItem("userRole");
+                userName = localStorage.getItem("userName");
+
                 // Optional for the user: store the role and email
                 if (userRole === "Student") {
                     storedStudentInfo = {
@@ -432,10 +480,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     };
                 }
 
-                // Retrieve the user name and user role from local storage
-                userRole = localStorage.getItem("userRole");
-                userName = localStorage.getItem("userName");
-
                 // Role dependent conditionals
                 if (userRole === "Student") {
                     // Set the user's ID
@@ -443,52 +487,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     // Add user's data to the User and Class Data sheets
                     const userSheetURL = "https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec";
+                    const classSheetURL = "https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec";
 
                     fetch(`${userSheetURL}?role=${userRole}`)
-                        .then(res => {
-                            if (!res.ok) {
-                                throw new Error(`HTTP error! Status: ${res.status}`);
-                            }
-                            return res.json();
-                        })
+                        .then(res => res.json())
                         .then(data => {
                             // Check if user already exists in User Data sheet
                             const exists = data.some(entry => entry[`${userRole} ID`] === studentID);
                             if (!exists) {
                                 // If not, first, add to User Data
-                                fetch(userSheetURL, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({
-                                        role: userRole,
-                                        name: userName,
-                                        email: document.getElementById('logInEmail').value,
-                                        uid: studentID
-                                    })
-                                });
+                                Promise.all([
+                                    fetch(userSheetURL, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            role: userRole,
+                                            name: userName,
+                                            email: document.getElementById('logInEmail').value,
+                                            uid: studentID
+                                        })
+                                    }),
 
-                                // Then, add to Class Data
-                                const classSheetURL = "https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec";
-                                fetch(classSheetURL, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({
-                                        role: userRole,
-                                        action: "addToClassSheet",
-                                        userID: studentID,
-                                        inboxCount: 0,
-                                        class1: "x",
-                                        class2: "x",
-                                        class3: "x",
-                                        class4: "x",
-                                        class5: "x",
-                                        class6: "x",
-                                        class7: "x",
+                                    // Then, add to Class Data
+                                    fetch(classSheetURL, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            role: userRole,
+                                            action: "addToClassSheet",
+                                            userID: studentID,
+                                            inboxCount: 0,
+                                            class1: "x",
+                                            class2: "x",
+                                            class3: "x",
+                                            class4: "x",
+                                            class5: "x",
+                                            class6: "x",
+                                            class7: "x",
+                                        })
                                     })
-                                });
-
-                                // TODO: Then, navigate to home
-                                location.href = 'confirmation.html';
+                                ])
+                                .then(() => {
+                                    // Then, navigate to home
+                                    location.href = 'home.html';
+                                })
                             } else {
                                 // Fetch the user's name
                                 fetchUserName(studentID, "Student");
@@ -512,8 +554,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                     localStorage.removeItem("studentInfo");
                                 }
 
-                                // TODO: Navigate to home
-                                location.href = 'confirmation.html';
+                                // Navigate to home
+                                location.href = 'home.html';
                             }
                         });
                 } else if (userRole === "Teacher") {
@@ -522,58 +564,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     // Add user's data to the User and Class Data sheets
                     const userSheetURL = "https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec";
+                    const classSheetURL = "https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec";
 
                     fetch(`${userSheetURL}?role=${userRole}`)
-                        .then(res => {
-                            if (!res.ok) {
-                                throw new Error(`HTTP error! Status: ${res.status}`);
-                            }
-                            return res.json();
-                        })
+                        .then(res => res.json())
                         .then(data => {
                             // Check if user already exists in User Data sheet
                             const exists = data.some(entry => entry[`${userRole} ID`] === teacherID);
                             if (!exists) {
                                 // If not, first, add to User Data
-                                fetch(userSheetURL, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({
-                                        role: userRole,
-                                        name: userName,
-                                        email: document.getElementById('logInEmail').value,
-                                        uid: teacherID
-                                    })
-                                });
+                                Promise.all([
+                                    fetch(userSheetURL, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            role: userRole,
+                                            name: userName,
+                                            email: document.getElementById('logInEmail').value,
+                                            uid: teacherID
+                                        })
+                                    }),
 
-                                // Then, add to Class Data
-                                const classSheetURL = "https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec";
-                                fetch(classSheetURL, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({
-                                        role: userRole,
-                                        action: "addToClassSheet",
-                                        userID: teacherID,
-                                        inboxCount: 0,
-                                        class1: "x",
-                                        class2: "x",
-                                        class3: "x",
-                                        class4: "x",
-                                        class5: "x",
-                                        class6: "x",
-                                        class7: "x",
+                                    // Then, add to Class Data
+                                    fetch(classSheetURL, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            role: userRole,
+                                            action: "addToClassSheet",
+                                            userID: teacherID,
+                                            inboxCount: 0,
+                                            class1: "x",
+                                            class2: "x",
+                                            class3: "x",
+                                            class4: "x",
+                                            class5: "x",
+                                            class6: "x",
+                                            class7: "x",
+                                        })
                                     })
-                                });
-
-                                // TODO: Then, navigate to home
-                                location.href = 'confirmation.html';
+                                ])
+                                .then(() => {
+                                    // Then, navigate to home
+                                    location.href = 'home.html';
+                                })
                             } else {
                                 // Fetch the user's name
                                 fetchUserName(teacherID, "Teacher");
 
                                 // Set user's number of classes
-                                numOfStudentClasses = fetchClassAmount(teacherID, "Teacher");
+                                numOfTeacherClasses = fetchClassAmount(teacherID, "Teacher");
 
                                 // Set user's language preference
                                 langPref = fetchLangPref(teacherID, "Teacher");
@@ -586,13 +626,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
                                 // Store the info if they want it stored
                                 if (keepMeLoggedIn) {
-                                    localStorage.setItem("teacherInfo", JSON.stringify(storedTeacherInfo));
+                                    localStorage.setItem("teacherInfo", JSON.stringify(storedStudentInfo));
                                 } else {
                                     localStorage.removeItem("teacherInfo");
                                 }
 
-                                // TODO: Navigate to home
-                                location.href = 'confirmation.html';
+                                // Navigate to home
+                                location.href = 'home.html';
                             }
                         });
                 }            
@@ -611,6 +651,56 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
+    // Events for password reset
+    document.getElementById('forgotPasswordForm').addEventListener('submit', function (e) {
+        const blackOverlay = document.getElementById('black-overlay');
+
+        // Prevent form submission
+        e.preventDefault();
+
+        const email = document.getElementById('resetEmail').value;
+
+        if (!email) {
+            document.getElementById('noResetPasswordEmail').showModal();
+            return;
+        }
+
+        firebase.auth().sendPasswordResetEmail(email)
+            .then(() => {
+                // Email successfully sent
+                document.getElementById('resetSuccessAlert').showModal();
+
+                // Wait 3 seconds before hiding the form and alert
+                setTimeout(() => {
+                    const forgotPasswordForm = document.getElementById("forgotPassword");
+                    const resetSuccess = document.getElementById('resetSuccessAlert');
+
+                    // Start fading out black overlay, form, and alert
+                    blackOverlay.style.opacity = 0;
+                    forgotPasswordForm.style.opacity = 0;
+                    resetSuccess.style.opacity = 0;
+
+                    setTimeout(() => {
+                        forgotPasswordForm.style.display = "none";
+                        forgotPasswordForm.style.visibility = "hidden";
+
+                        document.getElementById('resetSuccessAlert').close();
+
+                        blackOverlay.style.visibility = 'hidden';
+                        blackOverlay.style.pointerEvents = 'none';
+
+                        resetSuccess.style.display = "none";
+                        resetSuccess.style.visibility = "hidden";
+                    }, 600);
+                }, 3000);
+            })
+            .catch((error) => {
+                // Error sending the email
+                console.error("Password reset error:", error);
+                document.getElementById('resetFailAlert').showModal();
+            });
+    });
+
     // Automatically redirect to the home screen if details are remembered
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
@@ -619,12 +709,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (user.emailVerified) {
                 // Navigate to home page or dashboard
                 window.location.href = "home.html";
-            } else {
-                // Force email verification before redirecting
-                user.sendEmailVerification().then(() => {
-                    // Redirect to the confirmation page
-                    location.href = "confirmation.html";
-                });
             }
         } else {
             // No user is signed in, stay on login

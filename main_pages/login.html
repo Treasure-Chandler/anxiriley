@@ -36,7 +36,6 @@
                 <!-- Sign up and login buttons -->
                 <button class="buttons vertical" id="signUpButton">Sign Up</button>
                 <button class="buttons vertical" id="logInButton">Log In</button>
-                <button class="buttons vertical" id="confirm">Confirm</button>
     
                 <!-- Translate option -->
                 <div class="right-side">
@@ -54,7 +53,7 @@
                     <a class="help-tooltip-img">
                         <span class="help-tooltip-text poppins-regular">
                             When it comes to creating an account, signing up will involve your SBCSC email.<br><br>
-                            You will be able to log in with the account you created with your SBCSC email.
+                            You will then be able to log in with the account you created with your SBCSC email.
                         </span>
                     </a>
                 </div>
@@ -88,7 +87,7 @@
                         </div>                        
 
                         <button type="button" class="signup-button" id="suButton">Create Account</button>
-                        <button class="signup-button" style="width: 16em;">Already a user? Log in!</button>
+                        <button class="signup-button" style="width: 16em;" id="alreadyUser">Already a user? Log in!</button>
                     </form>
                 </div>
 
@@ -116,13 +115,13 @@
 
                 <!-- Popup for forgetting your password -->
                 <div class="forgot-password-form" id="forgotPassword">
-                    <form action="/action_page.php" class="forgot-password-container">
+                    <form class="forgot-password-container" id="forgotPasswordForm">
                         <button type="button" class="close" id="closeForgotPasswordButton"></button>
                         <img src="../assets/popup.png" width="190" height="190" style="margin-top: 10px;">
 
-                        <label class="forgot-psw-hint">Enter your account's email to send a verification link!</label>
+                        <label class="forgot-psw-hint">Enter your account's email to send a password reset link!</label>
 
-                        <input type="text" placeholder="Enter your email..." name="email" required>
+                        <input type="text" id="resetEmail" placeholder="Enter your email..." name="email">
                         <button type="submit" class="forgot-psw-button">Send Password Reset Email</button>
                     </form>
                 </div>
@@ -196,6 +195,29 @@
                     characters long.
                 </p>
                 <button class="ok">OK</button>
+            </dialog>
+
+            <dialog closedby="closerequest" class="login-alert" id="emailNotVerifiedAlert">
+                <h2>Unverified Email</h2>
+                <p>You need to verify your email before logging in!</p>
+                <button class="ok">OK</button>
+            </dialog>
+
+            <dialog closedby="closerequest" class="login-alert" id="noResetPasswordEmail">
+                <h2>No Email</h2>
+                <p id="resetMessage">You must enter your email!</p>
+                <button class="ok">OK</button>
+            </dialog>
+
+            <dialog closedby="closerequest" class="login-alert" id="resetFailAlert">
+                <h2>Error</h2>
+                <p id="resetMessage">An error has occurred. You can try retyping your email.</p>
+                <button class="ok">OK</button>
+            </dialog>
+
+            <dialog closedby="closerequest" class="login-alert" id="resetSuccessAlert">
+                <h2>Email Sent</h2>
+                <p id="resetMessage">Password reset email has been sent!</p>
             </dialog>
         </main>
     </body>

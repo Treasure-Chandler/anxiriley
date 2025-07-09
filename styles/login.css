@@ -156,7 +156,7 @@
     background-image: url(../assets/settingshover.png);
 }
 
-/* Black background image that will appear when either popup is opened */
+/* Black background image that will appear when either form is opened */
 .black-overlay {
     align-items: center;
     display: flex;
@@ -172,7 +172,7 @@
     z-index: 999;
 }
 
-/* Sign Up Popup Section */
+/* Sign Up form Section */
 /* Adding the "X" button */
 .close {
     background-color: transparent;
@@ -306,7 +306,7 @@
     background-color: #7078ec;
 }
 
-/* Sign up popup - hidden by default */
+/* Sign up form - hidden by default */
 .signup-form {
     background-color: #ffffff;
     border: 5px solid #4a90e2;
@@ -323,9 +323,9 @@
     width: 550px;
     z-index: 1000;
 }
-/* End of the Sign Up Popup Section*/
+/* End of the Sign Up form Section*/
 
-/* Log In Popup Section */
+/* Log In form Section */
 /* Adding the "X" button */
 .close {
     background-color: transparent;
@@ -422,7 +422,7 @@
     background-color: #7078ec;
 }
 
-/* Log in popup - hidden by default */
+/* Log in form - hidden by default */
 .login-form {
     background-color: #ffffff;
     border: 5px solid #4a90e2;
@@ -511,9 +511,9 @@
     transform: rotate(45deg);
     width: 6px;
 }
-/* End of the Log In Popup Section */
+/* End of the Log In form Section */
 
-/* Forgot Password Popup Section */
+/* Forgot Password form Section */
 /* Adding the "X" button */
 .close {
     background-color: transparent;
@@ -600,7 +600,19 @@
     background-color: #7078ec;
 }
 
-/* Forgot password popup - hidden by default */
+/* Add transition for closing the form */
+#forgotPassword {
+    transition: opacity 0.6s ease;
+    opacity: 1;
+}
+
+/* Add transition for closing the success popup */
+#resetSuccessAlert {
+    transition: opacity 0.6s ease;
+    opacity: 1;
+}
+
+/* Forgot password form - hidden by default */
 .forgot-password-form {
     background-color: #ffffff;
     border: 5px solid #4a90e2;
@@ -617,7 +629,7 @@
     width: 450px;
     z-index: 1000;
 }
-/* End of Forgot Password Popup Section */
+/* End of Forgot Password form Section */
 
 /* Styling the login alert popups and the "OK" button */
 .ok {
