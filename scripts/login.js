@@ -5,6 +5,13 @@
  * for account handling.
  */
 
+import {
+    fetchUserName,
+    fetchClassAmount,
+    fetchLangPref,
+    fetchUserRole
+} from './userDataUtils.js';
+
 // When the page is loaded, execute these events
 document.addEventListener("DOMContentLoaded", function () {
     // Declaring variables
@@ -20,9 +27,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const unusedEmailAlert = document.getElementById('emailNotUsedAlert');
 
     let tempObject, userRole, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo,
-        firstTimeSigningInTour, numOfStudentClasses, numOfTeacherClasses, langPref, signedInLang;
+        numOfStudentClasses, numOfTeacherClasses, langPref, signedInLang;
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
+    /**
+     * Checks if the user's name is valid
+     * 
+     * @param {string} name     User's name
+     * @returns                 Validity
+    */
+    function isValidFullName(name) {
+        const trimmed = name.trim();
+        return /^[A-Za-z]+ [A-Za-z]+$/.test(trimmed);
+    }
 
     // Show sign up form and overlay when the sign up button is clicked
     document.getElementById('signUpButton').addEventListener('click', function () {
@@ -205,17 +223,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    /**
-     * Checks if the user's name is valid
-     * 
-     * @param {string} name     User's name
-     * @returns                 Validity
-     */
-    function isValidFullName(name) {
-        const trimmed = name.trim();
-        return /^[A-Za-z]+ [A-Za-z]+$/.test(trimmed);
-    }
-
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', function () {
         /* Custom alert events section */
@@ -268,6 +275,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Initialize the user
                 const user = userCredential.user;
 
+                // Activate the tour trigger
+                localStorage.setItem("firstTimeSigningInTour", "true");
+
                 // Declare and store the user role for future login
                 userRole = document.getElementById('isTeacher').checked ? "Teacher" : "Student";
                 localStorage.setItem("userRole", userRole);
@@ -298,127 +308,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
     });
-
-    /**
-     * Returns the user's name from the corresponding Google Sheet
-     * 
-     * @param {string} firebaseUID      User ID
-     * @param {string} userRole         User's role
-     * @returns                         User's name
-     */
-    async function fetchUserName(firebaseUID, userRole) {
-        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
-
-        try {
-            const response = await fetch(`${userSheetURL}?role=${userRole}`);
-            const data = await response.json();
-
-            const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
-            const nameKey = userRole === "Teacher" ? "Teacher Name" : "Student Name";
-
-            const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
-
-            if (matchingEntry) {
-                return matchingEntry[nameKey];
-            } else {
-                console.warn(`User ID not found in ${userRole} data.`);
-                return null;
-            }
-        } catch (err) {
-            console.error("Error fetching user data:", err);
-            return null;
-        }
-    }
-
-    /**
-     * Returns the user's amount of classes from the corresponding Google Sheet
-     * 
-     * @param {string} firebaseUID      User ID
-     * @param {string} userRole         User's role
-     * @returns                         User's class amount
-     */
-    async function fetchClassAmount(firebaseUID, userRole) {
-        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
-
-        try {
-            const response = await fetch(`${userSheetURL}?role=${userRole}`);
-            const data = await response.json();
-
-            const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
-            const numClassesKey = "Number of Classes";
-
-            const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
-
-            if (matchingEntry) {
-                return matchingEntry[numClassesKey];
-            } else {
-                console.warn(`User ID not found in ${userRole} data.`);
-                return null;
-            }
-        } catch (err) {
-            console.error("Error fetching user data:", err);
-            return null;
-        }
-    }
-
-    /**
-     * Returns the user's language preference from the corresponding Google Sheet
-     * 
-     * @param {string} firebaseUID      User ID
-     * @param {string} userRole         User's role
-     * @returns                         User's language preference
-     */
-    async function fetchLangPref(firebaseUID, userRole) {
-        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
-
-        try {
-            const response = await fetch(`${userSheetURL}?role=${userRole}`);
-            const data = await response.json();
-
-            const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
-            const langKey = "Language Preference";
-
-            const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
-
-            if (matchingEntry) {
-                return matchingEntry[langKey];
-            } else {
-                console.warn(`User ID not found in ${userRole} data.`);
-                return null;
-            }
-        } catch (err) {
-            console.error("Error fetching user data:", err);
-            return null;
-        }
-    }
-
-    /**
-     * Returns the user's role depending on where their ID is located
-     * 
-     * @param {string} firebaseUID                  User's ID
-     * @returns                                     User's role
-     */
-    async function fetchUserRole(firebaseUID) {
-        const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
-
-        try {
-            const [studentRes, teacherRes] = await Promise.all([
-                fetch(`${userSheetURL}?role=Student`).then(res => res.json()),
-                fetch(`${userSheetURL}?role=Teacher`).then(res => res.json())
-            ]);
-
-            const isStudent = studentRes.some(entry => entry["Student ID"] === firebaseUID);
-            if (isStudent) return "Student";
-
-            const isTeacher = teacherRes.some(entry => entry["Teacher ID"] === firebaseUID);
-            if (isTeacher) return "Teacher";
-
-            return null;
-        } catch (err) {
-            console.error("Error fetching user role:", err);
-            return null;
-        }
-    }
 
     // Events for logging in
     document.getElementById('liButton').addEventListener('click', function () {
@@ -532,17 +421,22 @@ document.addEventListener("DOMContentLoaded", function () {
                                     location.href = 'home.html';
                                 })
                             } else {
-                                // Fetch the user's name
-                                fetchUserName(studentID, "Student");
+                                // Load the user's existing data
+                                async function loadStudentData() {
+                                    // Fetch the user's name
+                                    userName = await fetchUserName(studentID, "Student");
 
-                                // Set user's number of classes
-                                numOfStudentClasses = fetchClassAmount(studentID, "Student");
+                                    // Set user's number of classes
+                                    numOfStudentClasses = await fetchClassAmount(studentID, "Student");
 
-                                // Set user's language preference
-                                langPref = fetchLangPref(studentID, "Student");
+                                    // Set user's language preference
+                                    langPref = await fetchLangPref(studentID, "Student");
 
-                                // Set user's role
-                                userRole = fetchUserRole(studentID);
+                                    // Set user's role
+                                    userRole = await fetchUserRole(studentID);
+                                }
+
+                                loadStudentData();
 
                                 // Set signedInLang
                                 signedInLang = true;
@@ -609,24 +503,29 @@ document.addEventListener("DOMContentLoaded", function () {
                                     location.href = 'home.html';
                                 })
                             } else {
-                                // Fetch the user's name
-                                fetchUserName(teacherID, "Teacher");
+                                // Load the user's existing data
+                                async function loadTeacherData() {
+                                    // Fetch the user's name
+                                    userName = await fetchUserName(teacherID, "Teacher");
 
-                                // Set user's number of classes
-                                numOfTeacherClasses = fetchClassAmount(teacherID, "Teacher");
+                                    // Set user's number of classes
+                                    numOfTeacherClasses = await fetchClassAmount(teacherID, "Teacher");
 
-                                // Set user's language preference
-                                langPref = fetchLangPref(teacherID, "Teacher");
+                                    // Set user's language preference
+                                    langPref = await fetchLangPref(teacherID, "Teacher");
 
-                                // Set user's role
-                                userRole = fetchUserRole(teacherID);
+                                    // Set user's role
+                                    userRole = await fetchUserRole(teacherID);
+                                }
+
+                                loadTeacherData();
 
                                 // Set signedInLang
                                 signedInLang = true;
 
                                 // Store the info if they want it stored
                                 if (keepMeLoggedIn) {
-                                    localStorage.setItem("teacherInfo", JSON.stringify(storedStudentInfo));
+                                    localStorage.setItem("teacherInfo", JSON.stringify(storedTeacherInfo));
                                 } else {
                                     localStorage.removeItem("teacherInfo");
                                 }
