@@ -133,10 +133,11 @@
                 </footer>
             </div>
 
-            <!-- Login alerts -->
-            <dialog closedby="closerequest" class="login-alert" id="credIssues">
-                <p>One or more fields appear to be empty. Fill out all empty fields!</p>
-                <button class="ok">OK</button>
+            <!-- Login alert template -->
+            <dialog closedby="closerequest" class="login-alert" id="universalAlert">
+                <h2 id="universalAlertTitle"></h2>
+                <p id="universalAlertMessage"></p>
+                <button class="ok" id="universalAlertOK">OK</button>
             </dialog>
             
             <dialog closedby="closerequest" class="login-alert" id="nameAlert">
@@ -213,6 +214,12 @@
             <dialog closedby="closerequest" class="login-alert" id="resetFailAlert">
                 <h2>Error</h2>
                 <p id="resetMessage">An error has occurred. You can try retyping your email.</p>
+                <button class="ok">OK</button>
+            </dialog>
+
+            <!-- These are the only alerts that differ from the universal alert template -->
+            <dialog closedby="closerequest" class="login-alert" id="credIssues">
+                <p>One or more fields appear to be empty. Fill out all empty fields!</p>
                 <button class="ok">OK</button>
             </dialog>
 

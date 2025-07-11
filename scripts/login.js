@@ -15,21 +15,26 @@ import {
 // When the page is loaded, execute these events
 document.addEventListener("DOMContentLoaded", function () {
     // Declaring variables
-    const nameAlert = document.getElementById('nameAlert');
-    const stuEmailAlert = document.getElementById('stuEmailAlert');
-    const teaEmailAlert = document.getElementById('teaEmailAlert');
     const credAlert = document.getElementById('credIssues');
-    const dupeEmailAlert = document.getElementById('duplicateEmailAlert');
-    const noOptionAlert = document.getElementById('noRadioCheckedAlert');
-    const nonStrongPasswordAlert = document.getElementById('weakPasswordAlert');
-    const emailAlert = document.getElementById('emailAlert');
-    const passwordAlert = document.getElementById('incorrectPasswordAlert');
-    const unusedEmailAlert = document.getElementById('emailNotUsedAlert');
+    const resetSuccess = document.getElementById('resetSuccessAlert');
 
     let tempObject, userRole, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo,
         numOfStudentClasses, numOfTeacherClasses, langPref, signedInLang;
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
+    /**
+     * Shows sign up/log in/forgot password alerts with a specific title and message depending on the condition
+     * 
+     * @param {string} title 
+     * @param {string} message 
+     */
+    function showAlert(title, message) {
+        const alert = document.getElementById('universalAlert');
+        document.getElementById('universalAlertTitle').textContent = title;
+        document.getElementById('universalAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
+        alert.showModal();
+    }
 
     /**
      * Checks if the user's name is valid
@@ -234,30 +239,34 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             // User's name validity
             if (!isValidFullName(document.getElementById('name').value)) {
-                nameAlert.showModal();
+                showAlert("Incorrect Name", "You must have your first AND last name!");
                 return;
             }
 
             // Email validation
             if ((document.getElementById('isStudent').checked &&
                 (!document.getElementById('signUpEmail').value.includes("@gmail.com")))) {
-                stuEmailAlert.showModal();
+                showAlert("Incorrect Student Email", "You must enter your student email!");
                 return;
             } else if ((document.getElementById('isTeacher').checked &&
                         (!document.getElementById('signUpEmail').value.includes("@gmail.com")))) {
-                teaEmailAlert.showModal();
+                showAlert("Incorrect Teacher Email", "You must enter your teacher email!");
                 return;
             }
 
             // If neither radio buttons are checked
             if (!document.getElementById('isStudent').checked && !document.getElementById('isTeacher').checked) {
-                noOptionAlert.showModal();
+                showAlert("No Option Selected", "You need to select if you are student or a teacher!");
                 return;
             }
 
             // If the password is too weak
             if (!strongPasswordRegex.test(document.getElementById('signUpPassword').value)) {
-                nonStrongPasswordAlert.showModal();
+                showAlert("Weak Password",
+                        "You will need a stronger password with this account!\n\n" +
+                        "A strong password requires at least one uppercase letter,\n" +
+                        "one lowercase letter, a number, and must be at least 6\n" +
+                        "characters long.");
                 return;
             }
         }
@@ -299,11 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Log any Firebase errors
                 if (error.code === 'auth/email-already-in-use') {
                     // If the email is already in use
-                    dupeEmailAlert.showModal();
-                    return;
-                } else if (error.code === 'auth/weak-password') {
-                    // If the password is too weak
-                    nonStrongPasswordAlert.showModal();
+                    showAlert("Email Already Registered", "This email is already in use! Why not try signing in?");
                     return;
                 }
             });
@@ -322,7 +327,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             // If the email does not contain the correct email address upon logging in
             if (!document.getElementById('logInEmail').value.includes("@gmail.com")) {
-                emailAlert.showModal();
+                showAlert("Incorrect Email", "You must enter a school email!");
                 return;
             }
         }
@@ -345,7 +350,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Check if email is verified
                 if (!user.emailVerified) {
-                    emailNotVerifiedAlert.showModal();
+                    showAlert("Unverified Email", "You need to verify your email before logging in!");
 
                     // Sign out unverified users
                     firebase.auth().signOut();
@@ -540,11 +545,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Log any Firebase errors
                 if (error.code === 'auth/user-not-found') {
                     // If the email is not used
-                    unusedEmailAlert.showModal();
+                    showAlert("Email Not Used", "This email is not used! Why not try creating an account?");
                     return;
                 } else if (error.code === 'auth/wrong-password') {
                     // If the password is incorrect
-                    passwordAlert.showModal();
+                    showAlert("Incorrect Password", "Your password is incorrect. You can try retyping it or resetting it.");
                     return;
                 }
             });
@@ -560,14 +565,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const email = document.getElementById('resetEmail').value;
 
         if (!email) {
-            document.getElementById('noResetPasswordEmail').showModal();
+            showAlert("No Email", "You must enter your email!");
             return;
         }
 
         firebase.auth().sendPasswordResetEmail(email)
             .then(() => {
                 // Email successfully sent
-                document.getElementById('resetSuccessAlert').showModal();
+                resetSuccess.showModal();
 
                 // Wait 3 seconds before hiding the form and alert
                 setTimeout(() => {
@@ -596,7 +601,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch((error) => {
                 // Error sending the email
                 console.error("Password reset error:", error);
-                document.getElementById('resetFailAlert').showModal();
+                showAlert("Error", "An error has occurred. You can try retyping your email.");
             });
     });
 
