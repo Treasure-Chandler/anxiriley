@@ -12,16 +12,35 @@ import {
     fetchUserRole
 } from './userDataUtils.js';
 
+import {
+    setNumOfStudentClasses,
+    setNumOfTeacherClasses,
+    setUserName,
+    setUserRole,
+    setLangPref,
+    setSignedInLang
+} from './userInfo.js';
+
+import {
+    isBrowserOnline,
+    monitorConnectionStatus
+} from './connectionUtils.js';
+
 // When the page is loaded, execute these events
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', async function () {
     // Declaring variables
     const credAlert = document.getElementById('credIssues');
     const resetSuccess = document.getElementById('resetSuccessAlert');
 
-    let tempObject, userRole, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo,
-        numOfStudentClasses, numOfTeacherClasses, langPref, signedInLang;
+    let tempObject, userRole, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo;
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
+    const body = document.getElementById('background');
+
+    // Hide page and background at first
+    body.style.display = 'none';
+    body.classList.add('no-background');
 
     /**
      * Shows sign up/log in/forgot password alerts with a specific title and message depending on the condition
@@ -46,6 +65,24 @@ document.addEventListener("DOMContentLoaded", function () {
         const trimmed = name.trim();
         return /^[A-Za-z]+ [A-Za-z]+$/.test(trimmed);
     }
+
+    // Check internet connection first
+    const offline = !isBrowserOnline();
+
+    if (offline) {
+        showAlert('Offline', 'You are currently offline! Some features may not work. Please check your internet connection.');
+
+        // Show login even if offline
+        body.style.display = 'block';
+        body.classList.remove('no-background');
+        return;
+    }
+
+    // Alert the user if they have gone back online or if they have been disconnected
+    monitorConnectionStatus(
+        () => showAlert('Back Online', 'Your internet connection has been restored!'),
+        () => showAlert('Disconnected', 'You have lost your internet connection.')
+    );
 
     // Show sign up form and overlay when the sign up button is clicked
     document.getElementById('signUpButton').addEventListener('click', function () {
@@ -77,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
         signUpForm.style.opacity = 1;
     });
 
-    // Close the sign up form and hide the overlay when the "X" button is clicked
+    // Close the sign up form and hide the overlay when the 'X' button is clicked
     document.getElementById('closeSignUpButton').addEventListener('click', function () {
         const signUpForm = document.getElementById('signUp');
         const blackOverlay = document.getElementById('black-overlay');
@@ -95,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 600);
     });
 
-    // When the "Already a User?" button is clicked, open the log in form
+    // When the 'Already a User?' button is clicked, open the log in form
     document.getElementById('alreadyUser').addEventListener('click', function () {
         const logInForm = document.getElementById('logIn');
         const signupForm = document.getElementById('signUp');
@@ -148,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
         logInForm.style.opacity = 1;
     });
 
-    // Close the log in form and hide the overlay when the "X" button is clicked
+    // Close the log in form and hide the overlay when the 'X' button is clicked
     document.getElementById('closeLogInButton').addEventListener('click', function () {
         const logInForm = document.getElementById('logIn');
         const blackOverlay = document.getElementById('black-overlay');
@@ -166,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 600);
     });
 
-    // When the "Forgot Password?" button is clicked, open the forgot password form
+    // When the 'Forgot Password?' button is clicked, open the forgot password form
     document.getElementById('forgotPasswordButton').addEventListener('click', function (event) {
         const logInForm = document.getElementById('logIn');
         const forgotPasswordForm = document.getElementById('forgotPassword');
@@ -195,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
         logInForm.style.visibility = 'hidden';
     });
 
-    // Close the forgot password form and hide the overlay when the "X" button is clicked
+    // Close the forgot password form and hide the overlay when the 'X' button is clicked
     document.getElementById('closeForgotPasswordButton').addEventListener('click', function () {
         const logInForm = document.getElementById('logIn');
         const forgotPasswordForm = document.getElementById('forgotPassword');
@@ -216,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     /* 
-    * The "OK" button is linked to each popup; this event listener is defined for all "OK"
+    * The 'OK' button is linked to each popup; this event listener is defined for all 'OK'
     * buttons so they can close their respective popups
     */
     const okBtns = document.querySelectorAll('.ok');
@@ -239,34 +276,34 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             // User's name validity
             if (!isValidFullName(document.getElementById('name').value)) {
-                showAlert("Incorrect Name", "You must have your first AND last name!");
+                showAlert('Incorrect Name', 'You must have your first AND last name!');
                 return;
             }
 
             // Email validation
             if ((document.getElementById('isStudent').checked &&
-                (!document.getElementById('signUpEmail').value.includes("@gmail.com")))) {
-                showAlert("Incorrect Student Email", "You must enter your student email!");
+                (!document.getElementById('signUpEmail').value.includes('@gmail.com')))) {
+                showAlert('Incorrect Student Email', 'You must enter your student email!');
                 return;
             } else if ((document.getElementById('isTeacher').checked &&
-                        (!document.getElementById('signUpEmail').value.includes("@gmail.com")))) {
-                showAlert("Incorrect Teacher Email", "You must enter your teacher email!");
+                        (!document.getElementById('signUpEmail').value.includes('@gmail.com')))) {
+                showAlert('Incorrect Teacher Email', 'You must enter your teacher email!');
                 return;
             }
 
             // If neither radio buttons are checked
             if (!document.getElementById('isStudent').checked && !document.getElementById('isTeacher').checked) {
-                showAlert("No Option Selected", "You need to select if you are student or a teacher!");
+                showAlert('No Option Selected', 'You need to select if you are student or a teacher!');
                 return;
             }
 
             // If the password is too weak
             if (!strongPasswordRegex.test(document.getElementById('signUpPassword').value)) {
-                showAlert("Weak Password",
-                        "You will need a stronger password with this account!\n\n" +
-                        "A strong password requires at least one uppercase letter,\n" +
-                        "one lowercase letter, a number, and must be at least 6\n" +
-                        "characters long.");
+                showAlert('Weak Password',
+                        'You will need a stronger password with this account!\n\n' +
+                        'A strong password requires at least one uppercase letter,\n' +
+                        'one lowercase letter, a number, and must be at least 6\n' +
+                        'characters long.');
                 return;
             }
         }
@@ -285,15 +322,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 const user = userCredential.user;
 
                 // Activate the tour trigger
-                localStorage.setItem("firstTimeSigningInTour", "true");
+                localStorage.setItem('firstTimeSigningInTour', 'true');
 
                 // Declare and store the user role for future login
-                userRole = document.getElementById('isTeacher').checked ? "Teacher" : "Student";
-                localStorage.setItem("userRole", userRole);
+                userRole = document.getElementById('isTeacher').checked ? 'Teacher' : 'Student';
+                localStorage.setItem('userRole', userRole);
 
                 // Declare and store the user name for future login
                 userName = document.getElementById('name').value;
-                localStorage.setItem("userName", userName);
+                localStorage.setItem('userName', userName);
 
                 // Send verification email
                 user.sendEmailVerification().then(() => {
@@ -301,15 +338,28 @@ document.addEventListener("DOMContentLoaded", function () {
                     return firebase.auth().signOut();
                 }).then(() => {
                     // Redirect to the confirmation page
-                    location.href = "confirmation.html";
+                    window.location.replace('confirmation.html');
                 });
             })
             .catch((error) => {
                 // Log any Firebase errors
-                if (error.code === 'auth/email-already-in-use') {
-                    // If the email is already in use
-                    showAlert("Email Already Registered", "This email is already in use! Why not try signing in?");
-                    return;
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        // If the email is already in use
+                        showAlert('Email Already Registered', 'This email is already in use! Why not try signing in?');
+                        break;
+                    case 'auth/invalid-email':
+                        // If the email is invalid
+                        showAlert('Invalid Email', 'This email address is not valid! Please enter a correct email.');
+                        break;
+                    case 'auth/internal-error':
+                        // If there has been an internal error
+                        showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                        break;
+                    default:
+                        // If there has been any other error
+                        showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                        break;
                 }
             });
     });
@@ -326,8 +376,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         } else {
             // If the email does not contain the correct email address upon logging in
-            if (!document.getElementById('logInEmail').value.includes("@gmail.com")) {
-                showAlert("Incorrect Email", "You must enter a school email!");
+            if (!document.getElementById('logInEmail').value.includes('@gmail.com')) {
+                showAlert('Incorrect Email', 'You must enter a school email!');
                 return;
             }
         }
@@ -350,7 +400,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Check if email is verified
                 if (!user.emailVerified) {
-                    showAlert("Unverified Email", "You need to verify your email before logging in!");
+                    showAlert('Unverified Email', 'You need to verify your email before logging in!');
 
                     // Sign out unverified users
                     firebase.auth().signOut();
@@ -358,16 +408,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 // Retrieve the user name and user role from local storage
-                userRole = localStorage.getItem("userRole");
-                userName = localStorage.getItem("userName");
+                userRole = localStorage.getItem('userRole');
+                userName = localStorage.getItem('userName');
 
                 // Optional for the user: store the role and email
-                if (userRole === "Student") {
+                if (userRole === 'Student') {
                     storedStudentInfo = {
                         role: userRole,
                         email: document.getElementById('logInEmail').value
                     };
-                } else if (userRole === "Teacher") {
+                } else if (userRole === 'Teacher') {
                     storedTeacherInfo = {
                         role: userRole,
                         email: document.getElementById('logInEmail').value
@@ -375,14 +425,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 // Role dependent conditionals
-                if (userRole === "Student") {
+                const userSheetURL = 'https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec';
+                const classSheetURL = 'https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec';
+
+                if (userRole === 'Student') {
                     // Set the user's ID
                     studentID = firebase.auth().currentUser.uid;
 
                     // Add user's data to the User and Class Data sheets
-                    const userSheetURL = "https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec";
-                    const classSheetURL = "https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec";
-
                     fetch(`${userSheetURL}?role=${userRole}`)
                         .then(res => res.json())
                         .then(data => {
@@ -392,8 +442,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                 // If not, first, add to User Data
                                 Promise.all([
                                     fetch(userSheetURL, {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({
                                             role: userRole,
                                             name: userName,
@@ -404,67 +454,64 @@ document.addEventListener("DOMContentLoaded", function () {
 
                                     // Then, add to Class Data
                                     fetch(classSheetURL, {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({
                                             role: userRole,
-                                            action: "addToClassSheet",
+                                            action: 'addToClassSheet',
                                             userID: studentID,
                                             inboxCount: 0,
-                                            class1: "x",
-                                            class2: "x",
-                                            class3: "x",
-                                            class4: "x",
-                                            class5: "x",
-                                            class6: "x",
-                                            class7: "x",
+                                            class1: 'x',
+                                            class2: 'x',
+                                            class3: 'x',
+                                            class4: 'x',
+                                            class5: 'x',
+                                            class6: 'x',
+                                            class7: 'x',
                                         })
                                     })
                                 ])
                                 .then(() => {
                                     // Then, navigate to home
-                                    location.href = 'home.html';
+                                    window.location.replace('home.html');
                                 })
                             } else {
                                 // Load the user's existing data
                                 async function loadStudentData() {
                                     // Fetch the user's name
-                                    userName = await fetchUserName(studentID, "Student");
+                                    setUserName(await fetchUserName(studentID, 'Student'));
 
                                     // Set user's number of classes
-                                    numOfStudentClasses = await fetchClassAmount(studentID, "Student");
+                                    setNumOfStudentClasses(await fetchClassAmount(studentID, 'Student'));
 
                                     // Set user's language preference
-                                    langPref = await fetchLangPref(studentID, "Student");
+                                    setLangPref(await fetchLangPref(studentID, 'Student'));
 
                                     // Set user's role
-                                    userRole = await fetchUserRole(studentID);
+                                    setUserRole(await fetchUserRole(studentID));
                                 }
 
                                 loadStudentData();
 
                                 // Set signedInLang
-                                signedInLang = true;
+                                setSignedInLang(true);
 
                                 // Store the info if they want it stored
                                 if (keepMeLoggedIn) {
-                                    localStorage.setItem("studentInfo", JSON.stringify(storedStudentInfo));
+                                    localStorage.setItem('studentInfo', JSON.stringify(storedStudentInfo));
                                 } else {
-                                    localStorage.removeItem("studentInfo");
+                                    localStorage.removeItem('studentInfo');
                                 }
 
                                 // Navigate to home
-                                location.href = 'home.html';
+                                window.location.replace('home.html');
                             }
                         });
-                } else if (userRole === "Teacher") {
+                } else if (userRole === 'Teacher') {
                     // Set the user's ID
                     teacherID = firebase.auth().currentUser.uid;
 
                     // Add user's data to the User and Class Data sheets
-                    const userSheetURL = "https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec";
-                    const classSheetURL = "https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec";
-
                     fetch(`${userSheetURL}?role=${userRole}`)
                         .then(res => res.json())
                         .then(data => {
@@ -474,8 +521,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                 // If not, first, add to User Data
                                 Promise.all([
                                     fetch(userSheetURL, {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({
                                             role: userRole,
                                             name: userName,
@@ -486,71 +533,84 @@ document.addEventListener("DOMContentLoaded", function () {
 
                                     // Then, add to Class Data
                                     fetch(classSheetURL, {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({
                                             role: userRole,
-                                            action: "addToClassSheet",
+                                            action: 'addToClassSheet',
                                             userID: teacherID,
                                             inboxCount: 0,
-                                            class1: "x",
-                                            class2: "x",
-                                            class3: "x",
-                                            class4: "x",
-                                            class5: "x",
-                                            class6: "x",
-                                            class7: "x",
+                                            class1: 'x',
+                                            class2: 'x',
+                                            class3: 'x',
+                                            class4: 'x',
+                                            class5: 'x',
+                                            class6: 'x',
+                                            class7: 'x',
                                         })
                                     })
                                 ])
                                 .then(() => {
                                     // Then, navigate to home
-                                    location.href = 'home.html';
+                                    window.location.replace('home.html');
                                 })
                             } else {
                                 // Load the user's existing data
                                 async function loadTeacherData() {
                                     // Fetch the user's name
-                                    userName = await fetchUserName(teacherID, "Teacher");
+                                    setUserName(await fetchUserName(teacherID, 'Teacher'));
 
                                     // Set user's number of classes
-                                    numOfTeacherClasses = await fetchClassAmount(teacherID, "Teacher");
+                                    setNumOfTeacherClasses(await fetchClassAmount(teacherID, 'Teacher'));
 
                                     // Set user's language preference
-                                    langPref = await fetchLangPref(teacherID, "Teacher");
+                                    setLangPref(await fetchLangPref(teacherID, 'Teacher'));
 
                                     // Set user's role
-                                    userRole = await fetchUserRole(teacherID);
+                                    setUserRole(await fetchUserRole(teacherID));
                                 }
 
                                 loadTeacherData();
 
                                 // Set signedInLang
-                                signedInLang = true;
+                                setSignedInLang(true);
 
                                 // Store the info if they want it stored
                                 if (keepMeLoggedIn) {
-                                    localStorage.setItem("teacherInfo", JSON.stringify(storedTeacherInfo));
+                                    localStorage.setItem('teacherInfo', JSON.stringify(storedTeacherInfo));
                                 } else {
-                                    localStorage.removeItem("teacherInfo");
+                                    localStorage.removeItem('teacherInfo');
                                 }
 
                                 // Navigate to home
-                                location.href = 'home.html';
+                                window.location.replace('home.html');
                             }
                         });
                 }            
             })
             .catch((error) => {
                 // Log any Firebase errors
-                if (error.code === 'auth/user-not-found') {
-                    // If the email is not used
-                    showAlert("Email Not Used", "This email is not used! Why not try creating an account?");
-                    return;
-                } else if (error.code === 'auth/wrong-password') {
-                    // If the password is incorrect
-                    showAlert("Incorrect Password", "Your password is incorrect. You can try retyping it or resetting it.");
-                    return;
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        // If the email is not used
+                        showAlert('Email Not Used', 'This email is not used! Why not try creating an account?');
+                        break;
+                    case 'auth/invalid-credential':
+                        // If the email/password is incorrect
+                        showAlert('Incorrect Credentials', 'Your email or password is incorrect. You can try retyping your email/password, '
+                                                            + 'or resetting your password.');
+                        break;
+                    case 'auth/too-many-requests':
+                        // If too many requests have been made
+                        showAlert('Too Many Attempts', 'There have been too many login attempts! Please try again later.');
+                        break;
+                    case 'auth/user-disabled':
+                        // If the account has been disabled
+                        showAlert('Account Disabled', 'This account has been disabled! Please contact us for support.');
+                    default:
+                        // If there has been any other error
+                        showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                        break;
                 }
             });
     });
@@ -565,7 +625,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const email = document.getElementById('resetEmail').value;
 
         if (!email) {
-            showAlert("No Email", "You must enter your email!");
+            showAlert('No Email', 'You must enter your email!');
             return;
         }
 
@@ -576,7 +636,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Wait 3 seconds before hiding the form and alert
                 setTimeout(() => {
-                    const forgotPasswordForm = document.getElementById("forgotPassword");
+                    const forgotPasswordForm = document.getElementById('forgotPassword');
                     const resetSuccess = document.getElementById('resetSuccessAlert');
 
                     // Start fading out black overlay, form, and alert
@@ -585,38 +645,112 @@ document.addEventListener("DOMContentLoaded", function () {
                     resetSuccess.style.opacity = 0;
 
                     setTimeout(() => {
-                        forgotPasswordForm.style.display = "none";
-                        forgotPasswordForm.style.visibility = "hidden";
+                        forgotPasswordForm.style.display = 'none';
+                        forgotPasswordForm.style.visibility = 'hidden';
 
                         document.getElementById('resetSuccessAlert').close();
 
                         blackOverlay.style.visibility = 'hidden';
                         blackOverlay.style.pointerEvents = 'none';
 
-                        resetSuccess.style.display = "none";
-                        resetSuccess.style.visibility = "hidden";
+                        resetSuccess.style.display = 'none';
+                        resetSuccess.style.visibility = 'hidden';
                     }, 600);
                 }, 3000);
             })
-            .catch((error) => {
+            .catch(() => {
                 // Error sending the email
-                console.error("Password reset error:", error);
-                showAlert("Error", "An error has occurred. You can try retyping your email.");
+                showAlert('Error', 'An error has occurred. You can try retyping your email.');
+                return;
             });
     });
 
     // Automatically redirect to the home screen if details are remembered
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            // User is signed in
-            // Check if their email is verified
-            if (user.emailVerified) {
-                // Navigate to home page or dashboard
-                window.location.href = "home.html";
+    firebase.auth().onAuthStateChanged(async (user) => {
+        const body = document.getElementById('background');
+
+        // User is signed in, along with checking for a verified email
+        if (user && user.emailVerified) {
+            const studentInfoStr = localStorage.getItem('studentInfo');
+            const teacherInfoStr = localStorage.getItem('teacherInfo');
+
+            const storedStudentInfo = studentInfoStr ? JSON.parse(studentInfoStr) : null;
+            const storedTeacherInfo = teacherInfoStr ? JSON.parse(teacherInfoStr) : null;
+
+            // Determine user role based on what exists
+            let storedUserInfo = null;
+            let userRole = null;
+
+            if (storedStudentInfo) {
+                storedUserInfo = storedStudentInfo;
+                userRole = storedStudentInfo.role;
+            } else if (storedTeacherInfo) {
+                storedUserInfo = storedTeacherInfo;
+                userRole = storedTeacherInfo.role;
+            }
+
+            if (userRole === 'Student' && storedUserInfo != null) {
+                const studentID = firebase.auth().currentUser.uid;
+
+                try {
+                    // Fetch from Student User Data sheet
+                    const response = await fetch('https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec?sheet=Student User Data');
+                    const data = await response.json();
+
+                    // Find matching row by Firebase UID
+                    const matchedRow = data.find(row => row['Student ID'] === studentID);
+
+                    if (matchedRow) {
+                        tempObject = matchedRow;
+
+                        // Set user-specific variables from the matched row
+                        setUserName(tempObject['Student Name']);
+                        setNumOfStudentClasses(parseInt(tempObject['Number of Classes']));
+                        setLangPref(tempObject['Language Preference']);
+                        setSignedInLang(true);
+
+                        // Redirect
+                        window.location.replace('home.html');
+                    }
+                } catch (e) {
+                    showAlert("Error", "There was a problem loading your account data. Please try again by refreshing or contact us for support.");
+                    return;
+                }
+            } else if (userRole === 'Teacher' && storedUserInfo != null) {
+                const teacherID = firebase.auth().currentUser.uid;
+
+                try {
+                    // Fetch from Teacher User Data sheet
+                    const response = await fetch('https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec?sheet=Teacher User Data');
+                    const data = await response.json();
+
+                    // Find matching row by Firebase UID
+                    const matchedRow = data.find(row => row['Teacher ID'] === teacherID);
+
+                    if (matchedRow) {
+                        tempObject = matchedRow;
+
+                        // Set user-specific variables from the matched row
+                        setUserName(tempObject['Teacher Name']);
+                        setNumOfTeacherClasses(parseInt(tempObject['Number of Classes']));
+                        setLangPref(tempObject['Language Preference']);
+                        setSignedInLang(true);
+
+                        // Redirect
+                        window.location.replace('home.html');
+                    }
+                } catch (e) {
+                    showAlert("Error", "There was a problem loading your account data. Please try again by refreshing or contact us for support.");
+                    return;
+                }
+            } else {
+                // If no info is saved, just redirect
+                window.location.replace('home.html');
             }
         } else {
-            // No user is signed in, stay on login
-            console.log("No user is currently signed in.");
+            // Show the login screen only after the auth check
+            body.style.display = 'block';
+            body.classList.remove('no-background');
         }
     });
 });

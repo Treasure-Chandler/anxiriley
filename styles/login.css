@@ -97,6 +97,14 @@
 }
 
 /* Show the tooltip when the user hovers over it with the mouse */
+.help-tooltip-img {
+    transition: background-image 0.3s ease-in-out;
+}
+
+.help-tooltip-img:hover {
+    background-image: url(../assets/helphover.png);
+}
+
 .help-tooltip-img:hover .help-tooltip-text {
     opacity: 1;
     visibility: visible;
@@ -129,9 +137,14 @@
     margin: 20px auto;
 }
 
-/* Change the hyperlink color */
+/* Change the hyperlink color, and change the color upon hover */
 #hyperlink {
     color: #60b4ef;
+    transition: color 0.3s ease-in-out;
+}
+
+#hyperlink:hover {
+    color: #286692;
 }
 
 /* Gives the secondary text a slightly larger bottom margin */
@@ -186,8 +199,13 @@
     position: absolute;
     right: 20px;
     top: 14px;
+    transition: background-image 0.3s ease-in-out;
     width: 60px;
     z-index: 1000;
+}
+
+.close:hover {
+    background-image: url(../assets/closehover.png);
 }
 
 /* Style the labels accompanying the radio buttons */
@@ -672,11 +690,16 @@ footer {
     width: 100%;
 }
 
-/* Sets the background image */
-html {
-    background-image: url(../assets/lightmodewithwildcat.png);
+/* Background visible by default */
+#background {
+    background-image: url('../assets/lightmodewithwildcat.png');
     background-size: 100vw 100vh;
     background-repeat: no-repeat;
+}
+
+/* Class to hide the background */
+.no-background {
+    background-image: none !important;
 }
 
 /* Styling the welcome text */

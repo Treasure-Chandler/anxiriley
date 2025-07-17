@@ -27,7 +27,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
     </head>
-    <body>
+    <body style="display: none;" id="background">
         <main>
             <div class="login-height">
                 <!-- Welcome text -->
@@ -140,83 +140,6 @@
                 <button class="ok" id="universalAlertOK">OK</button>
             </dialog>
             
-            <dialog closedby="closerequest" class="login-alert" id="nameAlert">
-                <h2>Incorrect Name</h2>
-                <p>You must have your first AND last name!</p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="stuEmailAlert">
-                <h2>Incorrect Student Email</h2>
-                <p>You must enter your student email!</p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="teaEmailAlert">
-                <h2>Incorrect Teacher Email</h2>
-                <p>You must enter your teacher email!</p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="emailAlert">
-                <h2>Incorrect Email</h2>
-                <p>You must enter a school email!</p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="incorrectPasswordAlert">
-                <h2>Incorrect Password</h2>
-                <p>Your password is incorrect. You can try retyping it or resetting it.</p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="duplicateEmailAlert">
-                <h2>Email Already Registered</h2>
-                <p>This email is already in use! Why not try signing in?</p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="noRadioCheckedAlert">
-                <h2>No Option Selected</h2>
-                <p>You need to select if you are a student or a teacher!</p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="emailNotUsedAlert">
-                <h2>Email Not Used</h2>
-                <p>This email is not used! Why not try creating an account?</p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="weakPasswordAlert">
-                <h2>Weak Password</h2>
-                <p>
-                    You will need a stronger password with this account!<br><br>
-                    A strong password requires at least one uppercase letter,<br>
-                    one lowercase letter, a number, and must be at least 6<br>
-                    characters long.
-                </p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="emailNotVerifiedAlert">
-                <h2>Unverified Email</h2>
-                <p>You need to verify your email before logging in!</p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="noResetPasswordEmail">
-                <h2>No Email</h2>
-                <p id="resetMessage">You must enter your email!</p>
-                <button class="ok">OK</button>
-            </dialog>
-
-            <dialog closedby="closerequest" class="login-alert" id="resetFailAlert">
-                <h2>Error</h2>
-                <p id="resetMessage">An error has occurred. You can try retyping your email.</p>
-                <button class="ok">OK</button>
-            </dialog>
-
             <!-- These are the only alerts that differ from the universal alert template -->
             <dialog closedby="closerequest" class="login-alert" id="credIssues">
                 <p>One or more fields appear to be empty. Fill out all empty fields!</p>
