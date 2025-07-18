@@ -12,11 +12,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Verify Email</title>
 
-        <!-- Firebase setup -->
-        <!-- <script src="../scripts/lib/firebase-app-compat.js"></script>
-        <script src="../scripts/lib/firebase-auth-compat.js"></script>
-        <script src="../scripts/firebase-init.js"></script> -->
-
         <script src="../scripts/confirmation.js"></script>
 
         <link rel="stylesheet" href="../styles/confirmation.css">
@@ -29,7 +24,23 @@
     </head>
     <body>
         <main>
-            <button id="continue">Back</button>
+            <div class="confirm-height">
+                <!-- Headers -->
+                <h2 class="allset poppins-semibold" id="allSet">You're all set!</h2>
+                <p class="welcome poppins-regular" id="replacePlaceholderName">Welcome, [name] <3</p>
+
+                <!-- Verifying information -->
+                <p class="text poppins-regular">
+                    A verification email was just sent to you. You can check it to see how to verify. Then, try logging in!<br>
+                    If nothing happens when you actually try to log in, your email may not be verified.
+                </p>
+
+                <!-- Continue (back to the login page) -->
+                <button class="continuebtn" id="continue">Continue</button>
+            </div>
+
+            <!-- Celebratory confetti GIF that plays once upon the page loading -->
+            <img src="/assets/confetti.gif" width="512" height="512" id="confetti">
         </main>
     </body>
 </html>

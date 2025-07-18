@@ -85,6 +85,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     );
 
     // Show sign up form and overlay when the sign up button is clicked
+    document.getElementById('cButton').addEventListener('click', function () {
+        window.location.href = 'confirmation.html';
+    });
+
     document.getElementById('signUpButton').addEventListener('click', function () {
         const signUpForm = document.getElementById('signUp');
         const blackOverlay = document.getElementById('black-overlay');
@@ -331,6 +335,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Declare and store the user name for future login
                 userName = document.getElementById('name').value;
                 localStorage.setItem('userName', userName);
+
+                // Set a temporary name in the local storage for the confirmation page
+                localStorage.setItem('tempUserName', userName);
 
                 // Send verification email
                 user.sendEmailVerification().then(() => {

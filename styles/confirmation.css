@@ -1,0 +1,87 @@
+/* 
+    Made by Treasure Chandler
+
+    This is the CSS file that will style the confirmation page.
+*/
+
+/* Styling the continue button */
+.continuebtn {
+    background-color: #3a42bd;
+    border: none;
+    border-radius: 15px;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    padding: 15px 32px;
+    transition: background-color 0.3s ease-in-out;
+    text-align: center;
+    text-decoration: none;
+    width: 24em;
+}
+
+/* Give the button a lighter color upon hovering */
+.continuebtn:hover {
+    background-color: #7078ec;
+}
+
+/* Confirmation div styling */
+.confirm-height {
+    align-items: center;
+    height: 84.7vh;
+    margin-top: 5.3em;
+    position: relative;
+    text-align: center;
+}
+
+/* Font configuration */
+.poppins-regular {
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.poppins-semibold {
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: 500;
+}
+
+/* Text styling */
+.welcome {
+    font-size: 2.75em;
+}
+
+.text {
+    color: #646370;
+    font-size: 1.6em;
+    max-width: 70%;
+    margin: 2em auto;
+}
+
+/* Styling the confetti gif */
+#confetti {
+    display: none;
+    left: 50%;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+/* Set the background image */
+html {
+    background-image: url(/assets/lightmodewithwildcat.png);
+    background-size: 100vw 100vh;
+    background-repeat: no-repeat;
+}
+
+/* Styling the "all set" text */
+h2 {
+    font-size: 6em;
+    margin-bottom: -0.25em;
+}
