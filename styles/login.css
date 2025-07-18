@@ -64,7 +64,7 @@
 
 /* Add the question mark to the page so it can be hoverable */
 .help-tooltip-img {
-    background-image: url(../assets/help.png);
+    background-image: url(/assets/help.png);
     background-repeat: no-repeat;
     background-size: 100% 100%;
     cursor: help;
@@ -102,7 +102,7 @@
 }
 
 .help-tooltip-img:hover {
-    background-image: url(../assets/helphover.png);
+    background-image: url(/assets/helphover.png);
 }
 
 .help-tooltip-img:hover .help-tooltip-text {
@@ -154,7 +154,7 @@
 
 /* Styling the translation gear */
 #translate-settings {
-    background-image: url(../assets/settings.png);
+    background-image: url(/assets/settings.png);
     background-repeat: no-repeat;
     background-size: 100% 100%;
     cursor: pointer;
@@ -166,7 +166,7 @@
 }
 
 #translate-settings:hover {
-    background-image: url(../assets/settingshover.png);
+    background-image: url(/assets/settingshover.png);
 }
 
 /* Black background image that will appear when either form is opened */
@@ -189,7 +189,7 @@
 /* Adding the "X" button */
 .close {
     background-color: transparent;
-    background-image: url(../assets/close.png);
+    background-image: url(/assets/close.png);
     background-repeat: no-repeat;
     background-size: cover;
     border: none;
@@ -205,7 +205,7 @@
 }
 
 .close:hover {
-    background-image: url(../assets/closehover.png);
+    background-image: url(/assets/closehover.png);
 }
 
 /* Style the labels accompanying the radio buttons */
@@ -347,7 +347,7 @@
 /* Adding the "X" button */
 .close {
     background-color: transparent;
-    background-image: url(../assets/close.png);
+    background-image: url(/assets/close.png);
     background-repeat: no-repeat;
     background-size: cover;
     border: none;
@@ -535,7 +535,7 @@
 /* Adding the "X" button */
 .close {
     background-color: transparent;
-    background-image: url(../assets/close.png);
+    background-image: url(/assets/close.png);
     background-repeat: no-repeat;
     background-size: cover;
     border: none;
@@ -692,7 +692,7 @@ footer {
 
 /* Background visible by default */
 #background {
-    background-image: url('../assets/lightmodewithwildcat.png');
+    background-image: url(/assets/lightmodewithwildcat.png);
     background-size: 100vw 100vh;
     background-repeat: no-repeat;
 }
