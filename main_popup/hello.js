@@ -5,6 +5,12 @@
  */
 
 // Open event
-document.getElementById('openLogin').addEventListener('click', function() {
-    chrome.tabs.create({ url: 'main_pages/login.html' });
+document.addEventListener('DOMContentLoaded', function () {
+    const wildcatHead = document.getElementById('openLogin');
+
+    if (wildcatHead) {
+        wildcatHead.addEventListener('click', function() {
+            chrome.tabs.create({ url: 'main_pages/login.html' });
+        });
+    }
 });

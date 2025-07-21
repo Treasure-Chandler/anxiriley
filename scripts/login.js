@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     /**
      * Shows sign up/log in/forgot password alerts with a specific title and message depending on the condition
      * 
-     * @param {string} title 
-     * @param {string} message 
+     * @param {string} title        Alert title 
+     * @param {string} message      Alert message
      */
     function showAlert(title, message) {
         const alert = document.getElementById('universalAlert');
@@ -85,10 +85,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     );
 
     // Show sign up form and overlay when the sign up button is clicked
-    document.getElementById('cButton').addEventListener('click', function () {
-        window.location.href = 'confirmation.html';
-    });
-
     document.getElementById('signUpButton').addEventListener('click', function () {
         const signUpForm = document.getElementById('signUp');
         const blackOverlay = document.getElementById('black-overlay');
@@ -422,12 +418,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (userRole === 'Student') {
                     storedStudentInfo = {
                         role: userRole,
-                        email: document.getElementById('logInEmail').value
+                        email: document.getElementById('logInEmail').value,
+                        studentID
                     };
                 } else if (userRole === 'Teacher') {
                     storedTeacherInfo = {
                         role: userRole,
-                        email: document.getElementById('logInEmail').value
+                        email: document.getElementById('logInEmail').value,
+                        teacherID
                     };
                 }
 

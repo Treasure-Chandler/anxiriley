@@ -10,10 +10,28 @@
         <script src="../scripts/lib/firebase-auth-compat.js"></script>
         <script src="../scripts/firebase-init.js"></script>
 
-        <script src="../scripts/settings.js"></script>
+        <script type="module" src="../scripts/settings.js"></script>
 
         <link rel="stylesheet" href="../styles/settings.css">
         <link rel="icon" href="../assets/anxirileyicon.png">
+
+        <style>
+            .yes {
+                background-color: #e75f5f;
+            }
+
+            .yes:hover {
+                background-color: #c53b3b;
+            }
+
+            .no {
+                background-color: #5580f7;
+            }
+
+            .no:hover {
+                background-color: #335cd6;
+            }
+        </style>
         
         <!-- "Poppins" font from Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +41,18 @@
     <body>
         <main>
             <button id="signOut">Sign Out</button>
+            <button id="deleteAccount">Delete Account</button>
+
+            <!-- Account deletion alerts -->
+            <dialog closedby="closerequest" class="settings-alert" id="confirmAlert">
+                <h2>Delete Account</h2>
+                <p>
+                    Are you sure you want to delete your account?<br>
+                    <b style="color: #c03131">This action cannot be undone!</b>
+                </p>
+                <button class="btns yes" id="yes">Yes</button>
+                <button class="btns no" id="no">No</button>
+            </dialog>
         </main>
     </body>
 </html>

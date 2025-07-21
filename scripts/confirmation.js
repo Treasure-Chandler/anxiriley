@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // When "Continue" is clicked, navigate back to the login page
     document.getElementById('continue').addEventListener('click', function () {
-        location.href = 'login.html';
+        window.location.replace('login.html');
     });
 
     // Replace the placeholder [name] with the user's name
