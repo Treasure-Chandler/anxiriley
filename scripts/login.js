@@ -596,14 +596,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             .catch((error) => {
                 // Log any Firebase errors
                 switch (error.code) {
-                    case 'auth/user-not-found':
-                        // If the email is not used
-                        showAlert('Email Not Used', 'This email is not used! Why not try creating an account?');
-                        break;
                     case 'auth/invalid-credential':
                         // If the email/password is incorrect
-                        showAlert('Incorrect Credentials', 'Your email or password is incorrect. You can try retyping your email/password, '
-                                                            + 'or resetting your password.');
+                        showAlert('Incorrect Credentials', 'Your email or password is incorrect, or your email does not exist.\nYou can try' + 
+                                                           ' retyping your email/password, resetting your password, or signing up if your' +
+                                                           ' email really does not exist.');
                         break;
                     case 'auth/too-many-requests':
                         // If too many requests have been made
@@ -612,6 +609,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     case 'auth/user-disabled':
                         // If the account has been disabled
                         showAlert('Account Disabled', 'This account has been disabled! Please contact us for support.');
+                        break;
                     default:
                         // If there has been any other error
                         showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');

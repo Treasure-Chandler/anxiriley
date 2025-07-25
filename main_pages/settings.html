@@ -31,6 +31,23 @@
             .no:hover {
                 background-color: #335cd6;
             }
+
+            .cancel {
+                background-color: #e75f5f;
+                width: fit-content;
+            }
+
+            .cancel:hover {
+                background-color: #c53b3b;
+            }
+
+            .ok {
+                background-color: #6ad673;
+            }
+
+            .ok:hover {
+                background-color: #55ac5c;
+            }
         </style>
         
         <!-- "Poppins" font from Google Fonts -->
@@ -43,7 +60,7 @@
             <button id="signOut">Sign Out</button>
             <button id="deleteAccount">Delete Account</button>
 
-            <!-- Account deletion alerts -->
+            <!-- Account deletion alerts/prompts -->
             <dialog closedby="closerequest" class="settings-alert" id="confirmAlert">
                 <h2>Delete Account</h2>
                 <p>
@@ -52,6 +69,25 @@
                 </p>
                 <button class="btns yes" id="yes">Yes</button>
                 <button class="btns no" id="no">No</button>
+            </dialog>
+
+            <dialog class="settings-alert" id="pwPrompt">
+                <form method="dialog">
+                    <label for="userInput">Please enter your password to confirm deletion:</label>
+                    <input type="password" placeholder="Enter your password..." id="pw">
+                    <div class="actions">
+                        <button class="btns cancel" id="noPw">Cancel</button>
+                        <button class="btns ok" id="submitPrompt" value="ok">OK</button>
+                    </div>
+                </form>
+            </dialog>
+
+            <dialog closedby="closerequest" class="settings-alert" id="needPasswordAlert">
+                <form method="dialog">
+                    <h2>Password Needed</h2>
+                    <p>Your password is required to delete your account.</p>
+                    <button class="btns" value="cancel">OK</button>
+                </form>
             </dialog>
         </main>
     </body>

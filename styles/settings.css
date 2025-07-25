@@ -6,7 +6,8 @@
 
 /* Styling the settings alert popups and the "OK" button */
 .btns {
-    background-color: #c7bd3a; /* Base background color - not actually shown on the page */
+    background-color: #c7bd3a;
+    /* Base background color - not actually shown on the page */
     border: none;
     border-radius: 15px;
     color: #000000;
@@ -23,7 +24,8 @@
 }
 
 .btns:hover {
-    background-color: #ece359; /* Base background color - not actually shown on the page */
+    background-color: #ece359;
+    /* Base background color - not actually shown on the page */
 }
 
 .settings-alert {
@@ -33,4 +35,25 @@
     font-size: 13px;
     font-style: normal;
     font-weight: 400;
+}
+
+/* Extra styling the password prompt to confirm account deletion */
+#pwPrompt {
+    /* display: flex; */
+    font-size: 14px;
+    flex-direction: column;
+    padding: 20px;
+    width: 24em;
+}
+
+#pwPrompt .actions {
+    margin-top: 10px;
+}
+
+#pwPrompt input {
+    display: block;
+    font-family: "Poppins", sans-serif;
+    padding: 6px;
+    margin-top: 8px;
+    width: 95%;
 }
