@@ -41,7 +41,6 @@ function getPasswordFromUser() {
         }
 
         function onCancel() {
-            passwordPrompt.close();
             cleanup();
             resolve(null);
         }
@@ -129,7 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     await fetch('https://script.google.com/macros/s/AKfycbzWW3USZ-4f9rWhgM6fu-5TBNHOL6lWKW8nJphpYssKkXOXzQQ8YH-QHowIT1d6RKRSkQ/exec', {
                         method: 'POST',
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ id })
+                        body: JSON.stringify({
+                            userID: id,
+                            role: role
+                        })
                     });
                 } catch (e) {
                     console.error("Sheet deletion error:", e);
@@ -159,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Reauthentication failed. Please try logging out and logging back in.");
                 return;
             }
-
         });
     });
 });

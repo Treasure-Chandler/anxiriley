@@ -66,6 +66,43 @@ document.addEventListener('DOMContentLoaded', async function () {
         return /^[A-Za-z]+ [A-Za-z]+$/.test(trimmed);
     }
 
+    /**
+     * Determine the user's role by their email
+     * 
+     * @param {string} email    User's email
+     * @returns                 User's role
+     */
+    function inferRoleFromEmail(email) {
+        if (email.includes('teacher')) return 'Teacher';
+        return 'Student';
+    }
+
+    // Show/hide the loading spinner before fetching Google Apps Scripts
+    function showSpinner() {
+        const spinner = document.getElementById('loadingSpinner');
+        spinner.classList.add('active');
+    }
+
+    function hideSpinner() {
+        const spinner = document.getElementById('loadingSpinner');
+        spinner.classList.remove('active');
+    }
+
+    // Loads the student's data if that student's info already exists
+    async function loadStudentData() {
+        // Fetch user's name
+        setUserName(await fetchUserName(studentID, 'Student'));
+
+        // Set user's number of classes
+        setNumOfStudentClasses(await fetchClassAmount(studentID, 'Student'));
+
+        // Set user's language preference
+        setLangPref(await fetchLangPref(studentID, 'Student'));
+
+        // Set user's role
+        setUserRole(await fetchUserRole(studentID));
+    }
+
     // Check internet connection first
     const offline = !isBrowserOnline();
 
@@ -324,15 +361,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Activate the tour trigger
                 localStorage.setItem('firstTimeSigningInTour', 'true');
 
+                // Declare and store the user name for future login
+                user.updateProfile({
+                    displayName: document.getElementById('name').value
+                });
+
                 // Declare and store the user role for future login
                 userRole = document.getElementById('isTeacher').checked ? 'Teacher' : 'Student';
                 localStorage.setItem('userRole', userRole);
 
-                // Declare and store the user name for future login
-                userName = document.getElementById('name').value;
-                localStorage.setItem('userName', userName);
-
                 // Set a temporary name in the local storage for the confirmation page
+                userName = document.getElementById('name').value;
                 localStorage.setItem('tempUserName', userName);
 
                 // Send verification email
@@ -411,8 +450,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
 
                 // Retrieve the user name and user role from local storage
-                userRole = localStorage.getItem('userRole');
-                userName = localStorage.getItem('userName');
+                userRole = localStorage.getItem('userRole') || inferRoleFromEmail(user.email);
+                userName = localStorage.getItem('userName') || user.displayName;
 
                 // Optional for the user: store the role and email
                 if (userRole === 'Student') {
@@ -442,74 +481,68 @@ document.addEventListener('DOMContentLoaded', async function () {
                         .then(res => res.json())
                         .then(data => {
                             // Check if user already exists in User Data sheet
-                            const exists = data.some(entry => entry[`${userRole} ID`] === studentID);
+                            const exists = data.some(entry => entry.uid === studentID);
                             if (!exists) {
-                                // If not, first, add to User Data
-                                Promise.all([
-                                    fetch(userSheetURL, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                            role: userRole,
-                                            name: userName,
-                                            email: document.getElementById('logInEmail').value,
-                                            uid: studentID
-                                        })
-                                    }),
+                                // Show the spinner and wait a frame before doing the heavy work
+                                showSpinner();
+                                requestAnimationFrame(async () => {
+                                    // If the user doesn't exist, add to User Data first
+                                    await Promise.all([
+                                        fetch(userSheetURL, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                role: userRole,
+                                                name: userName,
+                                                email: document.getElementById('logInEmail').value,
+                                                uid: studentID
+                                            })
+                                        }),
 
-                                    // Then, add to Class Data
-                                    fetch(classSheetURL, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                            role: userRole,
-                                            action: 'addToClassSheet',
-                                            userID: studentID,
-                                            inboxCount: 0,
-                                            class1: 'x',
-                                            class2: 'x',
-                                            class3: 'x',
-                                            class4: 'x',
-                                            class5: 'x',
-                                            class6: 'x',
-                                            class7: 'x',
+                                        // Then, add to Class Data
+                                        fetch(classSheetURL, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                role: userRole,
+                                                action: 'addToClassSheet',
+                                                userID: studentID,
+                                                inboxCount: 0,
+                                                class1: 'x',
+                                                class2: 'x',
+                                                class3: 'x',
+                                                class4: 'x',
+                                                class5: 'x',
+                                                class6: 'x',
+                                                class7: 'x',
+                                            })
                                         })
-                                    })
-                                ])
-                                .then(() => {
-                                    // Then, navigate to home
+                                    ]);
+
+                                    // Then, hide the spinner and navigate to home
+                                    hideSpinner();
                                     window.location.replace('home.html');
-                                })
+                                });
                             } else {
-                                // Load the user's existing data
-                                async function loadStudentData() {
-                                    // Fetch the user's name
-                                    setUserName(await fetchUserName(studentID, 'Student'));
+                                // Show the spinner before loading the user's existing data
+                                showSpinner();
+                                requestAnimationFrame(async () => {
+                                    // Set signedInLang
+                                    setSignedInLang(true);
 
-                                    // Set user's number of classes
-                                    setNumOfStudentClasses(await fetchClassAmount(studentID, 'Student'));
+                                    // Store the info if they want it stored
+                                    if (keepMeLoggedIn) {
+                                        localStorage.setItem('studentInfo', JSON.stringify(storedStudentInfo));
+                                    } else {
+                                        localStorage.removeItem('studentInfo');
+                                    }
 
-                                    // Set user's language preference
-                                    setLangPref(await fetchLangPref(studentID, 'Student'));
+                                    await loadStudentData();
 
-                                    // Set user's role
-                                    setUserRole(await fetchUserRole(studentID));
-                                }
-
-                                loadStudentData();
-
-                                // Set signedInLang
-                                setSignedInLang(true);
-
-                                // Store the info if they want it stored
-                                if (keepMeLoggedIn) {
-                                    localStorage.setItem('studentInfo', JSON.stringify(storedStudentInfo));
-                                } else {
-                                    localStorage.removeItem('studentInfo');
-                                }
-
-                                // Navigate to home
-                                window.location.replace('home.html');
+                                    // Hide the spinner then navigate to home
+                                    hideSpinner();
+                                    window.location.replace('home.html');
+                                });
                             }
                         });
                 } else if (userRole === 'Teacher') {
@@ -523,6 +556,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // Check if user already exists in User Data sheet
                             const exists = data.some(entry => entry[`${userRole} ID`] === teacherID);
                             if (!exists) {
+                                // Show loading spinner
+                                document.getElementById('loadingSpinner').style.display = 'flex';
+
                                 // If not, first, add to User Data
                                 Promise.all([
                                     fetch(userSheetURL, {
@@ -556,7 +592,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     })
                                 ])
                                 .then(() => {
-                                    // Then, navigate to home
+                                    // Then, hide the spinnger and navigate to home
+                                    document.getElementById('loadingSpinner').style.display = 'none';
                                     window.location.replace('home.html');
                                 })
                             } else {
