@@ -88,8 +88,31 @@ document.addEventListener('DOMContentLoaded', async function () {
         spinner.classList.remove('active');
     }
 
-    // Loads the student's data if that student's info already exists
-    async function loadStudentData() {
+    // Shared fetch helpers that will add the new user's data
+    async function addNewUserData(role, uid, name, email, userSheetURL, classSheetURL) {
+        await Promise.all([
+            fetch(userSheetURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role, name, email, uid })
+            }),
+            fetch(classSheetURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    role,
+                    action: 'addToClassSheet',
+                    userID: uid,
+                    inboxCount: 0,
+                    class1: 'x', class2: 'x', class3: 'x',
+                    class4: 'x', class5: 'x', class6: 'x', class7: 'x'
+                })
+            })
+        ]);
+    }
+
+    // Load student/teacher data
+    async function loadStudentData(studentID) {
         // Fetch user's name
         setUserName(await fetchUserName(studentID, 'Student'));
 
@@ -101,6 +124,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Set user's role
         setUserRole(await fetchUserRole(studentID));
+    }
+
+    async function loadTeacherData(teacherID) {
+        // Fetch the user's name
+        setUserName(await fetchUserName(teacherID, 'Teacher'));
+
+        // Set user's number of classes
+        setNumOfTeacherClasses(await fetchClassAmount(teacherID, 'Teacher'));
+
+        // Set user's language preference
+        setLangPref(await fetchLangPref(teacherID, 'Teacher'));
+
+        // Set user's role
+        setUserRole(await fetchUserRole(teacherID));
     }
 
     // Check internet connection first
@@ -407,18 +444,22 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     // Events for logging in
-    document.getElementById('liButton').addEventListener('click', function () {
+    document.getElementById('liButton').addEventListener('click', async function () {
         // Toggle persistent log in
         let keepMeLoggedIn = document.getElementById('stayLoggedIn').checked;
 
+        // Declare email and password values
+        const email = document.getElementById('logInEmail').value;
+        const password = document.getElementById('logInPassword').value;
+
         /* Custom alert events section */
         // If one or both of the fields are empty
-        if ((!document.getElementById('logInEmail').value) || (!document.getElementById('logInPassword').value)) {
+        if (!email || !password) {
             credAlert.showModal();
             return;
         } else {
             // If the email does not contain the correct email address upon logging in
-            if (!document.getElementById('logInEmail').value.includes('@gmail.com')) {
+            if (!email.includes('@gmail.com')) {
                 showAlert('Incorrect Email', 'You must enter a school email!');
                 return;
             }
@@ -431,228 +472,91 @@ document.addEventListener('DOMContentLoaded', async function () {
                             : firebase.auth.Auth.Persistence.SESSION; // SESSION clears when the tab closes
 
         // Logging in with Firebase
-        firebase.auth().setPersistence(persistence)
-            .then(() => {
-                return firebase.auth().signInWithEmailAndPassword(document.getElementById('logInEmail').value,
-                                                                    document.getElementById('logInPassword').value)
-            })
-            .then(() => {
-                // Initialize current user
-                const user = firebase.auth().currentUser;
+        try {
+            await firebase.auth().setPersistence(persistence);
+            await firebase.auth().signInWithEmailAndPassword(email, password);
 
-                // Check if email is verified
-                if (!user.emailVerified) {
-                    showAlert('Unverified Email', 'You need to verify your email before logging in!');
+            // Initialize current user
+            const user = firebase.auth().currentUser;
 
-                    // Sign out unverified users
-                    firebase.auth().signOut();
-                    return;
+            // Check if email is verified
+            if (!user.emailVerified) {
+                showAlert('Unverified Email', 'You need to verify your email before logging in!');
+
+                // Sign out unverified users
+                await firebase.auth().signOut();
+                return;
+            }
+
+            // Declare common values
+            const userRole = localStorage.getItem('userRole') || inferRoleFromEmail(user.email);
+            const userName = localStorage.getItem('userName') || user.displayName;
+            const uid = user.uid;
+
+            const userSheetURL = 'https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec';
+            const classSheetURL = 'https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec';
+
+            // Hide the login popup and show the spinner before any network calls
+            document.getElementById('logIn').style.display = 'none';
+
+            showSpinner();
+            await new Promise(requestAnimationFrame);
+
+            // Check if the user already exists
+            const existingData = await fetch(`${userSheetURL}?role=${userRole}`).then(res => res.json());
+
+            const exists = userRole === 'Student'
+                ? existingData.some(entry => entry.uid === uid)
+                : existingData.some(entry => entry["Teacher ID"] === uid);
+
+            // If not, add the new user to both sheets
+            if (!exists) {
+                await addNewUserData(userRole, uid, userName, email, userSheetURL, classSheetURL);
+            }
+
+            // Load data depending on the user's role
+            if (userRole === 'Student') {
+                await loadStudentData(uid);
+                setSignedInLang(true);
+                if (keepMeLoggedIn) {
+                    localStorage.setItem('studentInfo', JSON.stringify({ role: userRole, email, studentID: uid }));
                 }
-
-                // Retrieve the user name and user role from local storage
-                userRole = localStorage.getItem('userRole') || inferRoleFromEmail(user.email);
-                userName = localStorage.getItem('userName') || user.displayName;
-
-                // Optional for the user: store the role and email
-                if (userRole === 'Student') {
-                    storedStudentInfo = {
-                        role: userRole,
-                        email: document.getElementById('logInEmail').value,
-                        studentID
-                    };
-                } else if (userRole === 'Teacher') {
-                    storedTeacherInfo = {
-                        role: userRole,
-                        email: document.getElementById('logInEmail').value,
-                        teacherID
-                    };
+            } else if (userRole === 'Teacher') {
+                await loadTeacherData(uid);
+                setSignedInLang(true);
+                if (keepMeLoggedIn) {
+                    localStorage.setItem('teacherInfo', JSON.stringify({ role: userRole, email, teacherID: uid }));
                 }
+            }
 
-                // Role dependent conditionals
-                const userSheetURL = 'https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec';
-                const classSheetURL = 'https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec';
-
-                if (userRole === 'Student') {
-                    // Set the user's ID
-                    studentID = firebase.auth().currentUser.uid;
-
-                    // Add user's data to the User and Class Data sheets
-                    fetch(`${userSheetURL}?role=${userRole}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            // Check if user already exists in User Data sheet
-                            const exists = data.some(entry => entry.uid === studentID);
-                            if (!exists) {
-                                // Show the spinner and wait a frame before doing the heavy work
-                                showSpinner();
-                                requestAnimationFrame(async () => {
-                                    // If the user doesn't exist, add to User Data first
-                                    await Promise.all([
-                                        fetch(userSheetURL, {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({
-                                                role: userRole,
-                                                name: userName,
-                                                email: document.getElementById('logInEmail').value,
-                                                uid: studentID
-                                            })
-                                        }),
-
-                                        // Then, add to Class Data
-                                        fetch(classSheetURL, {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({
-                                                role: userRole,
-                                                action: 'addToClassSheet',
-                                                userID: studentID,
-                                                inboxCount: 0,
-                                                class1: 'x',
-                                                class2: 'x',
-                                                class3: 'x',
-                                                class4: 'x',
-                                                class5: 'x',
-                                                class6: 'x',
-                                                class7: 'x',
-                                            })
-                                        })
-                                    ]);
-
-                                    // Then, hide the spinner and navigate to home
-                                    hideSpinner();
-                                    window.location.replace('home.html');
-                                });
-                            } else {
-                                // Show the spinner before loading the user's existing data
-                                showSpinner();
-                                requestAnimationFrame(async () => {
-                                    // Set signedInLang
-                                    setSignedInLang(true);
-
-                                    // Store the info if they want it stored
-                                    if (keepMeLoggedIn) {
-                                        localStorage.setItem('studentInfo', JSON.stringify(storedStudentInfo));
-                                    } else {
-                                        localStorage.removeItem('studentInfo');
-                                    }
-
-                                    await loadStudentData();
-
-                                    // Hide the spinner then navigate to home
-                                    hideSpinner();
-                                    window.location.replace('home.html');
-                                });
-                            }
-                        });
-                } else if (userRole === 'Teacher') {
-                    // Set the user's ID
-                    teacherID = firebase.auth().currentUser.uid;
-
-                    // Add user's data to the User and Class Data sheets
-                    fetch(`${userSheetURL}?role=${userRole}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            // Check if user already exists in User Data sheet
-                            const exists = data.some(entry => entry[`${userRole} ID`] === teacherID);
-                            if (!exists) {
-                                // Show loading spinner
-                                document.getElementById('loadingSpinner').style.display = 'flex';
-
-                                // If not, first, add to User Data
-                                Promise.all([
-                                    fetch(userSheetURL, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                            role: userRole,
-                                            name: userName,
-                                            email: document.getElementById('logInEmail').value,
-                                            uid: teacherID
-                                        })
-                                    }),
-
-                                    // Then, add to Class Data
-                                    fetch(classSheetURL, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                            role: userRole,
-                                            action: 'addToClassSheet',
-                                            userID: teacherID,
-                                            inboxCount: 0,
-                                            class1: 'x',
-                                            class2: 'x',
-                                            class3: 'x',
-                                            class4: 'x',
-                                            class5: 'x',
-                                            class6: 'x',
-                                            class7: 'x',
-                                        })
-                                    })
-                                ])
-                                .then(() => {
-                                    // Then, hide the spinnger and navigate to home
-                                    document.getElementById('loadingSpinner').style.display = 'none';
-                                    window.location.replace('home.html');
-                                })
-                            } else {
-                                // Load the user's existing data
-                                async function loadTeacherData() {
-                                    // Fetch the user's name
-                                    setUserName(await fetchUserName(teacherID, 'Teacher'));
-
-                                    // Set user's number of classes
-                                    setNumOfTeacherClasses(await fetchClassAmount(teacherID, 'Teacher'));
-
-                                    // Set user's language preference
-                                    setLangPref(await fetchLangPref(teacherID, 'Teacher'));
-
-                                    // Set user's role
-                                    setUserRole(await fetchUserRole(teacherID));
-                                }
-
-                                loadTeacherData();
-
-                                // Set signedInLang
-                                setSignedInLang(true);
-
-                                // Store the info if they want it stored
-                                if (keepMeLoggedIn) {
-                                    localStorage.setItem('teacherInfo', JSON.stringify(storedTeacherInfo));
-                                } else {
-                                    localStorage.removeItem('teacherInfo');
-                                }
-
-                                // Navigate to home
-                                window.location.replace('home.html');
-                            }
-                        });
-                }            
-            })
-            .catch((error) => {
-                // Log any Firebase errors
-                switch (error.code) {
-                    case 'auth/invalid-credential':
-                        // If the email/password is incorrect
-                        showAlert('Incorrect Credentials', 'Your email or password is incorrect, or your email does not exist.\nYou can try' + 
-                                                           ' retyping your email/password, resetting your password, or signing up if your' +
-                                                           ' email really does not exist.');
-                        break;
-                    case 'auth/too-many-requests':
-                        // If too many requests have been made
-                        showAlert('Too Many Attempts', 'There have been too many login attempts! Please try again later.');
-                        break;
-                    case 'auth/user-disabled':
-                        // If the account has been disabled
-                        showAlert('Account Disabled', 'This account has been disabled! Please contact us for support.');
-                        break;
-                    default:
-                        // If there has been any other error
-                        showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
-                        break;
-                }
-            });
+            // Finally, hide the spinner and navigate to the home screen
+            hideSpinner();
+            window.location.replace('home.html');
+        } catch (error) {
+            // Log any Firebase errors
+            hideSpinner();
+            document.getElementById('logIn').style.display = 'block';
+            switch (error.code) {
+                case 'auth/invalid-credential':
+                    // If the email/password is incorrect
+                    showAlert('Incorrect Credentials', 'Your email or password is incorrect, or your email does not exist.\nYou can try' +
+                        ' retyping your email/password, resetting your password, or signing up if your' +
+                        ' email really does not exist.');
+                    break;
+                case 'auth/too-many-requests':
+                    // If too many requests have been made
+                    showAlert('Too Many Attempts', 'There have been too many login attempts! Please try again later.');
+                    break;
+                case 'auth/user-disabled':
+                    // If the account has been disabled
+                    showAlert('Account Disabled', 'This account has been disabled! Please contact us for support.');
+                    break;
+                default:
+                    // If there has been any other error
+                    showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                    break;
+            }
+        }
     });
 
     // Events for password reset

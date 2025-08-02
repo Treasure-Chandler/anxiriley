@@ -6,7 +6,7 @@
  */
 
 // Initalize the Google Apps Script link for the User Data Google sheet
-const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6SvgNsQlEpZ2qIJao3-p4AE5bEdc9pFMqyZQSowOQFmWbLiRwhhiQQ/exec";
+const userSheetURL = 'https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec';
 
 /**
  * Returns the user's name from the corresponding Google Sheet
@@ -16,17 +16,12 @@ const userSheetURL = "https://script.google.com/macros/s/AKfycbzevWfE_vLX-WYH6Sv
  * @returns                         User's name
 */
 export async function fetchUserName(firebaseUID, userRole) {
-    try {
-        const response = await fetch(`${userSheetURL}?role=${userRole}`);
-        const data = await response.json();
-        const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
-        const nameKey = userRole === "Teacher" ? "Teacher Name" : "Student Name";
-        const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
-        return matchingEntry ? matchingEntry[nameKey] : null;
-    } catch (err) {
-        console.error("Error fetching user name:", err);
-        return null;
-    }
+    const response = await fetch(`${userSheetURL}?role=${userRole}`);
+    const data = await response.json();
+    const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
+    const nameKey = userRole === "Teacher" ? "Teacher Name" : "Student Name";
+    const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
+    return matchingEntry ? matchingEntry[nameKey] : null;
 }
 
 /**
@@ -37,16 +32,11 @@ export async function fetchUserName(firebaseUID, userRole) {
  * @returns                         User's class amount
 */
 export async function fetchClassAmount(firebaseUID, userRole) {
-    try {
-        const response = await fetch(`${userSheetURL}?role=${userRole}`);
-        const data = await response.json();
-        const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
-        const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
-        return matchingEntry ? matchingEntry["Number of Classes"] : null;
-    } catch (err) {
-        console.error("Error fetching class amount:", err);
-        return null;
-    }
+    const response = await fetch(`${userSheetURL}?role=${userRole}`);
+    const data = await response.json();
+    const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
+    const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
+    return matchingEntry ? matchingEntry["Number of Classes"] : null;
 }
 
 /**
@@ -57,16 +47,11 @@ export async function fetchClassAmount(firebaseUID, userRole) {
  * @returns                         User's language preference
 */
 export async function fetchLangPref(firebaseUID, userRole) {
-    try {
-        const response = await fetch(`${userSheetURL}?role=${userRole}`);
-        const data = await response.json();
-        const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
-        const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
-        return matchingEntry ? matchingEntry["Language Preference"] : null;
-    } catch (err) {
-        console.error("Error fetching language preference:", err);
-        return null;
-    }
+    const response = await fetch(`${userSheetURL}?role=${userRole}`);
+    const data = await response.json();
+    const idKey = userRole === "Teacher" ? "Teacher ID" : "Student ID";
+    const matchingEntry = data.find(entry => entry[idKey] === firebaseUID);
+    return matchingEntry ? matchingEntry["Language Preference"] : null;
 }
 
 /**
@@ -76,16 +61,11 @@ export async function fetchLangPref(firebaseUID, userRole) {
  * @returns                                     User's role
 */
 export async function fetchUserRole(firebaseUID) {
-    try {
-        const [studentRes, teacherRes] = await Promise.all([
-            fetch(`${userSheetURL}?role=Student`).then(res => res.json()),
-            fetch(`${userSheetURL}?role=Teacher`).then(res => res.json())
-        ]);
-        if (studentRes.some(entry => entry["Student ID"] === firebaseUID)) return "Student";
-        if (teacherRes.some(entry => entry["Teacher ID"] === firebaseUID)) return "Teacher";
-        return null;
-    } catch (err) {
-        console.error("Error fetching user role:", err);
-        return null;
-    }
+    const [studentRes, teacherRes] = await Promise.all([
+        fetch(`${userSheetURL}?role=Student`).then(res => res.json()),
+        fetch(`${userSheetURL}?role=Teacher`).then(res => res.json())
+    ]);
+    if (studentRes.some(entry => entry["Student ID"] === firebaseUID)) return "Student";
+    if (teacherRes.some(entry => entry["Teacher ID"] === firebaseUID)) return "Teacher";
+    return null;
 }
