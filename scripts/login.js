@@ -502,16 +502,37 @@ document.addEventListener('DOMContentLoaded', async function () {
             showSpinner();
             await new Promise(requestAnimationFrame);
 
-            // Check if the user already exists
-            const existingData = await fetch(`${userSheetURL}?role=${userRole}`).then(res => res.json());
-
-            const exists = userRole === 'Student'
+            // Fetch existing users
+            let existingData = await fetch(`${userSheetURL}?role=${userRole}`).then(res => res.json());
+            let exists = userRole === 'Student'
                 ? existingData.some(entry => entry.uid === uid)
                 : existingData.some(entry => entry["Teacher ID"] === uid);
 
-            // If not, add the new user to both sheets
+            // If the user does not exist, add their info to both sheets
             if (!exists) {
                 await addNewUserData(userRole, uid, userName, email, userSheetURL, classSheetURL);
+
+                // Verification loop (max ~5 seconds)
+                let verified = false;
+                for (let i = 0; i < 10; i++) {
+                    await new Promise(res => setTimeout(res, 500));
+                    existingData = await fetch(`${userSheetURL}?role=${userRole}`).then(r => r.json());
+                    exists = userRole === 'Student'
+                        ? existingData.some(entry => entry.uid === uid)
+                        : existingData.some(entry => entry["Teacher ID"] === uid);
+
+                    if (exists) {
+                        verified = true;
+                        break;
+                    }
+                }
+
+                if (!verified) {
+                    hideSpinner();
+                    document.getElementById('logIn').style.display = 'block';
+                    showAlert('Account Creation Failed', 'There was an error trying to log you in. Please try again.');
+                    return;
+                }
             }
 
             // Load data depending on the user's role
