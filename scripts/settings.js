@@ -20,6 +20,8 @@ import {
     setLangPref
 } from './userInfo.js';
 
+import { doc, deleteDoc } from "firebase/firestore";
+
 /**
  * Helper function to retrieve the user's password for account deletion
  * 
@@ -60,6 +62,7 @@ function getPasswordFromUser() {
     });
 }
 
+// When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize alerts
     const confirmDeletionAlert = document.getElementById('confirmAlert');
@@ -123,18 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const credential = firebase.auth.EmailAuthProvider.credential(email, password);
                 await currentUser.reauthenticateWithCredential(credential);
 
-                // Delete user rows from the linked sheets
+                // Delete Firestore document
                 try {
-                    await fetch('https://script.google.com/macros/s/AKfycbzWW3USZ-4f9rWhgM6fu-5TBNHOL6lWKW8nJphpYssKkXOXzQQ8YH-QHowIT1d6RKRSkQ/exec', {
-                        method: 'POST',
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            userID: id,
-                            role: role
-                        })
-                    });
+                    const collectionName = role === "Student" ? "students" : "teachers";
+                    const userDocRef = doc(db, collectionName, id);
+                    await deleteDoc(userDocRef);
+                    console.log(`Deleted ${role} document from Firestore`);
                 } catch (e) {
-                    console.error("Sheet deletion error:", e);
+                    console.error("Firestore deletion error:", e);
                 }
 
                 // Delete Firebase account
@@ -145,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // Clear everything
+                // Clear local/session storage and reset values
                 localStorage.clear();
                 sessionStorage.clear();
                 setUserName(null);

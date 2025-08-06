@@ -6,13 +6,6 @@
  */
 
 import {
-    fetchUserName,
-    fetchClassAmount,
-    fetchLangPref,
-    fetchUserRole
-} from './userDataUtils.js';
-
-import {
     setNumOfStudentClasses,
     setNumOfTeacherClasses,
     setUserName,
@@ -25,6 +18,8 @@ import {
     isBrowserOnline,
     monitorConnectionStatus
 } from './connectionUtils.js';
+
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', async function () {
@@ -77,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         return 'Student';
     }
 
-    // Show/hide the loading spinner before fetching Google Apps Scripts
+    // Show/hide the loading spinner before retrieving Firestore stuff
     function showSpinner() {
         const spinner = document.getElementById('loadingSpinner');
         spinner.classList.add('active');
@@ -88,56 +83,31 @@ document.addEventListener('DOMContentLoaded', async function () {
         spinner.classList.remove('active');
     }
 
-    // Shared fetch helpers that will add the new user's data
-    async function addNewUserData(role, uid, name, email, userSheetURL, classSheetURL) {
-        await Promise.all([
-            fetch(userSheetURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ role, name, email, uid })
-            }),
-            fetch(classSheetURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    role,
-                    action: 'addToClassSheet',
-                    userID: uid,
-                    inboxCount: 0,
-                    class1: 'x', class2: 'x', class3: 'x',
-                    class4: 'x', class5: 'x', class6: 'x', class7: 'x'
-                })
-            })
-        ]);
-    }
-
     // Load student/teacher data
     async function loadStudentData(studentID) {
-        // Fetch user's name
-        setUserName(await fetchUserName(studentID, 'Student'));
+        const docRef = doc(db, "students", studentID);
+        const docSnap = await getDoc(docRef);
 
-        // Set user's number of classes
-        setNumOfStudentClasses(await fetchClassAmount(studentID, 'Student'));
-
-        // Set user's language preference
-        setLangPref(await fetchLangPref(studentID, 'Student'));
-
-        // Set user's role
-        setUserRole(await fetchUserRole(studentID));
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            setUserName(data["Student Name"]);
+            setNumOfStudentClasses(data["Number of Classes"]);
+            setLangPref(data["Language Preference"]);
+            setUserRole("Student");
+        }
     }
 
     async function loadTeacherData(teacherID) {
-        // Fetch the user's name
-        setUserName(await fetchUserName(teacherID, 'Teacher'));
+        const docRef = doc(db, "teachers", teacherID);
+        const docSnap = await getDoc(docRef);
 
-        // Set user's number of classes
-        setNumOfTeacherClasses(await fetchClassAmount(teacherID, 'Teacher'));
-
-        // Set user's language preference
-        setLangPref(await fetchLangPref(teacherID, 'Teacher'));
-
-        // Set user's role
-        setUserRole(await fetchUserRole(teacherID));
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            setUserName(data["Teacher Name"]);
+            setNumOfTeacherClasses(data["Number of Classes"]);
+            setLangPref(data["Language Preference"]);
+            setUserRole("Teacher");
+        }
     }
 
     // Check internet connection first
@@ -339,28 +309,34 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     });
 
+    // Initialize Firestore for user data creation
+    const db = getFirestore();
+
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', function () {
+        // Variable declaration
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const role = document.querySelector('input[name="role"]:checked')?.value;
+
         /* Custom alert events section */
         // If one or more of the fields are empty
-        if ((!document.getElementById('name').value) || (!document.getElementById('signUpEmail').value)
-            || (!document.getElementById('signUpPassword').value)) {
+        if (!name || !email || !password || !role) {
             credAlert.showModal();
             return;
         } else {
             // User's name validity
-            if (!isValidFullName(document.getElementById('name').value)) {
+            if (!isValidFullName(name)) {
                 showAlert('Incorrect Name', 'You must have your first AND last name!');
                 return;
             }
 
             // Email validation
-            if ((document.getElementById('isStudent').checked &&
-                (!document.getElementById('signUpEmail').value.includes('@gmail.com')))) {
+            if ((document.getElementById('isStudent').checked && !email.includes('@gmail.com'))) {
                 showAlert('Incorrect Student Email', 'You must enter your student email!');
                 return;
-            } else if ((document.getElementById('isTeacher').checked &&
-                        (!document.getElementById('signUpEmail').value.includes('@gmail.com')))) {
+            } else if ((document.getElementById('isTeacher').checked && !email.includes('@gmail.com'))) {
                 showAlert('Incorrect Teacher Email', 'You must enter your teacher email!');
                 return;
             }
@@ -372,7 +348,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             // If the password is too weak
-            if (!strongPasswordRegex.test(document.getElementById('signUpPassword').value)) {
+            if (!strongPasswordRegex.test(password)) {
                 showAlert('Weak Password',
                         'You will need a stronger password with this account!\n\n' +
                         'A strong password requires at least one uppercase letter,\n' +
@@ -383,42 +359,48 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         /* End of custom alert events section */
 
-        // Signing up with Firebase
+        // Signing up with Firebase and Firestore
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
             .then(() => {
-                return firebase.auth().createUserWithEmailAndPassword(
-                    document.getElementById('signUpEmail').value,
-                    document.getElementById('signUpPassword').value
-                );
+                return firebase.auth().createUserWithEmailAndPassword(email, password);
             })
-            .then((userCredential) => {
+            .then(async (userCredential) => {
                 // Initialize the user
                 const user = userCredential.user;
 
                 // Activate the tour trigger
                 localStorage.setItem('firstTimeSigningInTour', 'true');
 
-                // Declare and store the user name for future login
-                user.updateProfile({
-                    displayName: document.getElementById('name').value
-                });
+                // Declare and store user name and update Firebase profile
+                const userName = document.getElementById('name').value;
+                await user.updateProfile({ displayName: userName });
 
-                // Declare and store the user role for future login
-                userRole = document.getElementById('isTeacher').checked ? 'Teacher' : 'Student';
+                // Declare and store the user role
+                const userRole = document.getElementById('isTeacher').checked ? 'Teacher' : 'Student';
                 localStorage.setItem('userRole', userRole);
 
                 // Set a temporary name in the local storage for the confirmation page
-                userName = document.getElementById('name').value;
-                localStorage.setItem('tempUserName', userName);
+                localStorage.setItem('tempUserName', name);
+
+                // Create Firestore document using UID as document ID
+                const collectionName = userRole === 'Teacher' ? 'teachers' : 'students';
+                await setDoc(doc(db, collectionName, user.uid), {
+                    [`${userRole} Name`]: userName,
+                    [`${userRole} Email`]: email,
+                    [`${userRole} ID`]: user.uid,
+                    "Number of Classes": 0,
+                    "Language Preference": "eng",
+                    "Dark Mode": false
+                });
 
                 // Send verification email
-                user.sendEmailVerification().then(() => {
-                    // Sign the user out immediately after sending the email
-                    return firebase.auth().signOut();
-                }).then(() => {
-                    // Redirect to the confirmation page
-                    window.location.replace('confirmation.html');
-                });
+                await user.sendEmailVerification();
+
+                // Sign the user out immediately after sending the email
+                await firebase.auth().signOut();
+
+                // Redirect to the confirmation page
+                window.location.replace('confirmation.html');
             })
             .catch((error) => {
                 // Log any Firebase errors
@@ -490,59 +472,34 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Declare common values
             const userRole = localStorage.getItem('userRole') || inferRoleFromEmail(user.email);
-            const userName = localStorage.getItem('userName') || user.displayName;
             const uid = user.uid;
-
-            const userSheetURL = 'https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec';
-            const classSheetURL = 'https://script.google.com/macros/s/AKfycbw4uDIl9vojIWutYF08QEQvJAXklzzNHu1rRBItaS_q06I9OmOyOCBujTzLU-in794R8w/exec';
 
             // Hide the login popup and show the spinner before any network calls
             document.getElementById('logIn').style.display = 'none';
-
             showSpinner();
             await new Promise(requestAnimationFrame);
 
-            // Fetch existing users
-            let existingData = await fetch(`${userSheetURL}?role=${userRole}`).then(res => res.json());
-            let exists = userRole === 'Student'
-                ? existingData.some(entry => entry.uid === uid)
-                : existingData.some(entry => entry["Teacher ID"] === uid);
+            // Firestore document check (read only)
+            const collectionName = userRole === "Student" ? "students" : "teachers";
+            const docRef = doc(db, collectionName, uid);
+            const docSnap = await getDoc(docRef);
 
-            // If the user does not exist, add their info to both sheets
-            if (!exists) {
-                await addNewUserData(userRole, uid, userName, email, userSheetURL, classSheetURL);
-
-                // Verification loop (max ~5 seconds)
-                let verified = false;
-                for (let i = 0; i < 10; i++) {
-                    await new Promise(res => setTimeout(res, 500));
-                    existingData = await fetch(`${userSheetURL}?role=${userRole}`).then(r => r.json());
-                    exists = userRole === 'Student'
-                        ? existingData.some(entry => entry.uid === uid)
-                        : existingData.some(entry => entry["Teacher ID"] === uid);
-
-                    if (exists) {
-                        verified = true;
-                        break;
-                    }
-                }
-
-                if (!verified) {
-                    hideSpinner();
-                    document.getElementById('logIn').style.display = 'block';
-                    showAlert('Account Creation Failed', 'There was an error trying to log you in. Please try again.');
-                    return;
-                }
+            // If the document does not exist, throw an error
+            if (!docSnap.exists()) {
+                showAlert("Account Error", "Your account data could not be found. Please contact us for support.");
+                hideSpinner();
+                document.getElementById('logIn').style.display = 'block';
+                return;
             }
 
-            // Load data depending on the user's role
-            if (userRole === 'Student') {
+            // Load data from Firestore depending on the user's role
+            if (userRole === "Student") {
                 await loadStudentData(uid);
                 setSignedInLang(true);
                 if (keepMeLoggedIn) {
                     localStorage.setItem('studentInfo', JSON.stringify({ role: userRole, email, studentID: uid }));
                 }
-            } else if (userRole === 'Teacher') {
+            } else {
                 await loadTeacherData(uid);
                 setSignedInLang(true);
                 if (keepMeLoggedIn) {
@@ -654,63 +611,46 @@ document.addEventListener('DOMContentLoaded', async function () {
                 userRole = storedTeacherInfo.role;
             }
 
-            if (userRole === 'Student' && storedUserInfo != null) {
-                const studentID = firebase.auth().currentUser.uid;
+            try {
+                const uid = firebase.auth().currentUser.uid;
+                let collectionName = null;
+                let nameField = null;
 
-                try {
-                    // Fetch from Student User Data sheet
-                    const response = await fetch('https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec?sheet=Student User Data');
-                    const data = await response.json();
+                if (userRole === 'Student') {
+                    collectionName = "students";
+                    nameField = "Student Name";
+                } else if (userRole === 'Teacher') {
+                    collectionName = "teachers";
+                    nameField = "Teacher Name";
+                }
 
-                    // Find matching row by Firebase UID
-                    const matchedRow = data.find(row => row['Student ID'] === studentID);
+                if (collectionName) {
+                    // Get Firestore document for the user
+                    const userDocRef = doc(db, collectionName, uid);
+                    const userDocSnap = await getDoc(userDocRef);
 
-                    if (matchedRow) {
-                        tempObject = matchedRow;
+                    if (userDocSnap.exists()) {
+                        const userData = userDocSnap.data();
 
-                        // Set user-specific variables from the matched row
-                        setUserName(tempObject['Student Name']);
-                        setNumOfStudentClasses(parseInt(tempObject['Number of Classes']));
-                        setLangPref(tempObject['Language Preference']);
+                        // Set variables from Firestore
+                        setUserName(userData[nameField]);
+                        setNumOfStudentClasses?.(parseInt(userData["Number of Classes"]));
+                        setNumOfTeacherClasses?.(parseInt(userData["Number of Classes"]));
+                        setLangPref(userData["Language Preference"]);
                         setSignedInLang(true);
 
                         // Redirect
                         window.location.replace('home.html');
+                    } else {
+                        showAlert("Error", "Your account data could not be found. Please contact us for support.");
                     }
-                } catch (e) {
-                    showAlert("Error", "There was a problem loading your account data. Please try again by refreshing or contact us for support.");
-                    return;
+                } else {
+                    // If no info is saved, just redirect
+                    window.location.replace('home.html');
                 }
-            } else if (userRole === 'Teacher' && storedUserInfo != null) {
-                const teacherID = firebase.auth().currentUser.uid;
-
-                try {
-                    // Fetch from Teacher User Data sheet
-                    const response = await fetch('https://script.google.com/macros/s/AKfycbztTCULNWyZ35_yJKWUqFYGXCIIvThW9XS5D1rrdHqa2eo622rH5RbO_MLRk-pWTWbQ/exec?sheet=Teacher User Data');
-                    const data = await response.json();
-
-                    // Find matching row by Firebase UID
-                    const matchedRow = data.find(row => row['Teacher ID'] === teacherID);
-
-                    if (matchedRow) {
-                        tempObject = matchedRow;
-
-                        // Set user-specific variables from the matched row
-                        setUserName(tempObject['Teacher Name']);
-                        setNumOfTeacherClasses(parseInt(tempObject['Number of Classes']));
-                        setLangPref(tempObject['Language Preference']);
-                        setSignedInLang(true);
-
-                        // Redirect
-                        window.location.replace('home.html');
-                    }
-                } catch (e) {
-                    showAlert("Error", "There was a problem loading your account data. Please try again by refreshing or contact us for support.");
-                    return;
-                }
-            } else {
-                // If no info is saved, just redirect
-                window.location.replace('home.html');
+            } catch (e) {
+                showAlert("Error", "There was a problem loading your account data. Please try again by refreshing or contact us for support.");
+                return;
             }
         } else {
             // Show the login screen only after the auth check
