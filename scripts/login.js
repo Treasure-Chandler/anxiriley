@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const credAlert = document.getElementById('credIssues');
     const resetSuccess = document.getElementById('resetSuccessAlert');
 
-    let tempObject, userRole, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo;
+    let tempObject, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo;
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     // When the 'Already a User?' button is clicked, open the log in form
-    document.getElementById('alreadyUser').addEventListener('click', function () {
+    document.getElementById('alreadyUser').addusrEventListener('click', function () {
         const logInForm = document.getElementById('logIn');
         const signupForm = document.getElementById('signUp');
 
@@ -313,12 +313,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     const db = getFirestore();
 
     // Events for signing up
-    document.getElementById('suButton').addEventListener('click', function () {
+    document.getElementById('suButton').addEventListener('click', async function () {
         // Variable declaration
+        const email = document.getElementById('signUpEmail').value;
+        const password = document.getElementById('signUpPassword').value;
         const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const role = document.querySelector('input[name="role"]:checked')?.value;
+        const isTeacher = document.getElementById('isTeacher').checked;
+        const role = isTeacher ? "Teacher" : "Student";
 
         /* Custom alert events section */
         // If one or more of the fields are empty
@@ -360,75 +361,75 @@ document.addEventListener('DOMContentLoaded', async function () {
         /* End of custom alert events section */
 
         // Signing up with Firebase and Firestore
-        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
-            .then(() => {
-                return firebase.auth().createUserWithEmailAndPassword(email, password);
-            })
-            .then(async (userCredential) => {
-                // Initialize the user
-                const user = userCredential.user;
+        try {
+            // Create the user's account
+            const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
 
-                // Activate the tour trigger
-                localStorage.setItem('firstTimeSigningInTour', 'true');
+            // Update the user's display name
+            await user.updateProfile({ displayName: name });
 
-                // Declare and store user name and update Firebase profile
-                const userName = document.getElementById('name').value;
-                await user.updateProfile({ displayName: userName });
+            // Locally store the user's role for future login
+            localStorage.setItem('userRole', role);
+            localStorage.setItem('tempUserName', name);
 
-                // Declare and store the user role
-                const userRole = document.getElementById('isTeacher').checked ? 'Teacher' : 'Student';
-                localStorage.setItem('userRole', userRole);
+            // Create the user's doc in Firestore
+            const db = firebase.firestore();
+            const collectionName = role === "Student" ? "students" : "teachers";
 
-                // Set a temporary name in the local storage for the confirmation page
-                localStorage.setItem('tempUserName', name);
-
-                // Create Firestore document using UID as document ID
-                const collectionName = userRole === 'Teacher' ? 'teachers' : 'students';
-                await setDoc(doc(db, collectionName, user.uid), {
-                    [`${userRole} Name`]: userName,
-                    [`${userRole} Email`]: email,
-                    [`${userRole} ID`]: user.uid,
+            const newDocData = role === "Student"
+                ? {
+                    "Student Name": userName,
+                    "Student Email": email,
+                    "Student ID": user.uid,
                     "Number of Classes": 0,
                     "Language Preference": "eng",
                     "Dark Mode": false
-                });
+                }
+                : {
+                    "Teacher Name": userName,
+                    "Teacher Email": email,
+                    "Teacher ID": user.uid,
+                    "Number of Classes": 0,
+                    "Language Preference": "eng",
+                    "Dark Mode": false
+                };
 
-                // Send verification email
+                await db.collection(collectionName).doc(user.uid).set(newDocData);
+
+                // Send verification email & sign out
                 await user.sendEmailVerification();
-
-                // Sign the user out immediately after sending the email
                 await firebase.auth().signOut();
 
-                // Redirect to the confirmation page
+                // Redirect to confirmation
                 window.location.replace('confirmation.html');
-            })
-            .catch((error) => {
-                // Log any Firebase errors
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        // If the email is already in use
-                        showAlert('Email Already Registered', 'This email is already in use! Why not try signing in?');
-                        break;
-                    case 'auth/invalid-email':
-                        // If the email is invalid
-                        showAlert('Invalid Email', 'This email address is not valid! Please enter a correct email.');
-                        break;
-                    case 'auth/internal-error':
-                        // If there has been an internal error
-                        showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
-                        break;
-                    default:
-                        // If there has been any other error
-                        showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
-                        break;
-                }
-            });
+        } catch (error) {
+            // Log any Firebase errors
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    // If the email is already in use
+                    showAlert('Email Already Registered', 'This email is already in use! Why not try signing in?');
+                    break;
+                case 'auth/invalid-email':
+                    // If the email is invalid
+                    showAlert('Invalid Email', 'This email address is not valid! Please enter a correct email.');
+                    break;
+                case 'auth/internal-error':
+                    // If there has been an internal error
+                    showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                    break;
+                default:
+                    // If there has been any other error
+                    showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                    break;
+            }
+        }
     });
 
     // Events for logging in
     document.getElementById('liButton').addEventListener('click', async function () {
         // Toggle persistent log in
-        let keepMeLoggedIn = document.getElementById('stayLoggedIn').checked;
+        const keepMeLoggedIn = document.getElementById('stayLoggedIn').checked;
 
         // Declare email and password values
         const email = document.getElementById('logInEmail').value;
@@ -448,15 +449,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         /* End of custom alert events section */
 
-        // Remember details if it is toggled
-        const persistence = keepMeLoggedIn
-                            ? firebase.auth.Auth.Persistence.LOCAL    // LOCAL stays after the tab closes
-                            : firebase.auth.Auth.Persistence.SESSION; // SESSION clears when the tab closes
-
         // Logging in with Firebase
         try {
+            // Remember details if it is toggled
+            const persistence = keepMeLoggedIn
+                                ? firebase.auth.Auth.Persistence.LOCAL    // LOCAL stays after the tab closes
+                                : firebase.auth.Auth.Persistence.SESSION; // SESSION clears when the tab closes
             await firebase.auth().setPersistence(persistence);
-            await firebase.auth().signInWithEmailAndPassword(email, password);
+
+            const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
 
             // Initialize current user
             const user = firebase.auth().currentUser;
@@ -465,7 +466,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (!user.emailVerified) {
                 showAlert('Unverified Email', 'You need to verify your email before logging in!');
 
-                // Sign out unverified users
+                // Sign out the unverified user
                 await firebase.auth().signOut();
                 return;
             }
@@ -473,37 +474,56 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Declare common values
             const userRole = localStorage.getItem('userRole') || inferRoleFromEmail(user.email);
             const uid = user.uid;
+            const db = firebase.firestore();
+            const collectionName = userRole === "Student" ? "students" : "teachers";
+            const docRef = db.collection(collectionName).doc(uid);
+            const docSnap = await docRef.get();
 
             // Hide the login popup and show the spinner before any network calls
             document.getElementById('logIn').style.display = 'none';
             showSpinner();
             await new Promise(requestAnimationFrame);
 
-            // Firestore document check (read only)
-            const collectionName = userRole === "Student" ? "students" : "teachers";
-            const docRef = doc(db, collectionName, uid);
-            const docSnap = await getDoc(docRef);
-
-            // If the document does not exist, throw an error
+            // If the document does not exist, create one anyway
             if (!docSnap.exists()) {
-                showAlert("Account Error", "Your account data could not be found. Please contact us for support.");
-                hideSpinner();
-                document.getElementById('logIn').style.display = 'block';
-                return;
+                const newUserData = userRole === "Student"
+                    ? {
+                        "Student Name": user.displayName || "Unnamed",
+                        "Student Email": email,
+                        "Student ID": uid,
+                        "Number of Classes": 0,
+                        "Language Preference": "eng",
+                        "Dark Mode": false
+                    }
+                    : {
+                        "Teacher Name": user.displayName || "Unnamed",
+                        "Teacher Email": email,
+                        "Teacher ID": uid,
+                        "Number of Classes": 0,
+                        "Language Preference": "eng",
+                        "Dark Mode": false
+                    };
+                await docRef.set(newUserData);
+            }
+
+            // Cache info for persistent login
+            if (keepMeLoggedIn) {
+                const info = { role: userRole, email, id: uid };
+                localStorage.setItem(userRole === "Student" ? "studentInfo" : "teacherInfo", JSON.stringify(info));
             }
 
             // Load data from Firestore depending on the user's role
-            if (userRole === "Student") {
+            if (role === "Student") {
                 await loadStudentData(uid);
                 setSignedInLang(true);
                 if (keepMeLoggedIn) {
-                    localStorage.setItem('studentInfo', JSON.stringify({ role: userRole, email, studentID: uid }));
+                    localStorage.setItem('studentInfo', JSON.stringify({ role: role, email, studentID: uid }));
                 }
             } else {
                 await loadTeacherData(uid);
                 setSignedInLang(true);
                 if (keepMeLoggedIn) {
-                    localStorage.setItem('teacherInfo', JSON.stringify({ role: userRole, email, teacherID: uid }));
+                    localStorage.setItem('teacherInfo', JSON.stringify({ role: role, email, teacherID: uid }));
                 }
             }
 
