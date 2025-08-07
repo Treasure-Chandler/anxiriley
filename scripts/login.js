@@ -19,8 +19,6 @@ import {
     monitorConnectionStatus
 } from './connectionUtils.js';
 
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
-
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', async function () {
     // Declaring variables
@@ -88,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const docRef = doc(db, "students", studentID);
         const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
+        if (docSnap.exists) {
             const data = docSnap.data();
             setUserName(data["Student Name"]);
             setNumOfStudentClasses(data["Number of Classes"]);
@@ -101,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const docRef = doc(db, "teachers", teacherID);
         const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
+        if (docSnap.exists) {
             const data = docSnap.data();
             setUserName(data["Teacher Name"]);
             setNumOfTeacherClasses(data["Number of Classes"]);
@@ -177,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     // When the 'Already a User?' button is clicked, open the log in form
-    document.getElementById('alreadyUser').addusrEventListener('click', function () {
+    document.getElementById('alreadyUser').addEventListener('click', function () {
         const logInForm = document.getElementById('logIn');
         const signupForm = document.getElementById('signUp');
 
@@ -310,11 +308,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     // Initialize Firestore for user data creation
-    const db = getFirestore();
+    const db = firebase.firestore();
 
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', async function () {
-        // Variable declaration
+        // Declare common user variables
         const email = document.getElementById('signUpEmail').value;
         const password = document.getElementById('signUpPassword').value;
         const name = document.getElementById('name').value;
@@ -371,15 +369,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Locally store the user's role for future login
             localStorage.setItem('userRole', role);
+
+            // Temporarily store the temporary name for the confirmation page
             localStorage.setItem('tempUserName', name);
 
             // Create the user's doc in Firestore
-            const db = firebase.firestore();
             const collectionName = role === "Student" ? "students" : "teachers";
 
             const newDocData = role === "Student"
                 ? {
-                    "Student Name": userName,
+                    "Student Name": name,
                     "Student Email": email,
                     "Student ID": user.uid,
                     "Number of Classes": 0,
@@ -387,7 +386,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     "Dark Mode": false
                 }
                 : {
-                    "Teacher Name": userName,
+                    "Teacher Name": name,
                     "Teacher Email": email,
                     "Teacher ID": user.uid,
                     "Number of Classes": 0,
@@ -397,7 +396,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 await db.collection(collectionName).doc(user.uid).set(newDocData);
 
-                // Send verification email & sign out
+                // Send verification email & then sign out
                 await user.sendEmailVerification();
                 await firebase.auth().signOut();
 
@@ -417,10 +416,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 case 'auth/internal-error':
                     // If there has been an internal error
                     showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                    console.error(error);
                     break;
                 default:
                     // If there has been any other error
                     showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                    console.error(error);
                     break;
             }
         }
@@ -457,7 +458,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 : firebase.auth.Auth.Persistence.SESSION; // SESSION clears when the tab closes
             await firebase.auth().setPersistence(persistence);
 
-            const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+            await firebase.auth().signInWithEmailAndPassword(email, password);
 
             // Initialize current user
             const user = firebase.auth().currentUser;
@@ -474,7 +475,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Declare common values
             const userRole = localStorage.getItem('userRole') || inferRoleFromEmail(user.email);
             const uid = user.uid;
-            const db = firebase.firestore();
             const collectionName = userRole === "Student" ? "students" : "teachers";
             const docRef = db.collection(collectionName).doc(uid);
             const docSnap = await docRef.get();
@@ -485,7 +485,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             await new Promise(requestAnimationFrame);
 
             // If the document does not exist, create one anyway
-            if (!docSnap.exists()) {
+            if (!docSnap.exists) {
                 const newUserData = userRole === "Student"
                     ? {
                         "Student Name": user.displayName || "Unnamed",
@@ -633,40 +633,27 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             try {
                 const uid = firebase.auth().currentUser.uid;
-                let collectionName = null;
-                let nameField = null;
+                let collectionName = userRole === 'Student' ? "students" : "teachers";
+                let nameField = userRole === 'Student' ? "Student Name" : "Teacher Name";
 
-                if (userRole === 'Student') {
-                    collectionName = "students";
-                    nameField = "Student Name";
-                } else if (userRole === 'Teacher') {
-                    collectionName = "teachers";
-                    nameField = "Teacher Name";
-                }
+                // Get Firestore document for the user
+                const userDocRef = doc(db, collectionName, uid);
+                const userDocSnap = await getDoc(userDocRef);
 
-                if (collectionName) {
-                    // Get Firestore document for the user
-                    const userDocRef = doc(db, collectionName, uid);
-                    const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.exists) {
+                    const userData = userDocSnap.data();
 
-                    if (userDocSnap.exists()) {
-                        const userData = userDocSnap.data();
+                    // Set variables from Firestore
+                    setUserName(userData[nameField]);
+                    setNumOfStudentClasses?.(parseInt(userData["Number of Classes"]));
+                    setNumOfTeacherClasses?.(parseInt(userData["Number of Classes"]));
+                    setLangPref(userData["Language Preference"]);
+                    setSignedInLang(true);
 
-                        // Set variables from Firestore
-                        setUserName(userData[nameField]);
-                        setNumOfStudentClasses?.(parseInt(userData["Number of Classes"]));
-                        setNumOfTeacherClasses?.(parseInt(userData["Number of Classes"]));
-                        setLangPref(userData["Language Preference"]);
-                        setSignedInLang(true);
-
-                        // Redirect
-                        window.location.replace('home.html');
-                    } else {
-                        showAlert("Error", "Your account data could not be found. Please contact us for support.");
-                    }
-                } else {
-                    // If no info is saved, just redirect
+                    // Redirect
                     window.location.replace('home.html');
+                } else {
+                    showAlert("Error", "Your account data could not be found. Please contact us for support.");
                 }
             } catch (e) {
                 showAlert("Error", "There was a problem loading your account data. Please try again by refreshing or contact us for support.");

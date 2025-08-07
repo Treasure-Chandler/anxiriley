@@ -20,7 +20,18 @@ import {
     setLangPref
 } from './userInfo.js';
 
-import { doc, deleteDoc } from "firebase/firestore";
+/**
+ * Shows sign up/log in/forgot password alerts with a specific title and message depending on the condition
+ * 
+ * @param {string} title        Alert title 
+ * @param {string} message      Alert message
+ */
+function showAlert(title, message) {
+    const alert = document.getElementById('universalAlert');
+    document.getElementById('universalAlertTitle').textContent = title;
+    document.getElementById('universalAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
+    alert.showModal();
+}
 
 /**
  * Helper function to retrieve the user's password for account deletion
@@ -87,15 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Deletes the user's account
     document.getElementById('deleteAccount').addEventListener('click', async function () {
         // Declare variables
-        const auth = firebase.auth();
         const currentUser = auth.currentUser;
-
-        const role = localStorage.getItem('userRole');
-        const studentInfo = JSON.parse(localStorage.getItem('studentInfo'));
-        const teacherInfo = JSON.parse(localStorage.getItem('teacherInfo'));
-
-        // Retrieve ID from local storage
-        const id = role === "Student" ? studentInfo?.studentID : teacherInfo?.teacherID;
+        const db = firebase.firestore();
 
         // Confirm intent
         const yesBtn = document.getElementById('yes');
@@ -122,27 +126,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
+                // Declare variables
                 const email = currentUser.email;
                 const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+                const uid = user.uid;
+                const role = localStorage.getItem('userRole');
+                const collectionName = role === 'Student' ? 'students' : 'teachers';
+
+                // Reauthenticate the user for successful account deletion
                 await currentUser.reauthenticateWithCredential(credential);
 
                 // Delete Firestore document
-                try {
-                    const collectionName = role === "Student" ? "students" : "teachers";
-                    const userDocRef = doc(db, collectionName, id);
-                    await deleteDoc(userDocRef);
-                    console.log(`Deleted ${role} document from Firestore`);
-                } catch (e) {
-                    console.error("Firestore deletion error:", e);
-                }
+                await db.collection(collectionName).doc(uid).delete();
 
                 // Delete Firebase account
-                try {
-                    await currentUser.delete();
-                } catch (e) {
-                    console.error("Firebase deletion error:", e);
-                    return;
-                }
+                await currentUser.delete();
 
                 // Clear local/session storage and reset values
                 localStorage.clear();
@@ -153,11 +151,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 setNumOfStudentClasses(null);
                 setNumOfTeacherClasses(null);
 
+                showAlert('Account Deleted', 'Your account has been successfully deleted.');
+
                 // Redirect back to login
-                window.location.replace('login.html');
+                setTimeout(() => {
+                    window.location.replace('login.html');
+                }, 1500);
             } catch (reauthError) {
-                console.error("Reauthentication failed:", reauthError);
-                alert("Reauthentication failed. Please try logging out and logging back in.");
+                showAlert('Error', 'There was a problem with deleting your account. Please try again.');
                 return;
             }
         });

@@ -8,6 +8,7 @@
         <!-- Firebase setup -->
         <script src="../scripts/lib/firebase-app-compat.js"></script>
         <script src="../scripts/lib/firebase-auth-compat.js"></script>
+        <script src="../scripts/lib/firebase-firestore-compat.js"></script>
         <script src="../scripts/firebase-init.js"></script>
 
         <script type="module" src="../scripts/settings.js"></script>
@@ -60,7 +61,14 @@
             <button id="signOut">Sign Out</button>
             <button id="deleteAccount">Delete Account</button>
 
-            <!-- Account deletion alerts/prompts -->
+            <!-- Login alert template -->
+            <dialog closedby="closerequest" class="settings-alert" id="universalAlert">
+                <h2 id="universalAlertTitle"></h2>
+                <p id="universalAlertMessage"></p>
+                <button class="ok" id="universalAlertOK">OK</button>
+            </dialog>
+
+            <!-- These are the only alerts that differ from the universal alert template -->
             <dialog closedby="closerequest" class="settings-alert" id="confirmAlert">
                 <h2>Delete Account</h2>
                 <p>
