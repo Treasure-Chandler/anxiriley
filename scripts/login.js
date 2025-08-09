@@ -21,6 +21,9 @@ import {
 
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', async function () {
+    // Initialize Firestore for user data creation
+    const db = firebase.firestore();
+    
     // Declaring variables
     const credAlert = document.getElementById('credIssues');
     const resetSuccess = document.getElementById('resetSuccessAlert');
@@ -307,9 +310,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     });
 
-    // Initialize Firestore for user data creation
-    const db = firebase.firestore();
-
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', async function () {
         // Declare common user variables
@@ -360,6 +360,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Signing up with Firebase and Firestore
         try {
+            // Hide the sign up popup and show the spinner before any data creation
+            document.getElementById('signUp').style.display = 'none';
+            showSpinner();
+            await new Promise(requestAnimationFrame);
+
             // Create the user's account
             const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
@@ -400,7 +405,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 await user.sendEmailVerification();
                 await firebase.auth().signOut();
 
-                // Redirect to confirmation
+                // Finally, hide the spinner and redirect to confirmation
+                hideSpinner();
                 window.location.replace('confirmation.html');
         } catch (error) {
             // Log any Firebase errors
@@ -452,6 +458,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Logging in with Firebase
         try {
+            // Hide the login popup and show the spinner before any data creation
+            document.getElementById('logIn').style.display = 'none';
+            showSpinner();
+            await new Promise(requestAnimationFrame);
+
             // Remember details if it is toggled
             const persistence = keepMeLoggedIn
                                 ? firebase.auth.Auth.Persistence.LOCAL    // LOCAL stays after the tab closes
@@ -478,11 +489,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             const collectionName = userRole === "Student" ? "students" : "teachers";
             const docRef = db.collection(collectionName).doc(uid);
             const docSnap = await docRef.get();
-
-            // Hide the login popup and show the spinner before any network calls
-            document.getElementById('logIn').style.display = 'none';
-            showSpinner();
-            await new Promise(requestAnimationFrame);
 
             // If the document does not exist, create one anyway
             if (!docSnap.exists) {
@@ -513,17 +519,17 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             // Load data from Firestore depending on the user's role
-            if (role === "Student") {
+            if (userRole === "Student") {
                 await loadStudentData(uid);
                 setSignedInLang(true);
                 if (keepMeLoggedIn) {
-                    localStorage.setItem('studentInfo', JSON.stringify({ role: role, email, studentID: uid }));
+                    localStorage.setItem('studentInfo', JSON.stringify({ role: userRole, email, studentID: uid }));
                 }
             } else {
                 await loadTeacherData(uid);
                 setSignedInLang(true);
                 if (keepMeLoggedIn) {
-                    localStorage.setItem('teacherInfo', JSON.stringify({ role: role, email, teacherID: uid }));
+                    localStorage.setItem('teacherInfo', JSON.stringify({ role: userRole, email, teacherID: uid }));
                 }
             }
 
@@ -540,6 +546,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     showAlert('Incorrect Credentials', 'Your email or password is incorrect, or your email does not exist.\nYou can try' +
                         ' retyping your email/password, resetting your password, or signing up if your' +
                         ' email really does not exist.');
+                    console.error(error);
                     break;
                 case 'auth/too-many-requests':
                     // If too many requests have been made
@@ -552,6 +559,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 default:
                     // If there has been any other error
                     showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                    console.error(error);
                     break;
             }
         }
