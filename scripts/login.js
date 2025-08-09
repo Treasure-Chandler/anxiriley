@@ -28,7 +28,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     const credAlert = document.getElementById('credIssues');
     const resetSuccess = document.getElementById('resetSuccessAlert');
 
-    let tempObject, userName, storedStudentInfo, studentID, teacherID, storedTeacherInfo;
+    // These variables are not used but still needed for authentication purposes
+    let userName, storedStudentInfo, storedTeacherInfo;
+    
+    let isLoggingInManually = false;
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
@@ -86,8 +89,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Load student/teacher data
     async function loadStudentData(studentID) {
-        const docRef = doc(db, "students", studentID);
-        const docSnap = await getDoc(docRef);
+        const docRef = db.collection("students").doc(studentID);
+        const docSnap = await docRef.get();
 
         if (docSnap.exists) {
             const data = docSnap.data();
@@ -99,8 +102,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     async function loadTeacherData(teacherID) {
-        const docRef = doc(db, "teachers", teacherID);
-        const docSnap = await getDoc(docRef);
+        const docRef = db.collection("teachers").doc(teacherID);
+        const docSnap = await docRef.get();
 
         if (docSnap.exists) {
             const data = docSnap.data();
@@ -312,6 +315,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', async function () {
+        // Hide the sign up popup and show the spinner before any data creation
+        document.getElementById('signUp').style.display = 'none';
+        document.getElementById('spinner').style.display = 'block';
+
         // Declare common user variables
         const email = document.getElementById('signUpEmail').value;
         const password = document.getElementById('signUpPassword').value;
@@ -322,10 +329,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         /* Custom alert events section */
         // If one or more of the fields are empty
         if (!name || !email || !password || !role) {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('signUp').style.display = 'block';
             credAlert.showModal();
             return;
         } else {
             // User's name validity
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('signUp').style.display = 'block';
             if (!isValidFullName(name)) {
                 showAlert('Incorrect Name', 'You must have your first AND last name!');
                 return;
@@ -360,11 +371,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Signing up with Firebase and Firestore
         try {
-            // Hide the sign up popup and show the spinner before any data creation
-            document.getElementById('signUp').style.display = 'none';
-            showSpinner();
-            await new Promise(requestAnimationFrame);
-
             // Create the user's account
             const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
@@ -405,11 +411,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 await user.sendEmailVerification();
                 await firebase.auth().signOut();
 
-                // Finally, hide the spinner and redirect to confirmation
-                hideSpinner();
+                // Finally, hide the spinner, show the sign up popup again, and redirect to the confirmation page
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('signUp').style.display = 'block';
                 window.location.replace('confirmation.html');
         } catch (error) {
             // Log any Firebase errors
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('logIn').style.display = 'block';
             switch (error.code) {
                 case 'auth/email-already-in-use':
                     // If the email is already in use
@@ -435,6 +444,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Events for logging in
     document.getElementById('liButton').addEventListener('click', async function () {
+        // Hide the log in popup and show the spinner before any data creation
+        document.getElementById('logIn').style.display = 'none';
+        document.getElementById('spinner').style.display = 'block';
+
+        // Toggle manual log in to true to prevent race conditions with automatic log in
+        isLoggingInManually = true;
+
         // Toggle persistent log in
         const keepMeLoggedIn = document.getElementById('stayLoggedIn').checked;
 
@@ -445,9 +461,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         /* Custom alert events section */
         // If one or both of the fields are empty
         if (!email || !password) {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('logIn').style.display = 'block';
             credAlert.showModal();
             return;
         } else {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('logIn').style.display = 'block';
             // If the email does not contain the correct email address upon logging in
             if (!email.includes('@gmail.com')) {
                 showAlert('Incorrect Email', 'You must enter a school email!');
@@ -458,11 +478,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Logging in with Firebase
         try {
-            // Hide the login popup and show the spinner before any data creation
-            document.getElementById('logIn').style.display = 'none';
-            showSpinner();
-            await new Promise(requestAnimationFrame);
-
             // Remember details if it is toggled
             const persistence = keepMeLoggedIn
                                 ? firebase.auth.Auth.Persistence.LOCAL    // LOCAL stays after the tab closes
@@ -476,6 +491,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Check if email is verified
             if (!user.emailVerified) {
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('logIn').style.display = 'block';
                 showAlert('Unverified Email', 'You need to verify your email before logging in!');
 
                 // Sign out the unverified user
@@ -533,12 +550,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
             }
 
-            // Finally, hide the spinner and navigate to the home screen
-            hideSpinner();
+            // Finally, hide the spinner, show the log in popup again, and redirect to the home page
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('logIn').style.display = 'block';
             window.location.replace('home.html');
         } catch (error) {
             // Log any Firebase errors
-            hideSpinner();
+            document.getElementById('spinner').style.display = 'none';
             document.getElementById('logIn').style.display = 'block';
             switch (error.code) {
                 case 'auth/invalid-credential':
@@ -546,7 +564,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     showAlert('Incorrect Credentials', 'Your email or password is incorrect, or your email does not exist.\nYou can try' +
                         ' retyping your email/password, resetting your password, or signing up if your' +
                         ' email really does not exist.');
-                    console.error(error);
                     break;
                 case 'auth/too-many-requests':
                     // If too many requests have been made
@@ -559,9 +576,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 default:
                     // If there has been any other error
                     showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
-                    console.error(error);
                     break;
             }
+        } finally {
+            isLoggingInManually = false;
         }
     });
 
@@ -617,7 +635,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Automatically redirect to the home screen if details are remembered
     firebase.auth().onAuthStateChanged(async (user) => {
+        // Skip this line while manual log in is in progress
+        if (isLoggingInManually) return;
+
         const body = document.getElementById('background');
+        const spinner = document.getElementById('spinner');
+        const loginPopup = document.getElementById('logIn');
+
+        // Show the spinner while checking auth state
+        spinner.style.display = 'block';
+        body.style.display = 'none';
 
         // User is signed in, along with checking for a verified email
         if (user && user.emailVerified) {
@@ -645,16 +672,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let nameField = userRole === 'Student' ? "Student Name" : "Teacher Name";
 
                 // Get Firestore document for the user
-                const userDocRef = doc(db, collectionName, uid);
-                const userDocSnap = await getDoc(userDocRef);
+                const docRef = firebase.firestore().collection(collectionName).doc(uid);
+                const docSnap = await docRef.get();
 
-                if (userDocSnap.exists) {
-                    const userData = userDocSnap.data();
+                if (docSnap.exists) {
+                    const userData = docSnap.data();
 
                     // Set variables from Firestore
                     setUserName(userData[nameField]);
-                    setNumOfStudentClasses?.(parseInt(userData["Number of Classes"]));
-                    setNumOfTeacherClasses?.(parseInt(userData["Number of Classes"]));
+                    if (typeof setNumOfStudentClasses === 'function') {
+                        setNumOfStudentClasses(parseInt(userData["Number of Classes"]));
+                    }
+                    if (typeof setNumOfTeacherClasses === 'function') {
+                        setNumOfTeacherClasses(parseInt(userData["Number of Classes"]));
+                    }
                     setLangPref(userData["Language Preference"]);
                     setSignedInLang(true);
 
@@ -667,10 +698,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 showAlert("Error", "There was a problem loading your account data. Please try again by refreshing or contact us for support.");
                 return;
             }
-        } else {
-            // Show the login screen only after the auth check
-            body.style.display = 'block';
-            body.classList.remove('no-background');
         }
+
+        // If user is not logged in or something went wrong
+        spinner.style.display = 'none';
+        body.style.display = 'block';
+        body.classList.remove('no-background');
+        loginPopup.style.display = 'block';
     });
 });
