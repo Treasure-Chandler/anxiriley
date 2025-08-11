@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
     const body = document.getElementById('background');
+    const blackOverlay = document.getElementById('black-overlay');
 
     // Hide page and background at first
     body.style.display = 'none';
@@ -74,17 +75,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     function inferRoleFromEmail(email) {
         if (email.includes('teacher')) return 'Teacher';
         return 'Student';
-    }
-
-    // Show/hide the loading spinner before retrieving Firestore stuff
-    function showSpinner() {
-        const spinner = document.getElementById('loadingSpinner');
-        spinner.classList.add('active');
-    }
-
-    function hideSpinner() {
-        const spinner = document.getElementById('loadingSpinner');
-        spinner.classList.remove('active');
     }
 
     // Load student/teacher data
@@ -315,10 +305,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', async function () {
-        // Hide the sign up popup and show the spinner before any data creation
-        document.getElementById('signUp').style.display = 'none';
-        document.getElementById('spinner').style.display = 'block';
-
         // Declare common user variables
         const email = document.getElementById('signUpEmail').value;
         const password = document.getElementById('signUpPassword').value;
@@ -329,14 +315,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         /* Custom alert events section */
         // If one or more of the fields are empty
         if (!name || !email || !password || !role) {
-            document.getElementById('spinner').style.display = 'none';
-            document.getElementById('signUp').style.display = 'block';
             credAlert.showModal();
             return;
         } else {
             // User's name validity
-            document.getElementById('spinner').style.display = 'none';
-            document.getElementById('signUp').style.display = 'block';
             if (!isValidFullName(name)) {
                 showAlert('Incorrect Name', 'You must have your first AND last name!');
                 return;
@@ -369,85 +351,85 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         /* End of custom alert events section */
 
-        // Signing up with Firebase and Firestore
-        try {
-            // Create the user's account
-            const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-            const user = userCredential.user;
+        // Hide the sign up popup and show the spinner before any data creation
+        document.getElementById('signUp').style.display = 'none';
+        document.getElementById('spinner').style.display = 'flex';
 
-            // Update the user's display name
-            await user.updateProfile({ displayName: name });
+        requestAnimationFrame(async () => {
+            // Signing up with Firebase and Firestore
+            try {
+                // Create the user's account
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
 
-            // Locally store the user's role for future login
-            localStorage.setItem('userRole', role);
+                // Update the user's display name
+                await user.updateProfile({ displayName: name });
 
-            // Temporarily store the temporary name for the confirmation page
-            localStorage.setItem('tempUserName', name);
+                // Locally store the user's role for future login
+                localStorage.setItem('userRole', role);
 
-            // Create the user's doc in Firestore
-            const collectionName = role === "Student" ? "students" : "teachers";
+                // Temporarily store the temporary name for the confirmation page
+                localStorage.setItem('tempUserName', name);
 
-            const newDocData = role === "Student"
-                ? {
-                    "Student Name": name,
-                    "Student Email": email,
-                    "Student ID": user.uid,
-                    "Number of Classes": 0,
-                    "Language Preference": "eng",
-                    "Dark Mode": false
-                }
-                : {
-                    "Teacher Name": name,
-                    "Teacher Email": email,
-                    "Teacher ID": user.uid,
-                    "Number of Classes": 0,
-                    "Language Preference": "eng",
-                    "Dark Mode": false
-                };
+                // Create the user's doc in Firestore
+                const collectionName = role === "Student" ? "students" : "teachers";
 
-                await db.collection(collectionName).doc(user.uid).set(newDocData);
+                const newDocData = role === "Student"
+                    ? {
+                        "Student Name": name,
+                        "Student Email": email,
+                        "Student ID": user.uid,
+                        "Number of Classes": 0,
+                        "Language Preference": "eng",
+                        "Dark Mode": false
+                    }
+                    : {
+                        "Teacher Name": name,
+                        "Teacher Email": email,
+                        "Teacher ID": user.uid,
+                        "Number of Classes": 0,
+                        "Language Preference": "eng",
+                        "Dark Mode": false
+                    };
 
-                // Send verification email & then sign out
-                await user.sendEmailVerification();
-                await firebase.auth().signOut();
+                    await db.collection(collectionName).doc(user.uid).set(newDocData);
 
-                // Finally, hide the spinner, show the sign up popup again, and redirect to the confirmation page
+                    // Send verification email & then sign out
+                    await user.sendEmailVerification();
+                    await firebase.auth().signOut();
+
+                    // Finally, redirect to the confirmation page
+                    window.location.replace('confirmation.html');
+            } catch (error) {
+                // Log any Firebase errors
                 document.getElementById('spinner').style.display = 'none';
-                document.getElementById('signUp').style.display = 'block';
-                window.location.replace('confirmation.html');
-        } catch (error) {
-            // Log any Firebase errors
-            document.getElementById('spinner').style.display = 'none';
-            document.getElementById('logIn').style.display = 'block';
-            switch (error.code) {
-                case 'auth/email-already-in-use':
-                    // If the email is already in use
-                    showAlert('Email Already Registered', 'This email is already in use! Why not try signing in?');
-                    break;
-                case 'auth/invalid-email':
-                    // If the email is invalid
-                    showAlert('Invalid Email', 'This email address is not valid! Please enter a correct email.');
-                    break;
-                case 'auth/internal-error':
-                    // If there has been an internal error
-                    showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
-                    console.error(error);
-                    break;
-                default:
-                    // If there has been any other error
-                    showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
-                    console.error(error);
-                    break;
+                document.getElementById('signUp').style.display = 'flex';
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        // If the email is already in use
+                        showAlert('Email Already Registered', 'This email is already in use! Why not try signing in?');
+                        break;
+                    case 'auth/invalid-email':
+                        // If the email is invalid
+                        showAlert('Invalid Email', 'This email address is not valid! Please enter a correct email.');
+                        break;
+                    case 'auth/internal-error':
+                        // If there has been an internal error
+                        showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                        console.error(error);
+                        break;
+                    default:
+                        // If there has been any other error
+                        showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                        console.error(error);
+                        break;
+                }
             }
-        }
+        });
     });
 
     // Events for logging in
     document.getElementById('liButton').addEventListener('click', async function () {
-        // Hide the log in popup and show the spinner before any data creation
-        document.getElementById('logIn').style.display = 'none';
-        document.getElementById('spinner').style.display = 'block';
-
         // Toggle manual log in to true to prevent race conditions with automatic log in
         isLoggingInManually = true;
 
@@ -461,13 +443,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         /* Custom alert events section */
         // If one or both of the fields are empty
         if (!email || !password) {
-            document.getElementById('spinner').style.display = 'none';
-            document.getElementById('logIn').style.display = 'block';
             credAlert.showModal();
             return;
         } else {
-            document.getElementById('spinner').style.display = 'none';
-            document.getElementById('logIn').style.display = 'block';
             // If the email does not contain the correct email address upon logging in
             if (!email.includes('@gmail.com')) {
                 showAlert('Incorrect Email', 'You must enter a school email!');
@@ -475,6 +453,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         }
         /* End of custom alert events section */
+
+        // Hide the log in popup and show the spinner before any data creation
+        document.getElementById('logIn').style.display = 'none';
+        document.getElementById('spinner').style.display = 'block';
 
         // Logging in with Firebase
         try {
@@ -640,7 +622,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const body = document.getElementById('background');
         const spinner = document.getElementById('spinner');
-        const loginPopup = document.getElementById('logIn');
 
         // Show the spinner while checking auth state
         spinner.style.display = 'block';
@@ -704,6 +685,5 @@ document.addEventListener('DOMContentLoaded', async function () {
         spinner.style.display = 'none';
         body.style.display = 'block';
         body.classList.remove('no-background');
-        loginPopup.style.display = 'block';
     });
 });

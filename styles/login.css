@@ -680,6 +680,18 @@
 }
 
 /* Styling the loading icon */
+#spinner {
+    align-items: center !important;
+    background: rgba(0, 0, 0, 0.2);
+    height: 100vh;
+    justify-content: center !important;
+    left: 0;
+    position: fixed !important;
+    top: 0;
+    width: 100vw;
+    z-index: 9999;
+}
+
 .spinner {
     animation: spin 0.8s linear infinite;
     border: 10px solid #f3f3f3;
