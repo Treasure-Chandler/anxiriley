@@ -683,6 +683,7 @@
 #spinner {
     align-items: center !important;
     background: rgba(0, 0, 0, 0.2);
+    display: none;
     height: 100vh;
     justify-content: center !important;
     left: 0;

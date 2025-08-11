@@ -353,7 +353,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Hide the sign up popup and show the spinner before any data creation
         document.getElementById('signUp').style.display = 'none';
-        document.getElementById('spinner').style.display = 'flex';
+        document.getElementById('signUp').style.pointerEvents = 'none';
+        document.getElementById('black-overlay').style.display = 'none';
+        document.getElementById('black-overlay').style.pointerEvents = 'none';
+
+        setTimeout(() => {
+            document.getElementById('spinner').style.display = 'flex';
+        }, 200);
 
         requestAnimationFrame(async () => {
             // Signing up with Firebase and Firestore
