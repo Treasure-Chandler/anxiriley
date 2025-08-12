@@ -182,7 +182,7 @@
     width: 100%;
     top: 0;
     transition: opacity 0.6s ease, visibility 0s 0.6s;
-    z-index: 999;
+    z-index: 10000;
 }
 
 /* Sign Up form Section */
@@ -339,7 +339,7 @@
     transition: opacity 0.6s ease, visibility 0s 0.6s;
     visibility: hidden;
     width: 550px;
-    z-index: 1000;
+    z-index: 10001;
 }
 /* End of the Sign Up form Section*/
 
@@ -684,13 +684,14 @@
     align-items: center !important;
     background: rgba(0, 0, 0, 0.2);
     display: none;
+    flex-direction: column;
     height: 100vh;
     justify-content: center !important;
     left: 0;
     position: fixed !important;
     top: 0;
     width: 100vw;
-    z-index: 9999;
+    z-index: 10001;
 }
 
 .spinner {
@@ -699,7 +700,19 @@
     border-radius: 50%;
     border-top: 10px solid #3498db;
     height: 60px;
+    margin-bottom: 5px;
     width: 60px;
+}
+
+.spinner-text {
+    background-color: #fafafa;
+    border-radius: 10px;
+    color: #333333;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.3rem;
+    font-style: normal;
+    padding: 10px;
+    text-align: center;
 }
 
 @keyframes spin {

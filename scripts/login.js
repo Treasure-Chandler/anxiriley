@@ -351,87 +351,79 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         /* End of custom alert events section */
 
-        // Hide the sign up popup and show the spinner before any data creation
+        // Hide the sign up popup (+ overlay) and show the spinner before any data creation
         document.getElementById('signUp').style.display = 'none';
-        document.getElementById('signUp').style.pointerEvents = 'none';
         document.getElementById('black-overlay').style.display = 'none';
-        document.getElementById('black-overlay').style.pointerEvents = 'none';
+        document.getElementById('spinner').style.display = 'flex';
 
-        setTimeout(() => {
-            document.getElementById('spinner').style.display = 'flex';
-        }, 200);
+        // Signing up with Firebase and Firestore
+        try {
+            // Create the user's account
+            const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
 
-        requestAnimationFrame(async () => {
-            // Signing up with Firebase and Firestore
-            try {
-                // Create the user's account
-                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
+            // Update the user's display name
+            await user.updateProfile({ displayName: name });
 
-                // Update the user's display name
-                await user.updateProfile({ displayName: name });
+            // Locally store the user's role for future login
+            localStorage.setItem('userRole', role);
 
-                // Locally store the user's role for future login
-                localStorage.setItem('userRole', role);
+            // Temporarily store the temporary name for the confirmation page
+            localStorage.setItem('tempUserName', name);
 
-                // Temporarily store the temporary name for the confirmation page
-                localStorage.setItem('tempUserName', name);
-
-                // Create the user's doc in Firestore
-                const collectionName = role === "Student" ? "students" : "teachers";
-
-                const newDocData = role === "Student"
-                    ? {
-                        "Student Name": name,
-                        "Student Email": email,
-                        "Student ID": user.uid,
-                        "Number of Classes": 0,
-                        "Language Preference": "eng",
-                        "Dark Mode": false
-                    }
-                    : {
-                        "Teacher Name": name,
-                        "Teacher Email": email,
-                        "Teacher ID": user.uid,
-                        "Number of Classes": 0,
-                        "Language Preference": "eng",
-                        "Dark Mode": false
-                    };
-
-                    await db.collection(collectionName).doc(user.uid).set(newDocData);
-
-                    // Send verification email & then sign out
-                    await user.sendEmailVerification();
-                    await firebase.auth().signOut();
-
-                    // Finally, redirect to the confirmation page
-                    window.location.replace('confirmation.html');
-            } catch (error) {
-                // Log any Firebase errors
-                document.getElementById('spinner').style.display = 'none';
-                document.getElementById('signUp').style.display = 'flex';
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        // If the email is already in use
-                        showAlert('Email Already Registered', 'This email is already in use! Why not try signing in?');
-                        break;
-                    case 'auth/invalid-email':
-                        // If the email is invalid
-                        showAlert('Invalid Email', 'This email address is not valid! Please enter a correct email.');
-                        break;
-                    case 'auth/internal-error':
-                        // If there has been an internal error
-                        showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
-                        console.error(error);
-                        break;
-                    default:
-                        // If there has been any other error
-                        showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
-                        console.error(error);
-                        break;
+            // Create the user's doc in Firestore
+            const collectionName = role === "Student" ? "students" : "teachers";
+            const newDocData = role === "Student"
+                ? {
+                    "Student Name": name,
+                    "Student Email": email,
+                    "Student ID": user.uid,
+                    "Number of Classes": 0,
+                    "Language Preference": "eng",
+                    "Dark Mode": false
                 }
+                : {
+                    "Teacher Name": name,
+                    "Teacher Email": email,
+                    "Teacher ID": user.uid,
+                    "Number of Classes": 0,
+                    "Language Preference": "eng",
+                    "Dark Mode": false
+                };
+                
+            await db.collection(collectionName).doc(user.uid).set(newDocData);
+
+            // Send verification email
+            user.sendEmailVerification();
+            
+            // Finally, redirect to the confirmation page
+            window.location.replace('confirmation.html');
+        } catch (error) {
+            // Log any Firebase errors
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('black-overlay').style.display = 'block';
+            document.getElementById('signUp').style.display = 'flex';
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    // If the email is already in use
+                    showAlert('Email Already Registered', 'This email is already in use! Why not try signing in?');
+                    break;
+                case 'auth/invalid-email':
+                    // If the email is invalid
+                    showAlert('Invalid Email', 'This email address is not valid! Please enter a correct email.');
+                    break;
+                case 'auth/internal-error':
+                    // If there has been an internal error
+                    showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                    console.error(error);
+                    break;
+                default:
+                    // If there has been any other error
+                    showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                    console.error(error);
+                    break;
             }
-        });
+        }
     });
 
     // Events for logging in
