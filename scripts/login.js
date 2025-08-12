@@ -79,28 +79,28 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Load student/teacher data
     async function loadStudentData(studentID) {
-        const docRef = db.collection("students").doc(studentID);
+        const docRef = db.collection('students').doc(studentID);
         const docSnap = await docRef.get();
 
         if (docSnap.exists) {
             const data = docSnap.data();
-            setUserName(data["Student Name"]);
-            setNumOfStudentClasses(data["Number of Classes"]);
-            setLangPref(data["Language Preference"]);
-            setUserRole("Student");
+            setUserName(data['Student Name']);
+            setNumOfStudentClasses(data['Number of Classes']);
+            setLangPref(data['Language Preference']);
+            setUserRole('Student');
         }
     }
 
     async function loadTeacherData(teacherID) {
-        const docRef = db.collection("teachers").doc(teacherID);
+        const docRef = db.collection('teachers').doc(teacherID);
         const docSnap = await docRef.get();
 
         if (docSnap.exists) {
             const data = docSnap.data();
-            setUserName(data["Teacher Name"]);
-            setNumOfTeacherClasses(data["Number of Classes"]);
-            setLangPref(data["Language Preference"]);
-            setUserRole("Teacher");
+            setUserName(data['Teacher Name']);
+            setNumOfTeacherClasses(data['Number of Classes']);
+            setLangPref(data['Language Preference']);
+            setUserRole('Teacher');
         }
     }
 
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const password = document.getElementById('signUpPassword').value;
         const name = document.getElementById('name').value;
         const isTeacher = document.getElementById('isTeacher').checked;
-        const role = isTeacher ? "Teacher" : "Student";
+        const role = isTeacher ? 'Teacher' : 'Student';
 
         /* Custom alert events section */
         // If one or more of the fields are empty
@@ -371,27 +371,43 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Temporarily store the temporary name for the confirmation page
             localStorage.setItem('tempUserName', name);
 
-            // Create the user's doc in Firestore
-            const collectionName = role === "Student" ? "students" : "teachers";
-            const newDocData = role === "Student"
+            // Create the user's profile doc in Firestore
+            const collectionName = role === 'Student' ? 'students' : 'teachers';
+            const newDocData = role === 'Student'
                 ? {
-                    "Student Name": name,
-                    "Student Email": email,
-                    "Student ID": user.uid,
-                    "Number of Classes": 0,
-                    "Language Preference": "eng",
-                    "Dark Mode": false
+                    'Student Name': name,
+                    'Student Email': email,
+                    'Student ID': user.uid,
+                    'Number of Classes': 0,
+                    'Language Preference': 'eng',
+                    'Dark Mode': false
                 }
                 : {
-                    "Teacher Name": name,
-                    "Teacher Email": email,
-                    "Teacher ID": user.uid,
-                    "Number of Classes": 0,
-                    "Language Preference": "eng",
-                    "Dark Mode": false
+                    'Teacher Name': name,
+                    'Teacher Email': email,
+                    'Teacher ID': user.uid,
+                    'Number of Classes': 0,
+                    'Language Preference': 'eng',
+                    'Dark Mode': false
                 };
                 
             await db.collection(collectionName).doc(user.uid).set(newDocData);
+
+            // Then, create the user's default class data doc in Firestore
+            const classCollection = role === 'Student' ? 'studentClasses' : 'teacherClasses';
+            const classData = {
+                [role === 'Student' ? 'Student ID' : 'Teacher ID']: user.uid,
+                'Inbox Count': 0,
+                'Class 1': 'x',
+                'Class 2': 'x',
+                'Class 3': 'x',
+                'Class 4': 'x',
+                'Class 5': 'x',
+                'Class 6': 'x',
+                'Class 7': 'x'
+            };
+
+            await db.collection(classCollection).doc(user.uid).set(classData);
 
             // Send verification email
             user.sendEmailVerification();
@@ -454,7 +470,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Hide the log in popup and show the spinner before any data creation
         document.getElementById('logIn').style.display = 'none';
-        document.getElementById('spinner').style.display = 'block';
+        document.getElementById('black-overlay').style.display = 'none';
+        document.getElementById('spinner').style.display = 'flex';
 
         // Logging in with Firebase
         try {
@@ -483,28 +500,28 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Declare common values
             const userRole = localStorage.getItem('userRole') || inferRoleFromEmail(user.email);
             const uid = user.uid;
-            const collectionName = userRole === "Student" ? "students" : "teachers";
+            const collectionName = userRole === 'Student' ? 'students' : 'teachers';
             const docRef = db.collection(collectionName).doc(uid);
             const docSnap = await docRef.get();
 
             // If the document does not exist, create one anyway
             if (!docSnap.exists) {
-                const newUserData = userRole === "Student"
+                const newUserData = userRole === 'Student'
                     ? {
-                        "Student Name": user.displayName || "Unnamed",
-                        "Student Email": email,
-                        "Student ID": uid,
-                        "Number of Classes": 0,
-                        "Language Preference": "eng",
-                        "Dark Mode": false
+                        'Student Name': user.displayName || 'Unnamed',
+                        'Student Email': email,
+                        'Student ID': uid,
+                        'Number of Classes': 0,
+                        'Language Preference': 'eng',
+                        'Dark Mode': false
                     }
                     : {
-                        "Teacher Name": user.displayName || "Unnamed",
-                        "Teacher Email": email,
-                        "Teacher ID": uid,
-                        "Number of Classes": 0,
-                        "Language Preference": "eng",
-                        "Dark Mode": false
+                        'Teacher Name': user.displayName || 'Unnamed',
+                        'Teacher Email': email,
+                        'Teacher ID': uid,
+                        'Number of Classes': 0,
+                        'Language Preference': 'eng',
+                        'Dark Mode': false
                     };
                 await docRef.set(newUserData);
             }
@@ -512,11 +529,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Cache info for persistent login
             if (keepMeLoggedIn) {
                 const info = { role: userRole, email, id: uid };
-                localStorage.setItem(userRole === "Student" ? "studentInfo" : "teacherInfo", JSON.stringify(info));
+                localStorage.setItem(userRole === 'Student' ? 'studentInfo' : 'teacherInfo', JSON.stringify(info));
             }
 
             // Load data from Firestore depending on the user's role
-            if (userRole === "Student") {
+            if (userRole === 'Student') {
                 await loadStudentData(uid);
                 setSignedInLang(true);
                 if (keepMeLoggedIn) {
@@ -530,9 +547,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
             }
 
-            // Finally, hide the spinner, show the log in popup again, and redirect to the home page
-            document.getElementById('spinner').style.display = 'none';
-            document.getElementById('logIn').style.display = 'block';
+            // Finally, redirect to the home page
             window.location.replace('home.html');
         } catch (error) {
             // Log any Firebase errors
@@ -647,8 +662,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             try {
                 const uid = firebase.auth().currentUser.uid;
-                let collectionName = userRole === 'Student' ? "students" : "teachers";
-                let nameField = userRole === 'Student' ? "Student Name" : "Teacher Name";
+                let collectionName = userRole === 'Student' ? 'students' : 'teachers';
+                let nameField = userRole === 'Student' ? 'Student Name' : 'Teacher Name';
 
                 // Get Firestore document for the user
                 const docRef = firebase.firestore().collection(collectionName).doc(uid);
@@ -660,21 +675,22 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Set variables from Firestore
                     setUserName(userData[nameField]);
                     if (typeof setNumOfStudentClasses === 'function') {
-                        setNumOfStudentClasses(parseInt(userData["Number of Classes"]));
+                        setNumOfStudentClasses(parseInt(userData['Number of Classes']));
                     }
                     if (typeof setNumOfTeacherClasses === 'function') {
-                        setNumOfTeacherClasses(parseInt(userData["Number of Classes"]));
+                        setNumOfTeacherClasses(parseInt(userData['Number of Classes']));
                     }
-                    setLangPref(userData["Language Preference"]);
+                    setLangPref(userData['Language Preference']);
                     setSignedInLang(true);
 
                     // Redirect
                     window.location.replace('home.html');
                 } else {
-                    showAlert("Error", "Your account data could not be found. Please contact us for support.");
+                    showAlert('Error', 'Your account data could not be found. ' + 
+                            'Please try logging in. If this error still persists, contact us for support.');
                 }
             } catch (e) {
-                showAlert("Error", "There was a problem loading your account data. Please try again by refreshing or contact us for support.");
+                showAlert('Error', 'There was a problem loading your account data. Please try again by refreshing or contact us for support.');
                 return;
             }
         }

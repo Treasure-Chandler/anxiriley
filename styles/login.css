@@ -455,7 +455,7 @@
     transition: opacity 0.6s ease, visibility 0s 0.6s;
     visibility: visible;
     width: 550px;
-    z-index: 1000;
+    z-index: 10001;
 }
 
 /* Customize the label accompanying the checkbox */
@@ -645,7 +645,7 @@
     transition: opacity 0.6s ease, visibility 0s 0.6s;
     visibility: visible;
     width: 450px;
-    z-index: 1000;
+    z-index: 10001;
 }
 /* End of Forgot Password form Section */
 
