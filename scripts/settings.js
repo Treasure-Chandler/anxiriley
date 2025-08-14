@@ -84,10 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         firebase.auth().signOut()
             .then(() => {
                 // Clear stored info if needed
-                localStorage.removeItem('studentInfo');
-                localStorage.removeItem('teacherInfo');
-                localStorage.removeItem('userRole');
-                localStorage.removeItem('userName');
+                localStorage.clear();
                 sessionStorage.clear();
 
                 // Redirect to login page
