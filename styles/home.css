@@ -4,9 +4,31 @@
     This is the CSS file that will style the home page.
 */
 
+/* Settings button */
+.settings-btn {
+    background-color: transparent;
+    background-image: url(/assets/settings.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 75px 75px;
+    border: none;
+    cursor: pointer;
+    margin-right: 20px;
+    margin-top: 10px;
+    height: 75px;
+    float: right;
+    right: 10px;
+    transition: background-image 0.3s ease-in-out;
+    width: 75px;
+}
+
+.settings-btn:hover {
+    background-image: url(/assets/settingshover.png);
+}
+
 /* Background image */
 body {
-    background-image: url(/assets/lightmodewithwildcat.png);
+    background-image: url(/assets/lightmodewithwildcathome.png);
     background-size: 100vw 100vh;
     background-repeat: no-repeat;
 }
