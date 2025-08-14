@@ -1,7 +1,7 @@
 /**
  * @author Treasure Chandler
  * 
- * This allows full functionality of the login page, which includes Gmail authentation and Firebase integration
+ * This allows full functionality of the login page, which includes Gmail authentation, Firebase, and Firestore integration
  * for account handling.
  */
 

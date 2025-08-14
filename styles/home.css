@@ -1,0 +1,17 @@
+/* 
+    Made by Treasure Chandler
+
+    This is the CSS file that will style the home page.
+*/
+
+/* Background image */
+body {
+    background-image: url(/assets/lightmodewithwildcat.png);
+    background-size: 100vw 100vh;
+    background-repeat: no-repeat;
+}
+
+/* Positioning of elements on smaller screens */
+/* @media only screen and (max-width: 1360px) {
+
+} */
