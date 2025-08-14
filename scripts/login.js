@@ -414,6 +414,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Send verification email
             user.sendEmailVerification();
+
+            // Sign out the user in order to prevent errors with auto log in
+            firebase.auth().signOut();
             
             // Finally, redirect to the confirmation page
             window.location.replace('confirmation.html');
@@ -703,8 +706,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 } else {
                     showAlert('Error', 'If you chose to have your login information remembered, ' +
                             'there was an error attempting to recieve that data in order to automatically log you in.\n\n ' +
-                            'If you have refreshed this page and recieved this error before logging in for the first time, you can ignore this and log in.\n\n' +
-                            'Otherwise, please try logging in again. If this error still persists, contact us for support.');
+                            'Please try logging in again. If this error still persists, contact us for support.');
                 }
             } catch (e) {
                 showAlert('Error', 'There was a problem loading your account data. Please try again by refreshing or contact us for support.');
