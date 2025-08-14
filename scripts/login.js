@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
     const body = document.getElementById('background');
-    const blackOverlay = document.getElementById('black-overlay');
 
     // Hide page and background at first
     body.style.display = 'none';
@@ -305,6 +304,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', async function () {
+        const signUpForm = document.getElementById('signUp');
+        const blackOverlay = document.getElementById('black-overlay');
+        const spinner = document.getElementById('spinner');
+
         // Declare common user variables
         const email = document.getElementById('signUpEmail').value;
         const password = document.getElementById('signUpPassword').value;
@@ -352,9 +355,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         /* End of custom alert events section */
 
         // Hide the sign up popup (+ overlay) and show the spinner before any data creation
-        document.getElementById('signUp').style.display = 'none';
-        document.getElementById('black-overlay').style.display = 'none';
-        document.getElementById('spinner').style.display = 'flex';
+        signUpForm.style.display = 'none';
+        blackOverlay.style.display = 'none';
+        spinner.style.display = 'flex';
 
         // Signing up with Firebase and Firestore
         try {
@@ -416,9 +419,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             window.location.replace('confirmation.html');
         } catch (error) {
             // Log any Firebase errors
-            document.getElementById('spinner').style.display = 'none';
-            document.getElementById('black-overlay').style.display = 'block';
-            document.getElementById('signUp').style.display = 'flex';
+            spinner.style.display = 'none';
+            blackOverlay.style.display = 'block';
+            signUpForm.style.display = 'flex';
             switch (error.code) {
                 case 'auth/email-already-in-use':
                     // If the email is already in use
@@ -444,6 +447,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Events for logging in
     document.getElementById('liButton').addEventListener('click', async function () {
+        const logInForm = document.getElementById('logIn');
+        const blackOverlay = document.getElementById('black-overlay');
+        const spinner = document.getElementById('spinner');
+
         // Toggle manual log in to true to prevent race conditions with automatic log in
         isLoggingInManually = true;
 
@@ -469,16 +476,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         /* End of custom alert events section */
 
         // Hide the log in popup and show the spinner before any data creation
-        document.getElementById('logIn').style.display = 'none';
-        document.getElementById('black-overlay').style.display = 'none';
-        document.getElementById('spinner').style.display = 'flex';
+        logInForm.style.display = 'none';
+        blackOverlay.style.display = 'none';
+        spinner.style.display = 'flex';
 
         // Logging in with Firebase
         try {
             // Remember details if it is toggled
             const persistence = keepMeLoggedIn
-                                ? firebase.auth.Auth.Persistence.LOCAL    // LOCAL stays after the tab closes
-                                : firebase.auth.Auth.Persistence.SESSION; // SESSION clears when the tab closes
+                                ? firebase.auth.Auth.Persistence.LOCAL
+                                : firebase.auth.Auth.Persistence.SESSION;
             await firebase.auth().setPersistence(persistence);
 
             await firebase.auth().signInWithEmailAndPassword(email, password);
@@ -488,8 +495,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Check if email is verified
             if (!user.emailVerified) {
-                document.getElementById('spinner').style.display = 'none';
-                document.getElementById('logIn').style.display = 'block';
+                spinner.style.display = 'none';
+                logInForm.style.display = 'block';
                 showAlert('Unverified Email', 'You need to verify your email before logging in!');
 
                 // Sign out the unverified user
@@ -551,14 +558,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             window.location.replace('home.html');
         } catch (error) {
             // Log any Firebase errors
-            document.getElementById('spinner').style.display = 'none';
-            document.getElementById('logIn').style.display = 'block';
+            spinner.style.display = 'none';
+            logInForm.style.display = 'block';
             switch (error.code) {
                 case 'auth/invalid-credential':
                     // If the email/password is incorrect
                     showAlert('Incorrect Credentials', 'Your email or password is incorrect, or your email does not exist.\nYou can try' +
-                        ' retyping your email/password, resetting your password, or signing up if your' +
-                        ' email really does not exist.');
+                            ' retyping your email/password, resetting your password, or signing up if your' +
+                            ' email really does not exist.');
                     break;
                 case 'auth/too-many-requests':
                     // If too many requests have been made
@@ -581,6 +588,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Events for password reset
     document.getElementById('forgotPasswordForm').addEventListener('submit', function (e) {
         const blackOverlay = document.getElementById('black-overlay');
+        const spinner = document.getElementById('spinner');
 
         // Prevent form submission
         e.preventDefault();
@@ -592,8 +600,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
+        // Show spinner before starting password reset operation
+        spinner.style.display = 'flex';
+
         firebase.auth().sendPasswordResetEmail(email)
             .then(() => {
+                // Hide spinner when done
+                spinner.style.display = 'none';
+
                 // Email successfully sent
                 resetSuccess.showModal();
 
@@ -623,6 +637,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             })
             .catch(() => {
                 // Error sending the email
+                spinner.style.display = 'none';
                 showAlert('Error', 'An error has occurred. You can try retyping your email.');
                 return;
             });
@@ -630,14 +645,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Automatically redirect to the home screen if details are remembered
     firebase.auth().onAuthStateChanged(async (user) => {
-        // Skip this line while manual log in is in progress
-        if (isLoggingInManually) return;
-
         const body = document.getElementById('background');
         const spinner = document.getElementById('spinner');
 
+        // Skip this line while manual log in is in progress
+        if (isLoggingInManually) return;
+
         // Show the spinner while checking auth state
-        spinner.style.display = 'block';
+        spinner.style.display = 'flex';
         body.style.display = 'none';
 
         // User is signed in, along with checking for a verified email
@@ -686,18 +701,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Redirect
                     window.location.replace('home.html');
                 } else {
-                    showAlert('Error', 'Your account data could not be found. ' + 
-                            'Please try logging in. If this error still persists, contact us for support.');
+                    showAlert('Error', 'If you chose to have your login information remembered, ' +
+                            'there was an error attempting to recieve that data in order to automatically log you in.\n\n ' +
+                            'If you have refreshed this page and recieved this error before logging in for the first time, you can ignore this and log in.\n\n' +
+                            'Otherwise, please try logging in again. If this error still persists, contact us for support.');
                 }
             } catch (e) {
                 showAlert('Error', 'There was a problem loading your account data. Please try again by refreshing or contact us for support.');
                 return;
             }
+        } else {
+            // If user is not logged in or something went wrong
+            spinner.style.display = 'none';
+            body.style.display = 'block';
+            body.classList.add('loaded');
         }
-
-        // If user is not logged in or something went wrong
-        spinner.style.display = 'none';
-        body.style.display = 'block';
-        body.classList.remove('no-background');
     });
 });
