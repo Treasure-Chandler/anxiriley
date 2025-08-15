@@ -14,7 +14,7 @@
     border: none;
     cursor: pointer;
     margin-right: 20px;
-    margin-top: 10px;
+    margin-top: 55px;
     height: 75px;
     float: right;
     right: 10px;
@@ -26,11 +26,115 @@
     background-image: url(/assets/settingshover.png);
 }
 
+/* Styling for the actual menu buttons */
+#home {
+    cursor: pointer;
+    transition: filter 0.3s ease-in-out;
+}
+
+#home:hover {
+    filter: brightness(0.7);
+}
+
+#calmDown {
+    background-color: transparent;
+    background-image: url(/assets/calmdownlightmode.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 90px 90px;
+    border: none;
+    cursor: pointer;
+    margin-top: 18px;
+    height: 90px;
+    transition: filter 0.3s ease-in-out;
+    width: 90px;
+}
+
+#calmDown:hover {
+    filter: brightness(2.1);
+}
+
+#stats {
+    background-color: transparent;
+    background-image: url(/assets/statslightmode.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 120px 120px;
+    border: none;
+    cursor: pointer;
+    height: 120px;
+    transition: filter 0.3s ease-in-out;
+    width: 120px;
+}
+
+#stats:hover {
+    filter: brightness(2.1);
+}
+
+/* Div that houses the inbox and add class buttons */
+.xtra-btns {
+    align-items: center;
+    bottom: 120px;
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    width: 100%;
+}
+
+/* Inbox button */
+#inbox {
+    background-color: transparent;
+    background-image: url(/assets/mail.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 90px 90px;
+    border: none;
+    cursor: pointer;
+    height: 90px;
+    margin-left: 5px;
+    transition: filter 0.3s ease-in-out;
+    width: 90px;
+}
+
+#inbox:hover {
+    filter: brightness(1.45);
+}
+
+/* Add class button */
+#addClass {
+    background-color: transparent;
+    background-image: url(/assets/addclass.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 90px 90px;
+    border: none;
+    cursor: pointer;
+    height: 90px;
+    margin-right: 20px;
+    transition: background-image 0.3s ease-in-out;
+    width: 90px;
+}
+
+#addClass:hover {
+    background-image: url(/assets/addclasshover.png);
+}
+
 /* Background image */
 body {
     background-image: url(/assets/lightmodewithwildcathome.png);
     background-size: 100vw 100vh;
     background-repeat: no-repeat;
+}
+
+/* Footer that houses the home menu buttons */
+footer {
+    align-items: center;
+    bottom: 0;
+    display: flex;
+    gap: 12em;
+    justify-content: center;
+    position: fixed;
+    width: 100%;
 }
 
 /* Positioning of elements on smaller screens */
