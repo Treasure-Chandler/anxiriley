@@ -5,6 +5,7 @@
  * and redirecting them back to the login page (so the user can actually log in to their account).
  */
 
+// When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
     // Declare variables
     const replaceName = document.getElementById('replacePlaceholderName');
