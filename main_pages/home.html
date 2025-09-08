@@ -1,7 +1,7 @@
 <!--
     Made by Treasure Chandler
 
-    The main home age for Anxiriley, which includes Firestore integration for loading class data,
+    The main home page for Anxiriley, which includes Firestore integration for loading class data,
     along with all of the other main features of the extension.
 -->
 
@@ -13,9 +13,10 @@
         <title>Home</title>
 
         <!-- Firebase setup -->
-        <!-- <script src="../scripts/lib/firebase-app-compat.js"></script>
+        <script src="../scripts/lib/firebase-app-compat.js"></script>
         <script src="../scripts/lib/firebase-auth-compat.js"></script>
-        <script src="../scripts/firebase-init.js"></script> -->
+        <script src="../scripts/lib/firebase-firestore-compat.js"></script>
+        <script src="../scripts/firebase-init.js"></script>
 
         <script src="../scripts/home.js"></script>
 
@@ -35,7 +36,7 @@
             <!-- Inbox and add class buttons -->
             <div class="xtra-btns">
                 <button id="inbox"></button>
-                <button id="addClass"></button>
+                <button id="classAdd"></button>
             </div>
 
             <!-- 3 menu buttons -->
