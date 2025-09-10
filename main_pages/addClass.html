@@ -23,11 +23,27 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
-
-        <!-- Button to navigate back to the home page -->
-        <button id="back"></button>
     </head>
     <body>
+        <!-- Button to navigate back to the home page -->
+        <button id="back"></button>
+
+        <!-- "Enter class code" label -->
         <p class="poppins-semibold enter-code-txt">Enter the class code:</p>
+
+        <!-- Class code text field -->
+        <input type="text" placeholder="Type here..." name="code" id="classCode" required>
+
+        <!-- "Case sensitive" label -->
+        <p class="poppins-regular case-sens-txt">Keep in mind that codes are case sensitive.</p>
+
+        <!-- "Warning of max class amount" label -->
+        <p class="poppins-regular max-classes-warn-txt">
+            You are in the maximum amount of classes!<br>
+            If you want to join a new one, you will need to leave a different class.
+        </p>
+
+        <!-- Button to submit a new class code -->
+        <button type="button" class="add-class-btn" id="addClass">Join Class</button>
     </body>
 </html>

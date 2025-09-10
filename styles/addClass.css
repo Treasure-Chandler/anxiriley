@@ -31,6 +31,8 @@
     margin-top: 58px;
     height: 75px;
     left: 10px;
+    position: absolute;
+    top: 0.8rem;
     transition: filter 0.3s ease-in-out;
     width: 75px;
 }
@@ -39,8 +41,78 @@
     filter: brightness(0.8);
 }
 
+/* Styling the "enter class code" label */
 .enter-code-txt {
-    font-size: 2em;
+    font-size: 4em;
+    margin-top: 3em;
+    text-align: center;
+}
+
+/* Styling the class code text field */
+input[type=text] {
+    background: #f0f0f3;
+    border: none;
+    border-radius: 5px;
+    display: block;
+    font-family: "Poppins", sans-serif;
+    height: 20%;
+    margin: 5px auto;
+    padding: 15px;
+    width: 10%;
+}
+
+input[type=text]::placeholder {
+    color: #817d80;
+}
+
+input[type=text]:focus {
+    background: #e0e0e0;
+    outline: none;
+}
+
+/* Styling the "case sensitive" label */
+.case-sens-txt {
+    color: #afbbc0;
+    font-size: 16px;
+    margin-top: 2em;
+    text-align: center;
+}
+
+/* Styling the "max classes" warning label */
+.max-classes-warn-txt {
+    color: #d45055;
+    display: block;
+    font-size: 16.5px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
+    text-align: center;
+}
+
+/* Styling the "join class" button */
+.add-class-btn {
+    background-color: #3a42bd;
+    border: none;
+    border-radius: 15px;
+    color: #ffffff;
+    cursor: pointer;
+    display: block;
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
+    padding: 15px 32px;
+    transition: background-color 0.3s ease-in-out;
+    text-align: center;
+    text-decoration: none;
+    width: 10em;
+}
+
+.add-class-btn:hover {
+    background-color: #7078ec;
 }
 
 /* Background image */
