@@ -73,6 +73,16 @@
     z-index: 9999;
 }
 
+/* Styling the hyperlink of the support email */
+#hyperlink {
+    color: #60b4ef;
+    transition: color 0.3s ease-in-out;
+}
+
+#hyperlink:hover {
+    color: #286692;
+}
+
 /* Set the background image */
 html {
     background-image: url(/assets/lightmodewithwildcat.png);

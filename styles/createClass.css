@@ -1,0 +1,74 @@
+/* 
+    Made by Treasure Chandler
+
+    This is the CSS file that will style the "create class" page.
+*/
+
+/* Font configuration */
+.poppins-regular {
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.poppins-semibold {
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+}
+
+/* Settings button */
+.settings-btn {
+    background-color: transparent;
+    background-image: url(/assets/settings.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 75px 75px;
+    border: none;
+    cursor: pointer;
+    float: right;
+    margin-right: 20px;
+    margin-top: 58px;
+    height: 75px;
+    position: absolute;
+    right: 10px;
+    top: 0.8rem;
+    transition: background-image 0.3s ease-in-out;
+    width: 75px;
+}
+
+.settings-btn:hover {
+    background-image: url(/assets/settingshover.png);
+}
+
+/* Back button */
+#back {
+    background-color: transparent;
+    background-image: url(/Assets/back.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 75px 75px;
+    border: none;
+    cursor: pointer;
+    float: left;
+    margin-left: 20px;
+    margin-top: 58px;
+    height: 75px;
+    left: 10px;
+    position: absolute;
+    top: 0.8rem;
+    transition: filter 0.3s ease-in-out;
+    width: 75px;
+}
+
+#back:hover {
+    filter: brightness(0.8);
+}
+
+
+/* Background image */
+body {
+    background-image: url(/assets/lightmodewithwildcat.png);
+    background-size: 100vw 100vh;
+    background-repeat: no-repeat;
+}

@@ -28,6 +28,9 @@
         <!-- Button to navigate back to the home page -->
         <button id="back"></button>
 
+        <!-- Settings button -->
+        <button class="settings-btn" id="settings"></button>
+
         <!-- "Enter class code" label -->
         <p class="poppins-semibold enter-code-txt">Enter the class code:</p>
 
@@ -45,5 +48,11 @@
 
         <!-- Button to submit a new class code -->
         <button type="button" class="add-class-btn" id="addClass">Join Class</button>
+
+        <!-- Alert for entering an incorrect code -->
+        <dialog closedby="closerequest" class="wrong-code-alert" id="wrongCodeAlert">
+            <h2>Incorrect Code</h2>
+            <p>Class not found! Check to see if you have typed in the code correctly.</p>
+        </dialog>
     </body>
 </html>

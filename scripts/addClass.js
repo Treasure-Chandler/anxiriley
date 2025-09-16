@@ -11,4 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('back').addEventListener('click', function () {
         location.href = 'home.html';
     });
+
+    // Navigate to the settings page
+    document.getElementById('settings').addEventListener('click', function () {
+        location.href = 'settings.html';
+    });
 });
