@@ -41,6 +41,51 @@
     background-image: url(/assets/settingshover.png);
 }
 
+/* "Let's get started" text */
+.get-started-txt {
+    font-size: 4em;
+    margin-top: 2em;
+    text-align: center;
+}
+
+/* Enter stuff text labels */
+.enter-stuff-txt {
+    font-size: 3.75em;
+    margin-top: 1em;
+    text-align: center;
+}
+
+/* Styling the inputs */
+input[type=text] {
+    background: #f0f0f3;
+    border: none;
+    border-radius: 5px;
+    display: block;
+    font-family: "Poppins", sans-serif;
+    height: 20%;
+    margin: 1px auto;
+    margin-top: -20px;
+    padding: 15px;
+    width: 15%;
+}
+
+input[type=text]::placeholder {
+    color: #817d80;
+}
+
+input[type=text]:focus {
+    background: #e0e0e0;
+    outline: none;
+}
+
+/* "e.g." text */
+.eg-txt {
+    color: #b2b2b2;
+    font-size: 1.5em;
+    margin-top: -40px;
+    text-align: center;
+}
+
 /* Back button */
 #back {
     background-color: transparent;
