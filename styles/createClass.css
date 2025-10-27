@@ -82,8 +82,71 @@ input[type=text]:focus {
 .eg-txt {
     color: #b2b2b2;
     font-size: 1.5em;
+    margin-bottom: 40px;
     margin-top: -40px;
     text-align: center;
+}
+
+/* Incorrect hour format text */
+.incorrect-hour-format-txt {
+    color: #d45055;
+    display: none;
+    font-size: 16.5px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+    text-align: center;
+}
+
+/* Container that houses the grid of banners */
+.banner-grid-container {
+    font-family: "Poppins", sans-serif;
+    overflow-y: auto;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Container that houses the actual banners */
+.banner-grid {
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
+}
+
+/* Selectable banners */
+.banner-item {
+    align-items: center;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+    width: 120px;
+}
+
+.banner-item:hover {
+    transform: scale(1.05);
+}
+
+.banner-item img {
+    border-bottom: 3px solid #ccc;
+    display: block;
+    height: auto;
+    width: 100%;
+}
+
+.banner-item p {
+    background-color: #6b6b6b;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    padding: 5px;
+    text-align: center;
+    width: 100%;
 }
 
 /* Back button */
@@ -109,7 +172,6 @@ input[type=text]:focus {
 #back:hover {
     filter: brightness(0.8);
 }
-
 
 /* Background image */
 body {
