@@ -7,7 +7,7 @@
 
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
-    // Declare variables
+    // Declare components
     const replaceName = document.getElementById('replacePlaceholderName');
     const replacedName = localStorage.getItem('tempUserName');
     const confetti = document.getElementById('confetti');

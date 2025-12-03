@@ -7,6 +7,10 @@
 
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
+    // Declare compoennts
+    const classCodeInput = document.getElementById('classCode');
+    const addClassBtn = document.getElementById('addClass');
+
     // Navigate back to the home screen
     document.getElementById('back').addEventListener('click', function () {
         location.href = 'home.html';
@@ -15,5 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Navigate to the settings page
     document.getElementById('settings').addEventListener('click', function () {
         location.href = 'settings.html';
+    });
+
+    // The "submit" button is initially disabled
+    addClassBtn.disabled = true;
+
+    // Automatically toggle the enabling/disabling of the "submit" button
+    classCodeInput.addEventListener("input", () => {
+        if (classCodeInput.value.length >= 6) {
+            addClassBtn.disabled = false;
+        } else {
+            addClassBtn.disabled = true;
+        }
     });
 });

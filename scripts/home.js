@@ -7,9 +7,6 @@
 
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', async () => {
-    // Declare the user
-    const user = firebase.auth().currentUser;
-
     // Navigate to the settings
     document.getElementById('settings').addEventListener('click', function () {
         location.href = 'settings.html';
@@ -18,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Wait for the firebase auth state for the below code to work
     firebase.auth().onAuthStateChanged(async (user) => {
         /* Role dependent conditions for adding a class */
-        // Try to fetch from the "teachers" collection
+        // Try to fetch from the "teachers" collection for starters
         const teacherDoc = await firebase.firestore().collection('teachers').doc(user.uid).get();
 
         if (teacherDoc.exists) {
@@ -32,6 +29,5 @@ document.addEventListener('DOMContentLoaded', async () => {
                 location.href = 'addClass.html';
             });
         }
-
     });
 });

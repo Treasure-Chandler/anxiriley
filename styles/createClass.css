@@ -4,6 +4,32 @@
     This is the CSS file that will style the "create class" page.
 */
 
+/* Top buttons area */
+.top-bar {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+/* House the rest of the elements in this small interactive area */
+.interactive-area {
+    display: flex;
+    flex-direction: column;
+    height: 93.6vh;
+    overflow: hidden;
+    width: 100%;
+}
+
+.scroll-content {
+    flex: 1;
+    margin-top: 33px;
+    overflow-y: auto;
+}
+
 /* Font configuration */
 .poppins-regular {
     font-family: "Poppins", sans-serif;
@@ -44,7 +70,7 @@
 /* "Let's get started" text */
 .get-started-txt {
     font-size: 4em;
-    margin-top: 2em;
+    margin-top: 1em;
     text-align: center;
 }
 
@@ -57,12 +83,13 @@
 
 /* Styling the inputs */
 input[type=text] {
+    align-self: flex-start;
     background: #f0f0f3;
     border: none;
     border-radius: 5px;
     display: block;
     font-family: "Poppins", sans-serif;
-    height: 20%;
+    height: auto;
     margin: 1px auto;
     margin-top: -20px;
     padding: 15px;
@@ -107,7 +134,7 @@ input[type=text]:focus {
 }
 
 /* Container that houses the actual banners */
-.banner-grid {
+.banners-grid {
     display: grid;
     gap: 15px;
     grid-template-columns: repeat(4, 1fr);
@@ -123,12 +150,13 @@ input[type=text]:focus {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    margin-bottom: 40px;
     transition: transform 0.2s ease;
-    width: 120px;
+    width: 180px;
 }
 
 .banner-item:hover {
-    transform: scale(1.05);
+    transform: scale(1.075);
 }
 
 .banner-item img {
@@ -175,7 +203,8 @@ input[type=text]:focus {
 
 /* Background image */
 body {
-    background-image: url(/assets/lightmodewithwildcat.png);
+    background: url(/Assets/lightmodewithwildcat.png) no-repeat center center fixed;
     background-size: 100vw 100vh;
-    background-repeat: no-repeat;
+    margin: 0;
+    overflow: hidden;
 }

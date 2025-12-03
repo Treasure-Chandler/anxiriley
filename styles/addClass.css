@@ -17,30 +17,6 @@
     font-weight: 600;
 }
 
-/* Settings button */
-.settings-btn {
-    background-color: transparent;
-    background-image: url(/assets/settings.png);
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    background-size: 75px 75px;
-    border: none;
-    cursor: pointer;
-    float: right;
-    margin-right: 20px;
-    margin-top: 58px;
-    height: 75px;
-    position: absolute;
-    right: 10px;
-    top: 0.8rem;
-    transition: background-image 0.3s ease-in-out;
-    width: 75px;
-}
-
-.settings-btn:hover {
-    background-image: url(/assets/settingshover.png);
-}
-
 /* Back button */
 #back {
     background-color: transparent;
@@ -65,6 +41,30 @@
     filter: brightness(0.8);
 }
 
+/* Settings button */
+.settings-btn {
+    background-color: transparent;
+    background-image: url(/assets/settings.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 75px 75px;
+    border: none;
+    cursor: pointer;
+    float: right;
+    margin-right: 20px;
+    margin-top: 58px;
+    height: 75px;
+    position: absolute;
+    right: 10px;
+    top: 0.8rem;
+    transition: background-image 0.3s ease-in-out;
+    width: 75px;
+}
+
+.settings-btn:hover {
+    background-image: url(/assets/settingshover.png);
+}
+
 /* Styling the "enter class code" label */
 .enter-code-txt {
     font-size: 4em;
@@ -79,7 +79,7 @@ input[type=text] {
     border-radius: 5px;
     display: block;
     font-family: "Poppins", sans-serif;
-    height: 20%;
+    height: 25%;
     margin: 5px auto;
     padding: 15px;
     width: 10%;
@@ -139,6 +139,12 @@ input[type=text]:focus {
     background-color: #7078ec;
 }
 
+.add-class-btn:disabled {
+    background-color: #eaeaef;
+    color: #dad7d7;
+    cursor: not-allowed;
+}
+
 /* Styling the wrong code alert popup and the "OK" button */
 .ok {
     background-color: #c7bd3a;
@@ -168,7 +174,6 @@ input[type=text]:focus {
     font-style: normal;
     font-weight: 400;
 }
-
 
 /* Background image */
 body {

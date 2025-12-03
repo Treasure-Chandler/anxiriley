@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Initialize Firestore for user data creation
     const db = firebase.firestore();
     
-    // Declaring variables
+    // Declaring components
     const credAlert = document.getElementById('credIssues');
     const resetSuccess = document.getElementById('resetSuccessAlert');
 
@@ -304,6 +304,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', async function () {
+        // Declare components
         const signUpForm = document.getElementById('signUp');
         const blackOverlay = document.getElementById('black-overlay');
         const spinner = document.getElementById('spinner');
@@ -450,6 +451,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Events for logging in
     document.getElementById('liButton').addEventListener('click', async function () {
+        // Declare components
         const logInForm = document.getElementById('logIn');
         const blackOverlay = document.getElementById('black-overlay');
         const spinner = document.getElementById('spinner');
@@ -507,14 +509,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return;
             }
 
-            // Declare common values
+            // Declare common user variables
             const userRole = localStorage.getItem('userRole') || inferRoleFromEmail(user.email);
             const uid = user.uid;
             const collectionName = userRole === 'Student' ? 'students' : 'teachers';
             const docRef = db.collection(collectionName).doc(uid);
             const docSnap = await docRef.get();
 
-            // If the document does not exist, create one anyway
+            // If the document does not exist, create one
             if (!docSnap.exists) {
                 const newUserData = userRole === 'Student'
                     ? {
@@ -705,8 +707,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     window.location.replace('home.html');
                 } else {
                     showAlert('Error', 'If you chose to have your login information remembered, ' +
-                            'there was an error attempting to recieve that data in order to automatically log you in.\n\n ' +
-                            'Please try logging in again. If this error still persists, contact us for support.');
+                                'there was an error attempting to recieve that data in order to automatically log you in.\n\n ' +
+                                'Please try logging in again. If this error still persists, contact us for support.');
                 }
             } catch (e) {
                 showAlert('Error', 'There was a problem loading your account data. Please try again by refreshing or contact us for support.');
