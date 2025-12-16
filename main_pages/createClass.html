@@ -65,10 +65,18 @@
                     <p class="poppins-regular enter-stuff-txt" style="margin-bottom: 30px;">Choose your banner image:</p>
                     <div class="banners-grid">
                         <!-- Actual banners to select -->
-                        <div class="banner-item">
+                        <button class="banner-item" data-banner="Sunrise">
                             <img src="/Assets/Banners/banner_sunrise.png" alt='Class banner, titled "Sunrise"'>
                             <p>Sunrise</p>
-                        </div>
+                        </button>
+                        <button class="banner-item" data-banner="RHS">
+                            <img src="/Assets/Banners/banner_rhs.jpg" alt='Class banner, titled "RHS"'>
+                            <p>RHS</p>
+                        </button>
+                        <button class="banner-item" data-banner="Sunrise">
+                            <img src="/Assets/Banners/banner_sunrise.png" alt='Class banner, titled "Sunrise"'>
+                            <p>Sunrise</p>
+                        </button>
                         <div class="banner-item">
                             <img src="/Assets/Banners/banner_rhs.jpg" alt='Class banner, titled "RHS"'>
                             <p>RHS</p>
@@ -99,6 +107,9 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Button to submit the information (which creates a new class) -->
+                <button type="button" class="create-class-btn" id="addClass">Create Class</button>
             </div>
         </div>
     </body>

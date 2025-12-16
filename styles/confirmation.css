@@ -4,6 +4,19 @@
     This is the CSS file that will style the confirmation page.
 */
 
+/* Font configuration */
+.poppins-regular {
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.poppins-semibold {
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: 500;
+}
+
 /* Styling the continue button */
 .continuebtn {
     background-color: #3a42bd;
@@ -35,19 +48,6 @@
     margin-top: 5.3em;
     position: relative;
     text-align: center;
-}
-
-/* Font configuration */
-.poppins-regular {
-    font-family: "Poppins", sans-serif;
-    font-style: normal;
-    font-weight: 400;
-}
-
-.poppins-semibold {
-    font-family: "Poppins", sans-serif;
-    font-style: normal;
-    font-weight: 500;
 }
 
 /* Text styling */

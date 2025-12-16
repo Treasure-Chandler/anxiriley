@@ -43,6 +43,30 @@
     font-weight: 600;
 }
 
+/* Back button */
+#back {
+    background-color: transparent;
+    background-image: url(/Assets/back.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 75px 75px;
+    border: none;
+    cursor: pointer;
+    float: left;
+    margin-left: 20px;
+    margin-top: 58px;
+    height: 75px;
+    left: 10px;
+    position: absolute;
+    top: 0.8rem;
+    transition: filter 0.3s ease-in-out;
+    width: 75px;
+}
+
+#back:hover {
+    filter: brightness(0.8);
+}
+
 /* Settings button */
 .settings-btn {
     background-color: transparent;
@@ -177,28 +201,37 @@ input[type=text]:focus {
     width: 100%;
 }
 
-/* Back button */
-#back {
-    background-color: transparent;
-    background-image: url(/Assets/back.png);
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    background-size: 75px 75px;
+/* Button to create the class */
+.create-class-btn {
+    background-color: #3a42bd;
     border: none;
+    border-radius: 15px;
+    color: #ffffff;
     cursor: pointer;
-    float: left;
-    margin-left: 20px;
-    margin-top: 58px;
-    height: 75px;
-    left: 10px;
-    position: absolute;
-    top: 0.8rem;
-    transition: filter 0.3s ease-in-out;
-    width: 75px;
+    display: block;
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    margin-bottom: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+    padding: 15px 32px;
+    transition: background-color 0.3s ease-in-out;
+    text-align: center;
+    text-decoration: none;
+    width: 10em;
 }
 
-#back:hover {
-    filter: brightness(0.8);
+.create-class-btn:hover {
+    background-color: #7078ec;
+}
+
+.create-class-btn:disabled {
+    background-color: #eaeaef;
+    color: #dad7d7;
+    cursor: not-allowed;
 }
 
 /* Background image */
