@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Initialize Firestore for user data creation
     const db = firebase.firestore();
     
-    // Declaring components
+    // Declare components
     const credAlert = document.getElementById('credIssues');
     const resetSuccess = document.getElementById('resetSuccessAlert');
 

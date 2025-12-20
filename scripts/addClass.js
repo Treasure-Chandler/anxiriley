@@ -7,7 +7,7 @@
 
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
-    // Declare compoennts
+    // Declare components
     const classCodeInput = document.getElementById('classCode');
     const addClassBtn = document.getElementById('addClass');
 

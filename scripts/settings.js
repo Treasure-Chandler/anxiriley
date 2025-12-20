@@ -75,7 +75,7 @@ function getPasswordFromUser() {
 
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize alerts
+    // Declare alerts
     const confirmDeletionAlert = document.getElementById('confirmAlert');
     const needPwAlert = document.getElementById('needPasswordAlert');
 
