@@ -9,7 +9,14 @@
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
     // Declare components
+    const missingInfoDialog = document.getElementById("missingInfoAlert");
+    const missingInfoOk = document.getElementById("missingInfoOK");
+
+    const classNameInput = document.getElementById("className");
+    const classHourInput = document.getElementById("classHour");
     const bannerButtons = document.querySelectorAll(".banner-item");
+    const createBtn = document.getElementById("addClass");
+
     let selectedBanner = null;
 
     // Navigate back to the home screen
@@ -35,5 +42,25 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.add("selected");
             selectedBanner = bannerName;
         });
+    });
+
+    // Add the class to Firestore once everything is selected
+    createBtn.addEventListener("click", () => {
+        const className = classNameInput.value.trim();
+        const classHour = classHourInput.value.trim();
+
+        // Input validation
+        if (!className || !classHour || !selectedBanner) {
+            // Show the dialog if the user did not interact with anything
+            missingInfoDialog.showModal();
+            return;
+        }
+
+        // TODO: Firebase stuff
+    });
+
+    // Close dialog when "OK" is clicked
+    missingInfoOk.addEventListener("click", () => {
+        missingInfoDialog.close();
     });
 });
