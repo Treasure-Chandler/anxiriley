@@ -9,8 +9,8 @@
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
     // Declare components
-    const missingInfoDialog = document.getElementById("missingInfoAlert");
-    const missingInfoOk = document.getElementById("missingInfoOK");
+    const dialog = document.getElementById('universalCCAlert');
+    const okBtn = document.getElementById('universalCCAlertOK');
 
     const classNameInput = document.getElementById("className");
     const classHourInput = document.getElementById("classHour");
@@ -18,6 +18,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const createBtn = document.getElementById("addClass");
 
     let selectedBanner = null;
+
+    /**
+     * Shows class creation validation alerts with a specific title and message depending on the condition
+     * 
+     * @param {string} title        Alert title 
+     * @param {string} message      Alert message
+     */
+    function showAlert(title, message) {
+        const alert = document.getElementById('universalCCAlert');
+        document.getElementById('universalCCAlertTitle').textContent = title;
+        document.getElementById('universalCCAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
+        alert.showModal();
+    }
+
+    // Configure the "OK" button in alerts to close it
+    okBtn.addEventListener('click', () => {
+        dialog.close();
+    });
 
     // Navigate back to the home screen
     document.getElementById('back').addEventListener('click', function () {
@@ -50,17 +68,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const classHour = classHourInput.value.trim();
 
         // Input validation
-        if (!className || !classHour || !selectedBanner) {
-            // Show the dialog if the user did not interact with anything
-            missingInfoDialog.showModal();
+        if (!className && !classHour && !selectedBanner) {
+            // Alert if the user did not interact with anything
+            showAlert('Missing Information', 'You must fill in all required fields and select a banner!');
             return;
+        } else if (!className || !classHour || !selectedBanner) {
+            showAlert('Missing Information', 'You are missing one or more forms of information!\n' +
+                                             'Double check if you did not fill in a class or hour field, or if you did not select a banner.'
+            );
         }
 
         // TODO: Firebase stuff
-    });
-
-    // Close dialog when "OK" is clicked
-    missingInfoOk.addEventListener("click", () => {
-        missingInfoDialog.close();
     });
 });

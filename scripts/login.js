@@ -48,9 +48,9 @@ document.addEventListener('DOMContentLoaded', async function () {
      * @param {string} message      Alert message
      */
     function showAlert(title, message) {
-        const alert = document.getElementById('universalAlert');
-        document.getElementById('universalAlertTitle').textContent = title;
-        document.getElementById('universalAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
+        const alert = document.getElementById('universalLUSUAlert');
+        document.getElementById('universalLUSUAlertTitle').textContent = title;
+        document.getElementById('universalLUSUAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
         alert.showModal();
     }
 

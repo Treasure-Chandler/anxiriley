@@ -242,6 +242,15 @@ input[type=text]:focus {
 }
 
 /* Styling alerts and the OK button */
+.create-class-alert {
+    border: 3px solid #28507e;
+    border-radius: 8px;
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+}
+
 .ok {
     background-color: #c7bd3a;
     border: none;
@@ -260,15 +269,6 @@ input[type=text]:focus {
 
 .ok:hover {
     background-color: #ece359;
-}
-
-.missing-info-alert {
-    border: 3px solid #28507e;
-    border-radius: 8px;
-    font-family: "Poppins", sans-serif;
-    font-size: 13px;
-    font-style: normal;
-    font-weight: 400;
 }
 
 /* Background image */
