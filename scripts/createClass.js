@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createBtn.addEventListener("click", () => {
         const className = classNameInput.value.trim();
         const classHour = classHourInput.value.trim();
+        const hours = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'];
 
         // Input validation
         if (!className && !classHour && !selectedBanner) {
@@ -76,6 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
             showAlert('Missing Information', 'You are missing one or more forms of information!\n' +
                                              'Double check if you did not fill in a class or hour field, or if you did not select a banner.'
             );
+        } else if (!hours.includes(classHour)) {
+            showAlert('Incorrect Hour Format', 'The hour must be in the above format! Please use the format listed in the \"e.g\" above.');
         }
 
         // TODO: Firebase stuff
