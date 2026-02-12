@@ -6,6 +6,18 @@
  * decorative banner image for their class.
  */
 
+import {
+    setNumOfTeacherClasses,
+    numOfTeacherClasses
+} from './userInfo.js';
+
+import {
+    classIsMade,
+    isClassMade,
+    generatedCode,
+    setGeneratedCode
+} from './classUtils.js'
+
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
     // Declare components
@@ -30,6 +42,29 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('universalCCAlertTitle').textContent = title;
         document.getElementById('universalCCAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
         alert.showModal();
+    }
+
+    /**
+     * Generates a respective code for the class.
+     * 
+     * @returns {string}        The generated code
+     */
+    function classCode() {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        const numbers = '1234567890';
+
+        function random(str) {
+            return str[Math.floor(Math.random() * str.length)];
+        }
+
+        return (
+            random(letters) +
+            random(letters) +
+            random(numbers) +
+            random(numbers) +
+            random(letters) +
+            random(letters)
+        );
     }
 
     // Configure the "OK" button in alerts to close it
@@ -63,10 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Add the class to Firestore once everything is selected
-    createBtn.addEventListener("click", () => {
+    createBtn.addEventListener("click", async () => {
         const className = classNameInput.value.trim();
         const classHour = classHourInput.value.trim();
         const hours = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'];
+        const classCode = classCode();
+        classIsMade = false;
 
         // Input validation
         if (!className && !classHour && !selectedBanner) {
@@ -74,13 +111,94 @@ document.addEventListener('DOMContentLoaded', () => {
             showAlert('Missing Information', 'You must fill in all required fields and select a banner!');
             return;
         } else if (!className || !classHour || !selectedBanner) {
+            // Alert if the user is missing 1-2 pieces of info
             showAlert('Missing Information', 'You are missing one or more forms of information!\n' +
                                              'Double check if you did not fill in a class or hour field, or if you did not select a banner.'
             );
         } else if (!hours.includes(classHour)) {
+            // Alert if the user didn't input the hour in the correct format
             showAlert('Incorrect Hour Format', 'The hour must be in the above format! Please use the format listed in the \"e.g\" above.');
         }
 
-        // TODO: Firebase stuff
+        /**
+         * Adds the class code to the corresponding hour depending on the teacher's input
+         */
+        async function addHour() {
+            if (classHourInput == '1st') {
+                await firebase.firestore()
+                        .collection('teacherClasses')
+                        .doc(user.uid)
+                        .update({
+                            'Class 1': classCode
+                        });
+            } else if (classHourInput == '2nd') {
+                await firebase.firestore()
+                        .collection('teacherClasses')
+                        .doc(user.uid)
+                        .update({
+                            'Class 2': classCode
+                        });
+            } else if (classHourInput == '3rd') {
+                await firebase.firestore()
+                        .collection('teacherClasses')
+                        .doc(user.uid)
+                        .update({
+                            'Class 3': classCode
+                        });
+            } else if (classHourInput == '4th') {
+                await firebase.firestore()
+                        .collection('teacherClasses')
+                        .doc(user.uid)
+                        .update({
+                            'Class 4': classCode
+                        });
+            } else if (classHourInput == '5th') {
+                await firebase.firestore()
+                        .collection('teacherClasses')
+                        .doc(user.uid)
+                        .update({
+                            'Class 5': classCode
+                        });
+            } else if (classHourInput == '6th') {
+                await firebase.firestore()
+                        .collection('teacherClasses')
+                        .doc(user.uid)
+                        .update({
+                            'Class 6': classCode
+                        });
+            } else if (classHourInput == '7th') {
+                await firebase.firestore()
+                        .collection('teacherClasses')
+                        .doc(user.uid)
+                        .update({
+                            'Class 7': classCode
+                        });
+            }
+        }
+
+        /* Firebase stuff */
+        classIsMade = true;
+
+        // Generate the code and update the teacher's number of classes
+        setGeneratedCode(classCode);
+        setNumOfTeacherClasses(numOfTeacherClasses++);
+
+        // Update the number of the teacher's classes
+        await firebase.firestore()
+                .collection('teachers')
+                .doc(user.uid)
+                .update({
+                    'Number of Classes': numOfTeacherClasses
+                });
+        console.log(numOfTeacherClasses);
+
+        // Update the class code depending on the hour
+        addHour();
+
+        // Disble the button to prevent messing with the backend logic
+        createBtn.disabled = true;
+
+        // Create the class's new row in the collection
+        
     });
 });

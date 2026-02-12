@@ -14,6 +14,8 @@ import {
     setSignedInLang
 } from './userInfo.js';
 
+import { classData, setClassData } from './classUtils.js';
+
 import {
     isBrowserOnline,
     monitorConnectionStatus
@@ -399,7 +401,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Then, create the user's default class data doc in Firestore
             const classCollection = role === 'Student' ? 'studentClasses' : 'teacherClasses';
-            const classData = {
+            classData = {
                 [role === 'Student' ? 'Student ID' : 'Teacher ID']: user.uid,
                 'Inbox Count': 0,
                 'Class 1': 'x',
@@ -410,7 +412,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 'Class 6': 'x',
                 'Class 7': 'x'
             };
-
+            
+            setClassData(classData);
             await db.collection(classCollection).doc(user.uid).set(classData);
 
             // Send verification email
