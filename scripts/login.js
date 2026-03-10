@@ -11,15 +11,16 @@ import {
     setUserName,
     setUserRole,
     setLangPref,
-    setSignedInLang
-} from './userInfo.js';
+    setSignedInLang,
+    setTeacherIconURL
+} from './utils/userInfo.js';
 
-import { classData, setClassData } from './classUtils.js';
+import { classData, setClassData, setAllClassData } from './utils/classUtils.js';
 
 import {
     isBrowserOnline,
     monitorConnectionStatus
-} from './connectionUtils.js';
+} from './utils/connectionUtils.js';
 
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', async function () {
@@ -412,7 +413,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 'Class 6': 'x',
                 'Class 7': 'x'
             };
-            
+
             setClassData(classData);
             await db.collection(classCollection).doc(user.uid).set(classData);
 
@@ -534,6 +535,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         'Teacher Name': user.displayName || 'Unnamed',
                         'Teacher Email': email,
                         'Teacher ID': uid,
+                        'Teacher Icon': '/Assets/placeholderpfp.png',
                         'Number of Classes': 0,
                         'Language Preference': 'eng',
                         'Dark Mode': false
@@ -653,6 +655,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Automatically redirect to the home screen if details are remembered
     firebase.auth().onAuthStateChanged(async (user) => {
+        if (!user) return;
+        
         const body = document.getElementById('background');
         const spinner = document.getElementById('spinner');
 
@@ -697,10 +701,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Set variables from Firestore
                     setUserName(userData[nameField]);
-                    if (typeof setNumOfStudentClasses === 'function') {
+                    if (userRole === 'Student') {
                         setNumOfStudentClasses(parseInt(userData['Number of Classes']));
-                    }
-                    if (typeof setNumOfTeacherClasses === 'function') {
+                    } else {
+                        setTeacherIconURL(userData['Teacher Icon']);
                         setNumOfTeacherClasses(parseInt(userData['Number of Classes']));
                     }
                     setLangPref(userData['Language Preference']);

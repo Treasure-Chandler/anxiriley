@@ -5,9 +5,14 @@
  * and a class code that will be used across several pages.
  */
 
+export let allClassData = null;
 export let classData = null;
 export let classIsMade = null;
 export let generatedCode = null;
+
+export function setAllClassData(value) {
+    allClassData = value;
+}
 
 export function setClassData(value){
     classData = value;

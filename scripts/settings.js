@@ -18,7 +18,7 @@ import {
     setUserName,
     setUserRole,
     setLangPref
-} from './userInfo.js';
+} from './utils/userInfo.js';
 
 /**
  * Shows sign up/log in/forgot password alerts with a specific title and message depending on the condition

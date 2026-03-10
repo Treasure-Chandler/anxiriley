@@ -11,6 +11,7 @@ export let userName = null;
 export let userRole = null;
 export let langPref = null;
 export let signedInLang = null;
+export let teacherIconURL = null;
 
 export function setNumOfStudentClasses(value) {
     numOfStudentClasses = value;
@@ -34,4 +35,8 @@ export function setLangPref(value) {
 
 export function setSignedInLang(value) {
     signedInLang = value;
+}
+
+export function setTeacherIconURL(value) {
+    teacherIconURL = value;
 }

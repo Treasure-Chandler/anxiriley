@@ -8,28 +8,34 @@
 
 import {
     setNumOfTeacherClasses,
-    numOfTeacherClasses
-} from './userInfo.js';
+    numOfTeacherClasses,
+    userName,
+    teacherIconURL
+} from './utils/userInfo.js';
 
 import {
     classIsMade,
     isClassMade,
     generatedCode,
     setGeneratedCode
-} from './classUtils.js'
+} from './utils/classUtils.js'
 
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
     // Declare components
+    const db = firebase.firestore();
     const dialog = document.getElementById('universalCCAlert');
     const okBtn = document.getElementById('universalCCAlertOK');
-
     const classNameInput = document.getElementById("className");
     const classHourInput = document.getElementById("classHour");
+    const className = classNameInput.value.trim();
+    const classHour = classHourInput.value.trim();
     const bannerButtons = document.querySelectorAll(".banner-item");
     const createBtn = document.getElementById("addClass");
+    const classCode = classCode();
 
     let selectedBanner = null;
+    let selectedBannerURL = null;
 
     /**
      * Shows class creation validation alerts with a specific title and message depending on the condition
@@ -94,15 +100,16 @@ document.addEventListener('DOMContentLoaded', () => {
             bannerButtons.forEach(b => b.classList.remove("selected"));
             button.classList.add("selected");
             selectedBanner = bannerName;
+
+            // Store the banner's image for later use
+            const img = button.querySelector('img');
+            selectedBannerURL = img.getAttribute('src');
         });
     });
 
     // Add the class to Firestore once everything is selected
     createBtn.addEventListener("click", async () => {
-        const className = classNameInput.value.trim();
-        const classHour = classHourInput.value.trim();
         const hours = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'];
-        const classCode = classCode();
         classIsMade = false;
 
         // Input validation
@@ -125,49 +132,49 @@ document.addEventListener('DOMContentLoaded', () => {
          */
         async function addHour() {
             if (classHourInput == '1st') {
-                await firebase.firestore()
+                await db
                         .collection('teacherClasses')
                         .doc(user.uid)
                         .update({
                             'Class 1': classCode
                         });
             } else if (classHourInput == '2nd') {
-                await firebase.firestore()
+                await db
                         .collection('teacherClasses')
                         .doc(user.uid)
                         .update({
                             'Class 2': classCode
                         });
             } else if (classHourInput == '3rd') {
-                await firebase.firestore()
+                await db
                         .collection('teacherClasses')
                         .doc(user.uid)
                         .update({
                             'Class 3': classCode
                         });
             } else if (classHourInput == '4th') {
-                await firebase.firestore()
+                await db
                         .collection('teacherClasses')
                         .doc(user.uid)
                         .update({
                             'Class 4': classCode
                         });
             } else if (classHourInput == '5th') {
-                await firebase.firestore()
+                await db
                         .collection('teacherClasses')
                         .doc(user.uid)
                         .update({
                             'Class 5': classCode
                         });
             } else if (classHourInput == '6th') {
-                await firebase.firestore()
+                await db
                         .collection('teacherClasses')
                         .doc(user.uid)
                         .update({
                             'Class 6': classCode
                         });
             } else if (classHourInput == '7th') {
-                await firebase.firestore()
+                await db
                         .collection('teacherClasses')
                         .doc(user.uid)
                         .update({
@@ -184,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setNumOfTeacherClasses(numOfTeacherClasses++);
 
         // Update the number of the teacher's classes
-        await firebase.firestore()
+        await db
                 .collection('teachers')
                 .doc(user.uid)
                 .update({
@@ -199,6 +206,22 @@ document.addEventListener('DOMContentLoaded', () => {
         createBtn.disabled = true;
 
         // Create the class's new row in the collection
-        
+        const newClassData = {
+            'Class Banner': selectedBannerURL,
+            'Class Code': classCode,
+            'Class Hour': classHour,
+            'Class Title': className,
+            'Teacher Name': userName,
+            'Teacher ID': user.uid,
+            'Teacher Icon': teacherIconURL,
+            'Teacher Mood': ''
+        }
+
+        await db.collection('classData').doc(classCode).set(newClassData);
+
+        //
+        setTimeout({
+            
+        }, 500);
     });
 });
