@@ -727,15 +727,6 @@
     background-repeat: no-repeat;
 }
 
-/* Main login contents */
-body {
-    visibility: hidden;
-}
-
-body.loaded {
-    visibility: visible;
-}
-
 /* Styling the footer */
 footer {
     bottom: 0;

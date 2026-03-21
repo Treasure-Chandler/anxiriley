@@ -40,9 +40,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const body = document.getElementById('background');
 
-    // Hide page and background at first
-    body.style.display = 'none';
-    body.classList.add('no-background');
+    // Keep the page visible by default; use the spinner during auth checks instead
+    body.style.display = 'block';
+    body.classList.add('loaded');
 
     /**
      * Shows sign up/log in/forgot password alerts with a specific title and message depending on the condition
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Show login even if offline
         body.style.display = 'block';
-        body.classList.remove('no-background');
+        body.classList.add('loaded');
         return;
     }
 
@@ -728,4 +728,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             body.classList.add('loaded');
         }
     });
+
+    // If there is no remembered session, keep the login screen visible
+    const spinner = document.getElementById('spinner');
+    spinner.style.display = 'none';
+    body.style.display = 'block';
+    body.classList.add('loaded');
 });
