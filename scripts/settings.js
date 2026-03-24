@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Deletes the user's account
+    // TODO: Fix account deletion error
     document.getElementById('deleteAccount').addEventListener('click', async function () {
         // Declare variables
         const currentUser = auth.currentUser;

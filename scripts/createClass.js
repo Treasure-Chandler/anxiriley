@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update the class code depending on the hour
             await addHour();
 
-            // Add the teacher's default profile picture
+            // TODO: Add the teacher's default profile picture
 
             // Create the class's new row in the collection
             const newClassData = {
