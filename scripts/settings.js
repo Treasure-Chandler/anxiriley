@@ -78,6 +78,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Declare alerts
     const confirmDeletionAlert = document.getElementById('confirmAlert');
     const needPwAlert = document.getElementById('needPasswordAlert');
+    const universalAlert = document.getElementById('universalAlert');
+    const okBtn = document.getElementById('universalAlertOK');
+
+    // Close the universal alert when OK is clicked
+    okBtn.addEventListener('click', () => {
+        universalAlert.close();
+    });
 
     // Signs the user out
     document.getElementById('signOut').addEventListener('click', function () {

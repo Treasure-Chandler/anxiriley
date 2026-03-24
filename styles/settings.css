@@ -24,8 +24,8 @@
 }
 
 .btns:hover {
-    background-color: #ece359;
     /* Base background color - not actually shown on the page */
+    background-color: #ece359;
 }
 
 .settings-alert {
@@ -39,7 +39,6 @@
 
 /* Extra styling the password prompt to confirm account deletion */
 #pwPrompt {
-    /* display: flex; */
     font-size: 14px;
     flex-direction: column;
     padding: 20px;
@@ -51,6 +50,8 @@
 }
 
 #pwPrompt input {
+    background-color: #eee;
+    border-radius: 6px;
     display: block;
     font-family: "Poppins", sans-serif;
     padding: 6px;

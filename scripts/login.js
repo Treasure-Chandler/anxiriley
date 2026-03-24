@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             setUserName(data['Teacher Name']);
             setNumOfTeacherClasses(data['Number of Classes']);
             setLangPref(data['Language Preference']);
+            setTeacherIconURL(data['Teacher Icon']);
             setUserRole('Teacher');
         }
     }
@@ -442,12 +443,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 case 'auth/internal-error':
                     // If there has been an internal error
                     showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
-                    console.error(error);
                     break;
                 default:
                     // If there has been any other error
                     showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
-                    console.error(error);
                     break;
             }
         }

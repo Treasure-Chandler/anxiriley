@@ -191,10 +191,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     .update({
                         'Number of Classes': updatedClassCount
                     });
-            console.log(updatedClassCount);
 
             // Update the class code depending on the hour
             await addHour();
+
+            // Add the teacher's default profile picture
 
             // Create the class's new row in the collection
             const newClassData = {
@@ -216,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isClassMade(false);
             createBtn.disabled = false;
             showAlert('Class Creation Error', 'Something went wrong while creating the class. Please try again.');
-            console.error(error);
         }
     });
 });
