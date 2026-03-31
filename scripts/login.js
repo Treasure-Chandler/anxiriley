@@ -306,6 +306,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     });
 
+    // TODO: Fix sign up issue
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', async function () {
         // Declare components
@@ -569,6 +570,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Log any Firebase errors
             spinner.style.display = 'none';
             logInForm.style.display = 'block';
+            
+            /*
+             * Sign out the user in case they were partially signed in.
+             * If this is unsuccessful, throw the below error codes.
+             */
+            await firebase.auth().signOut();
+            
             switch (error.code) {
                 case 'auth/invalid-credential':
                     // If the email/password is incorrect
@@ -718,6 +726,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
             } catch (e) {
                 showAlert('Error', 'There was a problem loading your account data. Please try again by refreshing or contact us for support.');
+                await firebase.auth().signOut();
                 return;
             }
         } else {

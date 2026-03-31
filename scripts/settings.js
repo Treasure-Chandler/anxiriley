@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Declare variables
                 const email = currentUser.email;
                 const credential = firebase.auth.EmailAuthProvider.credential(email, password);
-                const uid = user.uid;
+                const uid = currentUser.uid; // fixed: use currentUser not undefined user variable
                 const role = localStorage.getItem('userRole');
                 const collectionName = role === 'Student' ? 'students' : 'teachers';
 
@@ -156,14 +156,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 setNumOfStudentClasses(null);
                 setNumOfTeacherClasses(null);
 
+                // Show the success message immediately
                 showAlert('Account Deleted', 'Your account has been successfully deleted.');
 
-                // Redirect back to login
+                // Keep the alert open for 3 seconds, then close and redirect to login
                 setTimeout(() => {
+                    universalAlert.close();
                     window.location.replace('login.html');
-                }, 1500);
+                }, 3000);
             } catch (reauthError) {
-                showAlert('Error', 'There was a problem with deleting your account. Please try again.');
+                showAlert('Error', 'There was a problem with deleting your account. Please try again.\n' +
+                                    'If it persists, contact support.');
                 return;
             }
         });
