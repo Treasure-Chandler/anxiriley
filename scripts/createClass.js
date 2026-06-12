@@ -8,9 +8,7 @@
 
 import {
     setNumOfTeacherClasses,
-    numOfTeacherClasses,
-    userName,
-    teacherIconURL
+    numOfTeacherClasses
 } from './utils/userInfo.js';
 
 import {
@@ -198,14 +196,30 @@ document.addEventListener('DOMContentLoaded', () => {
             // TODO: Add the teacher's default profile picture
 
             // Create the class's new row in the collection
+
+            // Ensure we have the teacher's name and icon; fetch from Firestore if not available
+            let teacherName = user.displayName || 'Unnamed';
+            let teacherIcon = '/Assets/placeholderpfp.png';
+            try {
+                const teacherDoc = await db.collection('teachers').doc(user.uid).get();
+                if (teacherDoc.exists) {
+                    const tdata = teacherDoc.data();
+                    if (tdata['Teacher Name']) teacherName = tdata['Teacher Name'];
+                    if (tdata['Teacher Icon']) teacherIcon = tdata['Teacher Icon'];
+                }
+            } catch (e) {
+                // ignore and use fallbacks
+                console.warn('Could not fetch teacher profile:', e);
+            }
+
             const newClassData = {
                 'Class Banner': selectedBannerURL,
                 'Class Code': generatedClassCode,
                 'Class Hour': classHour,
                 'Class Title': className,
-                'Teacher Name': userName,
+                'Teacher Name': teacherName,
                 'Teacher ID': user.uid,
-                'Teacher Icon': teacherIconURL,
+                'Teacher Icon': teacherIcon,
                 'Teacher Mood': ''
             };
 
