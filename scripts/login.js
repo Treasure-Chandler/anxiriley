@@ -306,7 +306,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     });
 
-    // TODO: Fix sign up issue
     // Events for signing up
     document.getElementById('suButton').addEventListener('click', async function () {
         // Declare components
@@ -404,7 +403,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Then, create the user's default class data doc in Firestore
             const classCollection = role === 'Student' ? 'studentClasses' : 'teacherClasses';
-            classData = {
+            const newClassData = {
                 [role === 'Student' ? 'Student ID' : 'Teacher ID']: user.uid,
                 'Inbox Count': 0,
                 'Class 1': 'x',
@@ -416,8 +415,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 'Class 7': 'x'
             };
 
-            setClassData(classData);
-            await db.collection(classCollection).doc(user.uid).set(classData);
+            setClassData(newClassData);
+            await db.collection(classCollection).doc(user.uid).set(newClassData);
 
             // Send verification email
             user.sendEmailVerification();
@@ -429,9 +428,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             window.location.replace('confirmation.html');
         } catch (error) {
             // Log any Firebase errors
+            console.error('Sign-up error:', error);
             spinner.style.display = 'none';
-            blackOverlay.style.display = 'block';
             signUpForm.style.display = 'flex';
+            blackOverlay.style.display = 'block';
+            blackOverlay.style.visibility = 'visible';
+            blackOverlay.style.pointerEvents = 'auto';
+
             switch (error.code) {
                 case 'auth/email-already-in-use':
                     // If the email is already in use
@@ -441,13 +444,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // If the email is invalid
                     showAlert('Invalid Email', 'This email address is not valid! Please enter a correct email.');
                     break;
+                case 'auth/weak-password':
+                    // If the password is too weak
+                    showAlert('Weak Password', 'Your password is too weak. Use at least 6 characters including uppercase, lowercase, and a number.');
+                    break;
                 case 'auth/internal-error':
                     // If there has been an internal error
                     showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
                     break;
                 default:
                     // If there has been any other error
-                    showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
+                    showAlert('Error', error.message || 'Something has gone wrong! Please try again, or contact us for support.');
                     break;
             }
         }
@@ -570,10 +577,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Log any Firebase errors
             spinner.style.display = 'none';
             logInForm.style.display = 'block';
-            
+            blackOverlay.style.display = 'block';
+            blackOverlay.style.visibility = 'visible';
+            blackOverlay.style.pointerEvents = 'auto';
+
             /*
              * Sign out the user in case they were partially signed in.
-             * If this is unsuccessful, throw the below error codes.
+             * If the login is unsuccessful, throw the below error codes.
              */
             await firebase.auth().signOut();
             
@@ -655,6 +665,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             .catch(() => {
                 // Error sending the email
                 spinner.style.display = 'none';
+                blackOverlay.style.display = 'block';
+                blackOverlay.style.visibility = 'visible';
+                blackOverlay.style.pointerEvents = 'auto';
+                
                 showAlert('Error', 'An error has occurred. You can try retyping your email.');
                 return;
             });

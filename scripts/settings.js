@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Declare variables
                 const email = currentUser.email;
                 const credential = firebase.auth.EmailAuthProvider.credential(email, password);
-                const uid = currentUser.uid; // fixed: use currentUser not undefined user variable
+                const uid = currentUser.uid;
                 const role = localStorage.getItem('userRole');
                 const collectionName = role === 'Student' ? 'students' : 'teachers';
 
