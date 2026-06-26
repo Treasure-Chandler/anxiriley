@@ -27,92 +27,100 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
     </head>
     <body>
-        <div class="interactive-area">
-            <!-- Fixed header for the back and settings buttons -->
-            <div class="top-bar">
-                <!-- Button to navigate back to the home page -->
-                <button id="back"></button>
+        <main>
+            <div class="interactive-area">
+                <!-- Fixed header for the back and settings buttons -->
+                <div class="top-bar">
+                    <!-- Button to navigate back to the home page -->
+                    <button id="back"></button>
 
-                <!-- Settings button -->
-                <button class="settings-btn" id="settings"></button>
-            </div>
-
-            <!-- Makes this entire section scrollable instead of needing to make the page scrollable -->
-            <div class="scroll-content">
-                <!-- "Let's get started" label -->
-                <p class="poppins-semibold get-started-txt">Let's get started with the class creation!</p>
-
-                <!-- Enter class name label -->
-                <p class="poppins-regular enter-stuff-txt">Enter class name:</p>
-
-                <!-- Class name input -->
-                <input type="text" placeholder="Type here..." name="code" id="className" required>
-
-                <!-- Enter class hour label -->
-                <p class="poppins-regular enter-stuff-txt">Enter class hour:</p>
-
-                <!-- "e.g." label -->
-                <p class="poppins-regular eg-txt">e.g.: 1st, 2nd, 3rd...</p>
-
-                <!-- Class hour input -->
-                <input type="text" placeholder="Type here..." name="code" id="classHour" required>
-
-                <!-- Incorrect hour label -->
-                <p class="poppins-regular incorrect-hour-format-txt" id="wrongHourAlert">
-                    The hour must be in the correct format!<br>
-                    Please use the format listed in the "e.g." above.
-                </p>
-
-                <!-- Class banners to select from -->
-                <div class="banner-grid-container">
-                    <p class="poppins-regular enter-stuff-txt" style="margin-bottom: 30px;">Choose your banner image:</p>
-                    <div class="banners-grid">
-                        <!-- Actual banners to select -->
-                        <button class="banner-item" data-banner="Sunrise">
-                            <img src="/Assets/Banners/banner_sunrise.png" alt='Class banner, titled "Sunrise"'>
-                            <p class="poppins-regular">Sunrise</p>
-                        </button>
-                        <button class="banner-item" data-banner="RHS">
-                            <img src="/Assets/Banners/banner_rhs.jpg" alt='Class banner, titled "RHS"'>
-                            <p class="poppins-regular">RHS</p>
-                        </button>
-                        <button class="banner-item" data-banner="Sunset">
-                            <img src="/Assets/Banners/banner_sunset.jpg" alt='Class banner, titled "Sunset"'>
-                            <p class="poppins-regular">Sunset</p>
-                        </button>
-                        <button class="banner-item" data-banner="Greens">
-                            <img src="/Assets/Banners/banner_greens.png" alt='Class banner, titled "Greens"'>
-                            <p class="poppins-regular">Greens</p>
-                        </button>
-                        <button class="banner-item" data-banner="Magical">
-                            <img src="/Assets/Banners/banner_magical.jpg" alt='Class banner, titled "Magical"'>
-                            <p class="poppins-regular">Magical</p>
-                        </button>
-                        <button class="banner-item" data-banner="Forest">
-                            <img src="/Assets/Banners/banner_forest.png" alt='Class banner, titled "Forest"'>
-                            <p class="poppins-regular">Forest</p>
-                        </button>
-                        <button class="banner-item" data-banner="Bubblegum">
-                            <img src="/Assets/Banners/banner_bubblegum.png" alt='Class banner, titled "Bubblegum"'>
-                            <p class="poppins-regular">Bubblegum</p>
-                        </button>
-                        <button class="banner-item" data-banner="Ocean">
-                            <img src="/Assets/Banners/banner_ocean.png" alt='Class banner, titled "Ocean"'>
-                            <p class="poppins-regular">Ocean</p>
-                        </button>
-                    </div>
+                    <!-- Settings button -->
+                    <button class="settings-btn" id="settings"></button>
                 </div>
 
-                <!-- Button to submit the information (which creates a new class) -->
-                <button type="button" class="create-class-btn" id="addClass">Create Class</button>
-            </div>
-        </div>
+                <!-- Makes this entire section scrollable instead of needing to make the page scrollable -->
+                <div class="scroll-content">
+                    <!-- "Let's get started" label -->
+                    <p class="poppins-semibold get-started-txt">Let's get started with the class creation!</p>
 
-        <!-- Class creation universal alert template-->
-        <dialog closedby="closerequest" class="create-class-alert" id="universalCCAlert">
-            <h2 id="universalCCAlertTitle"></h2>
-            <p id="universalCCAlertMessage"></p>
-            <button class="ok" id="universalCCAlertOK">OK</button>
-        </dialog>
+                    <!-- Enter class name label -->
+                    <p class="poppins-regular enter-stuff-txt">Enter class name:</p>
+
+                    <!-- Class name input -->
+                    <input type="text" placeholder="Type here..." name="code" id="className" required>
+
+                    <!-- Enter class hour label -->
+                    <p class="poppins-regular enter-stuff-txt">Enter class hour:</p>
+
+                    <!-- "e.g." label -->
+                    <p class="poppins-regular eg-txt">e.g.: 1st, 2nd, 3rd...</p>
+
+                    <!-- Class hour input -->
+                    <input type="text" placeholder="Type here..." name="code" id="classHour" required>
+
+                    <!-- Incorrect hour label -->
+                    <p class="poppins-regular incorrect-hour-format-txt" id="wrongHourAlert">
+                        The hour must be in the correct format!<br>
+                        Please use the format listed in the "e.g." above.
+                    </p>
+
+                    <!-- Class banners to select from -->
+                    <div class="banner-grid-container">
+                        <p class="poppins-regular enter-stuff-txt" style="margin-bottom: 30px;">Choose your banner image:</p>
+                        <div class="banners-grid">
+                            <!-- Actual banners to select -->
+                            <button class="banner-item" data-banner="Sunrise">
+                                <img src="/Assets/Banners/banner_sunrise.png" alt='Class banner, titled "Sunrise"'>
+                                <p class="poppins-regular">Sunrise</p>
+                            </button>
+                            <button class="banner-item" data-banner="RHS">
+                                <img src="/Assets/Banners/banner_rhs.jpg" alt='Class banner, titled "RHS"'>
+                                <p class="poppins-regular">RHS</p>
+                            </button>
+                            <button class="banner-item" data-banner="Sunset">
+                                <img src="/Assets/Banners/banner_sunset.jpg" alt='Class banner, titled "Sunset"'>
+                                <p class="poppins-regular">Sunset</p>
+                            </button>
+                            <button class="banner-item" data-banner="Greens">
+                                <img src="/Assets/Banners/banner_greens.png" alt='Class banner, titled "Greens"'>
+                                <p class="poppins-regular">Greens</p>
+                            </button>
+                            <button class="banner-item" data-banner="Magical">
+                                <img src="/Assets/Banners/banner_magical.jpg" alt='Class banner, titled "Magical"'>
+                                <p class="poppins-regular">Magical</p>
+                            </button>
+                            <button class="banner-item" data-banner="Forest">
+                                <img src="/Assets/Banners/banner_forest.png" alt='Class banner, titled "Forest"'>
+                                <p class="poppins-regular">Forest</p>
+                            </button>
+                            <button class="banner-item" data-banner="Bubblegum">
+                                <img src="/Assets/Banners/banner_bubblegum.png" alt='Class banner, titled "Bubblegum"'>
+                                <p class="poppins-regular">Bubblegum</p>
+                            </button>
+                            <button class="banner-item" data-banner="Ocean">
+                                <img src="/Assets/Banners/banner_ocean.png" alt='Class banner, titled "Ocean"'>
+                                <p class="poppins-regular">Ocean</p>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Button to submit the information (which creates a new class) -->
+                    <button type="button" class="create-class-btn" id="addClass">Create Class</button>
+                </div>
+            </div>
+
+            <!-- Loading icon -->
+            <div id="spinner" style="display: none; flex-direction: column;">
+                <div class="spinner"></div>
+                <p class="spinner-text">Working on things in the background, please wait...</p>
+            </div>
+            
+            <!-- Class creation universal alert template-->
+            <dialog closedby="closerequest" class="create-class-alert" id="universalCCAlert">
+                <h2 id="universalCCAlertTitle"></h2>
+                <p id="universalCCAlertMessage"></p>
+                <button class="ok" id="universalCCAlertOK">OK</button>
+            </dialog>
+        </main>
     </body>
 </html>

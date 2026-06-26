@@ -275,6 +275,47 @@ input[type=text]:focus {
     background-color: #ece359;
 }
 
+/* Styling the loading icon */
+#spinner {
+    align-items: center !important;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center !important;
+    left: 0;
+    position: fixed !important;
+    top: 0;
+    width: 100vw;
+    z-index: 10001;
+}
+
+.spinner {
+    animation: spin 0.8s linear infinite;
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    height: 60px;
+    margin-bottom: 5px;
+    width: 60px;
+}
+
+.spinner-text {
+    background-color: #fafafa;
+    border-radius: 10px;
+    color: #333333;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.3rem;
+    font-style: normal;
+    padding: 10px;
+    text-align: center;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Background image */
 body {
     background: url(/Assets/lightmodewithwildcat.png) no-repeat center center fixed;

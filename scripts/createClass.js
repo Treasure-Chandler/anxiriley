@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const classHourInput = document.getElementById("classHour");
     const bannerButtons = document.querySelectorAll(".banner-item");
     const createBtn = document.getElementById("addClass");
+    const spinner = document.getElementById('spinner');
 
     // Store all fetched classes by the first character of the inputted hour
     const storedClassData = allClassData || {};
@@ -127,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add the class to Firestore once everything is selected/filled in
     createBtn.addEventListener("click", async () => {
+        spinner.style.display = 'flex';
         const user = firebase.auth().currentUser;
         const className = classNameInput.value.trim();
         const classHour = classHourInput.value.trim();
@@ -180,6 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Generate the code and update the teacher's number of classes
             setGeneratedCode(generatedClassCode);
+            localStorage.setItem('latestClassCode', generatedClassCode);
+            localStorage.setItem('latestClassName', className);
             setNumOfTeacherClasses(updatedClassCount);
 
             // Update the number of the teacher's classes
@@ -209,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (tdata['Teacher Icon']) teacherIcon = tdata['Teacher Icon'];
                 }
             } catch (e) {
+                spinner.style.display = 'none';
                 isClassMade(false);
                 createBtn.disabled = false;
                 showAlert('Class Creation Error', 'Something went wrong while creating the class. Please try again.\n' +
@@ -232,11 +237,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Store the new class row by the first character of the hour input
             await storeClassData(generatedClassCode);
         } catch (error) {
+            spinner.style.display = 'none';
             isClassMade(false);
             createBtn.disabled = false;
             showAlert('Class Creation Error', 'Something went wrong while creating the class. Please try again.\n' +
                         'If the errors persist, please contact support.'
             );
         }
+        
+        // Hide spinner when done and then navigate back to the home page
+        spinner.style.display = 'none';
     });
 });
