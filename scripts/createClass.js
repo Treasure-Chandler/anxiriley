@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Configure the "OK" button in alerts to close it
+    // Configure the "OK" button in alerts to close them
     okBtn.addEventListener('click', () => {
         dialog.close();
     });
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Add the class to Firestore once everything is selected
+    // Add the class to Firestore once everything is selected/filled in
     createBtn.addEventListener("click", async () => {
         const user = firebase.auth().currentUser;
         const className = classNameInput.value.trim();
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         createBtn.disabled = true;
         
         try {
-            /* More Firebase stuff */
+            /* More Firestore stuff */
             isClassMade(true);
 
             // Generate the code and update the teacher's number of classes
@@ -193,11 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update the class code depending on the hour
             await addHour();
 
-            // TODO: Add the teacher's default profile picture
-
             // Create the class's new row in the collection
 
-            // Ensure we have the teacher's name and icon; fetch from Firestore if not available
+            /* 
+             * Ensure we have the teacher's name and icon since it sometimes returns null;
+             * fetch from Firestore if not available 
+             */
             let teacherName = user.displayName || 'Unnamed';
             let teacherIcon = '/Assets/placeholderpfp.png';
             try {
@@ -208,8 +209,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (tdata['Teacher Icon']) teacherIcon = tdata['Teacher Icon'];
                 }
             } catch (e) {
-                // ignore and use fallbacks
-                console.warn('Could not fetch teacher profile:', e);
+                isClassMade(false);
+                createBtn.disabled = false;
+                showAlert('Class Creation Error', 'Something went wrong while creating the class. Please try again.\n' +
+                            'If the errors persist, please contact support.'
+                );
             }
 
             const newClassData = {
@@ -230,7 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             isClassMade(false);
             createBtn.disabled = false;
-            showAlert('Class Creation Error', 'Something went wrong while creating the class. Please try again.');
+            showAlert('Class Creation Error', 'Something went wrong while creating the class. Please try again.\n' +
+                        'If the errors persist, please contact support.'
+            );
         }
     });
 });
