@@ -184,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setGeneratedCode(generatedClassCode);
             localStorage.setItem('latestClassCode', generatedClassCode);
             localStorage.setItem('latestClassName', className);
+            localStorage.setItem('classJustCreated', 'true');
             setNumOfTeacherClasses(updatedClassCount);
 
             // Update the number of the teacher's classes
@@ -247,5 +248,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Hide spinner when done and then navigate back to the home page
         spinner.style.display = 'none';
+        location.href = 'home.html';
     });
 });

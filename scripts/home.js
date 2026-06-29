@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const classCodeOkBtn = document.getElementById('latestClassCodeOK');
     const db = firebase.firestore();
 
+    // Clear the lastest class code to prevent mixups
     function clearStoredClassCode() {
         localStorage.removeItem('latestClassCode');
         localStorage.removeItem('latestClassName');
@@ -20,16 +21,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    if (classCodeBox) {
-        classCodeBox.style.display = 'none';
-    }
-
+    // Display the class code in the popup
     if (classCodeDisplay) {
         classCodeDisplay.textContent = localStorage.getItem('latestClassCode') || 'No class code yet';
     }
 
+    // "OK" button functionality
     if (classCodeOkBtn && classCodeBox) {
         classCodeOkBtn.addEventListener('click', () => {
+            clearStoredClassCode();
             classCodeBox.close();
         });
     }
@@ -49,23 +49,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (teacherDoc.exists) {
             const storedClassCode = localStorage.getItem('latestClassCode');
+            const classJustCreated = localStorage.getItem('classJustCreated');
 
             if (storedClassCode) {
                 const classDoc = await db.collection('classData').doc(storedClassCode).get();
                 if (!classDoc.exists) {
                     clearStoredClassCode();
+                    localStorage.removeItem('classJustCreated');
                 }
             }
 
-            const hasClassCode = Boolean(localStorage.getItem('latestClassCode'));
-
-            if (classCodeBox) {
-                if (hasClassCode) {
-                    classCodeDisplay.textContent = localStorage.getItem('latestClassCode');
+            // Show popup only if a class was just created
+            if (classJustCreated === 'true' && storedClassCode) {
+                if (classCodeBox) {
+                    classCodeDisplay.textContent = storedClassCode;
                     classCodeBox.showModal();
-                } else {
-                    classCodeDisplay.textContent = 'No class code yet';
-                    classCodeBox.showModal();
+                    localStorage.removeItem('classJustCreated');
                 }
             }
 
@@ -74,6 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 location.href = 'createClass.html';
             });
         } else {
+            // If the user is a studnet, always hide the class code dialog
             if (classCodeBox) {
                 classCodeBox.style.display = 'none';
             }
