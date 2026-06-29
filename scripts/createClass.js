@@ -134,14 +134,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const classHour = classHourInput.value.trim();
         const generatedClassCode = generateClassCode();
         const hours = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'];
-        const updatedClassCount = (numOfTeacherClasses || 0) + 1;
+
+        // Get the current number of classes from Firestore to later update
+        const teacherDoc = await db.collection('teachers').doc(user.uid).get();
+        const currentClassCount = teacherDoc.data()['Number of Classes'] || 0;
+        const updatedClassCount = currentClassCount + 1;
 
         isClassMade(false);
-
-        if (!user) {
-            showAlert('Authentication Error', 'You must be signed in to create a class!');
-            return;
-        }
 
         // Input validation
         if (!className && !classHour && !selectedBanner) {
@@ -177,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
         createBtn.disabled = true;
         
         try {
-            /* More Firestore stuff */
             isClassMade(true);
 
             // Generate the code and update the teacher's number of classes
@@ -244,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showAlert('Class Creation Error', 'Something went wrong while creating the class. Please try again.\n' +
                         'If the errors persist, please contact support.'
             );
+            return;
         }
         
         // Hide spinner when done and then navigate back to the home page

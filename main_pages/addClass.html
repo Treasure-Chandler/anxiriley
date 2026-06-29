@@ -13,8 +13,12 @@
         <title>Join a Class</title>
 
         <!-- Firebase setup -->
+        <script src="../scripts/lib/firebase-app-compat.js"></script>
+        <script src="../scripts/lib/firebase-auth-compat.js"></script>
+        <script src="../scripts/lib/firebase-firestore-compat.js"></script>
+        <script src="../scripts/firebase-init.js"></script>
                 
-        <script src="../scripts/addClass.js"></script>
+        <script type="module" src="../scripts/addClass.js"></script>
                 
         <link rel="stylesheet" href="../styles/addClass.css">
         <link rel="icon" href="../assets/anxirileyicon.png">
@@ -25,34 +29,53 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
     </head>
     <body>
-        <!-- Button to navigate back to the home page -->
-        <button id="back"></button>
+        <main>
+            <!-- Button to navigate back to the home page -->
+            <button id="back"></button>
 
-        <!-- Settings button -->
-        <button class="settings-btn" id="settings"></button>
+            <!-- Settings button -->
+            <button class="settings-btn" id="settings"></button>
 
-        <!-- "Enter class code" label -->
-        <p class="poppins-semibold enter-code-txt">Enter the class code:</p>
+            <!-- "Enter class code" label -->
+            <p class="poppins-semibold enter-code-txt">Enter the class code:</p>
 
-        <!-- Class code input -->
-        <input type="text" maxlength="6" placeholder="Type here..." name="code" id="classCode" required>
+            <!-- Class code input -->
+            <input type="text" maxlength="6" placeholder="Type here..." name="code" id="classCode" required>
 
-        <!-- "Case sensitive" label -->
-        <p class="poppins-regular case-sens-txt">Keep in mind that codes are case sensitive.</p>
+            <!-- "Case sensitive" label -->
+            <p class="poppins-regular case-sens-txt">Keep in mind that codes are case sensitive.</p>
 
-        <!-- "Warning of max class amount" label -->
-        <p class="poppins-regular max-classes-warn-txt">
-            You are in the maximum amount of classes!<br>
-            If you want to join a new one, you will need to leave a different class.
-        </p>
+            <!-- "Warning of max class amount" label -->
+            <p class="poppins-regular max-classes-warn-txt" id="maxClasses">
+                You are in the maximum amount of classes!<br>
+                If you want to join a new one, you will need to leave a different class.
+            </p>
 
-        <!-- Button to submit a new class code -->
-        <button type="button" class="add-class-btn" id="addClass">Join Class</button>
+            <!-- Button to submit a new class code -->
+            <button disabled type="button" class="add-class-btn" id="addClass">Join Class</button>
 
-        <!-- Alert for entering an incorrect code -->
-        <dialog closedby="closerequest" class="wrong-code-alert" id="wrongCodeAlert">
-            <h2>Incorrect Code</h2>
-            <p>Class not found! Check to see if you have typed in the code correctly.</p>
-        </dialog>
+            <!-- Alert for entering an incorrect code -->
+            <dialog closedby="closerequest" class="wrong-code-alert" id="wrongCodeAlert">
+                <h2>Incorrect Code</h2>
+                <p>Class not found! Check to see if you have typed in the code correctly.</p>
+                <button class="ok" id="wrongCodeAlertBtn">OK</button>
+            </dialog>
+
+            <!-- Alert for other errors -->
+            <dialog closedby="closerequest" class="wrong-code-alert" id="addClassError">
+                <h2>Joining Error</h2>
+                <p>
+                    Something went wrong while joining the class. Please try again.<br>
+                    If the errors persist, please contact support.
+                </p>
+                <button class="ok" id="wrongCodeAlertBtn">OK</button>
+            </dialog>
+
+            <!-- Loading icon -->
+            <div id="spinner" style="display: none; flex-direction: column;">
+                <div class="spinner"></div>
+                <p class="spinner-text">Working on things in the background, please wait...</p>
+            </div>
+        </main>
     </body>
 </html>
