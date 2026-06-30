@@ -17,10 +17,7 @@ import {
 
 import { classData, setClassData, setAllClassData } from './utils/classUtils.js';
 
-import {
-    isBrowserOnline,
-    monitorConnectionStatus
-} from './utils/connectionUtils.js';
+import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';
 
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', async function () {
@@ -31,16 +28,21 @@ document.addEventListener('DOMContentLoaded', async function () {
     const credAlert = document.getElementById('credIssues');
     const resetSuccess = document.getElementById('resetSuccessAlert');
 
-    // These variables are not used but still needed for authentication purposes
+    // Spinner for events that may take a minute
+    const spinner = document.getElementById('spinner');
+
+    // Background overlay for popups
+    const blackOverlay = document.getElementById('black-overlay');
+
+    // These variables are not really used but still needed for authentication purposes
     let userName, storedStudentInfo, storedTeacherInfo;
-    
     let isLoggingInManually = false;
 
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
     const body = document.getElementById('background');
 
-    // Keep the page visible by default; use the spinner during auth checks instead
+    // Keep the page visible by default; use the spinner during auth checks
     body.style.display = 'block';
     body.classList.add('loaded');
 
@@ -51,9 +53,9 @@ document.addEventListener('DOMContentLoaded', async function () {
      * @param {string} message      Alert message
      */
     function showAlert(title, message) {
-        const alert = document.getElementById('universalLUSUAlert');
-        document.getElementById('universalLUSUAlertTitle').textContent = title;
-        document.getElementById('universalLUSUAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
+        const alert = document.getElementById('universalLISUAlert');
+        document.getElementById('universalLISUAlertTitle').textContent = title;
+        document.getElementById('universalLISUAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
         alert.showModal();
     }
 
@@ -107,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    // Check internet connection first
+    /* Check internet connection */
     const offline = !isBrowserOnline();
 
     if (offline) {
@@ -128,7 +130,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Show sign up form and overlay when the sign up button is clicked
     document.getElementById('signUpButton').addEventListener('click', function () {
         const signUpForm = document.getElementById('signUp');
-        const blackOverlay = document.getElementById('black-overlay');
 
         // Give the black overlay a transition
         blackOverlay.style.transition = 'opacity 0.6s ease';
@@ -148,17 +149,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         signUpForm.style.opacity = 0;
         signUpForm.style.visibility = 'visible';
 
-        // Force a reflow for login form as well
+        // Force a reflow for sign up form as well
         void signUpForm.offsetWidth;
 
-        // Fade in the log in form
+        // Fade in the sign up form
         signUpForm.style.opacity = 1;
     });
 
     // Close the sign up form and hide the overlay when the 'X' button is clicked
     document.getElementById('closeSignUpButton').addEventListener('click', function () {
         const signUpForm = document.getElementById('signUp');
-        const blackOverlay = document.getElementById('black-overlay');
 
         // Start a fade-out transition
         blackOverlay.style.opacity = 0;
@@ -199,7 +199,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Show log in form and overlay when the log in button is clicked
     document.getElementById('logInButton').addEventListener('click', function () {
         const logInForm = document.getElementById('logIn');
-        const blackOverlay = document.getElementById('black-overlay');
 
         // Give the black overlay a transition
         blackOverlay.style.transition = 'opacity 0.6s ease';
@@ -229,7 +228,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Close the log in form and hide the overlay when the 'X' button is clicked
     document.getElementById('closeLogInButton').addEventListener('click', function () {
         const logInForm = document.getElementById('logIn');
-        const blackOverlay = document.getElementById('black-overlay');
 
         // Start a fade-out transition
         blackOverlay.style.opacity = 0;
@@ -248,7 +246,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('forgotPasswordButton').addEventListener('click', function (event) {
         const logInForm = document.getElementById('logIn');
         const forgotPasswordForm = document.getElementById('forgotPassword');
-        const blackOverlay = document.getElementById('black-overlay');
 
         event.preventDefault();
 
@@ -311,7 +308,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Declare components
         const signUpForm = document.getElementById('signUp');
         const blackOverlay = document.getElementById('black-overlay');
-        const spinner = document.getElementById('spinner');
 
         // Declare common user variables
         const email = document.getElementById('signUpEmail').value;
@@ -320,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const isTeacher = document.getElementById('isTeacher').checked;
         const role = isTeacher ? 'Teacher' : 'Student';
 
-        /* Custom alert events section */
+        /* Input validation */
         // If one or more of the fields are empty
         if (!name || !email || !password || !role) {
             credAlert.showModal();
@@ -357,7 +353,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return;
             }
         }
-        /* End of custom alert events section */
 
         // Hide the sign up popup (+ overlay) and show the spinner before any data creation
         signUpForm.style.display = 'none';
@@ -425,10 +420,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             firebase.auth().signOut();
             
             // Finally, redirect to the confirmation page
+            spinner.style.display = 'none';
             window.location.replace('confirmation.html');
         } catch (error) {
             // Log any Firebase errors
-            console.error('Sign-up error:', error);
             spinner.style.display = 'none';
             signUpForm.style.display = 'flex';
             blackOverlay.style.display = 'block';
@@ -454,7 +449,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     break;
                 default:
                     // If there has been any other error
-                    showAlert('Error', error.message || 'Something has gone wrong! Please try again, or contact us for support.');
+                    showAlert('Error', 'Something has gone wrong! Please try again, or contact us for support.');
                     break;
             }
         }
@@ -465,7 +460,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Declare components
         const logInForm = document.getElementById('logIn');
         const blackOverlay = document.getElementById('black-overlay');
-        const spinner = document.getElementById('spinner');
 
         // Toggle manual log in to true to prevent race conditions with automatic log in
         isLoggingInManually = true;
@@ -572,6 +566,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             // Finally, redirect to the home page
+            spinner.style.display = 'none';
             window.location.replace('home.html');
         } catch (error) {
             // Log any Firebase errors
@@ -591,8 +586,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 case 'auth/invalid-credential':
                     // If the email/password is incorrect
                     showAlert('Incorrect Credentials', 'Your email or password is incorrect, or your email does not exist.\nYou can try' +
-                            ' retyping your email/password, resetting your password, or signing up if your' +
-                            ' email really does not exist.');
+                              ' retyping your email/password, resetting your password, or signing up if your' +
+                              ' email really does not exist.');
                     break;
                 case 'auth/too-many-requests':
                     // If too many requests have been made
@@ -614,8 +609,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Events for password reset
     document.getElementById('forgotPasswordForm').addEventListener('submit', function (e) {
-        const blackOverlay = document.getElementById('black-overlay');
-        const spinner = document.getElementById('spinner');
 
         // Prevent form submission
         e.preventDefault();
@@ -669,7 +662,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 blackOverlay.style.visibility = 'visible';
                 blackOverlay.style.pointerEvents = 'auto';
                 
-                showAlert('Error', 'An error has occurred. You can try retyping your email.');
+                showAlert('Error', 'An error has occurred. You can try retyping your email.\n' +
+                          'If the error persists, please contact us for support.');
                 return;
             });
     });
@@ -678,8 +672,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     firebase.auth().onAuthStateChanged(async (user) => {
         if (!user) return;
         
+        // Declare components
         const body = document.getElementById('background');
-        const spinner = document.getElementById('spinner');
 
         // Skip this line while manual log in is in progress
         if (isLoggingInManually) return;
@@ -688,7 +682,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         spinner.style.display = 'flex';
         body.style.display = 'none';
 
-        // User is signed in, along with checking for a verified email
+        // User is signed in (along with checking for a verified email)
         if (user && user.emailVerified) {
             const studentInfoStr = localStorage.getItem('studentInfo');
             const teacherInfoStr = localStorage.getItem('teacherInfo');
@@ -732,13 +726,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                     setSignedInLang(true);
 
                     // Redirect
+                    spinner.style.display = 'none';
                     window.location.replace('home.html');
                 } else {
+                    spinner.style.display = 'none';
                     showAlert('Error', 'If you chose to have your login information remembered, ' +
-                                'there was an error attempting to recieve that data in order to automatically log you in.\n\n ' +
-                                'Please try logging in again. If this error still persists, contact us for support.');
+                              'there was an error attempting to recieve that data in order to automatically log you in.\n\n ' +
+                              'Please try logging in manually and toggle for your details to be remembered.' +
+                              'If this error still persists, contact us for support.');
                 }
             } catch (e) {
+                spinner.style.display = 'none';
                 showAlert('Error', 'There was a problem loading your account data. Please try again by refreshing or contact us for support.');
                 await firebase.auth().signOut();
                 return;
@@ -752,7 +750,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     // If there is no remembered session, keep the login screen visible
-    const spinner = document.getElementById('spinner');
     spinner.style.display = 'none';
     body.style.display = 'block';
     body.classList.add('loaded');
