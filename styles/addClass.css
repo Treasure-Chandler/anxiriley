@@ -113,6 +113,17 @@ input[type=text]:focus {
     text-align: center;
 }
 
+/* Styling the "success" label */
+.success-txt {
+    color: #41af41;
+    display: none;
+    font-size: 16.5px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
+    text-align: center;
+}
+
 /* Styling the "join class" button */
 .add-class-btn {
     background-color: #3a42bd;

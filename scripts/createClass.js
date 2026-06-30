@@ -145,16 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Input validation
         if (!className && !classHour && !selectedBanner) {
             // Alert if the user did not interact with anything
+            spinner.style.display = 'none';
             showAlert('Missing Information', 'You must fill in all required fields and select a banner!');
             return;
         } else if (!className || !classHour || !selectedBanner) {
             // Alert if the user is missing 1-2 pieces of info
+            spinner.style.display = 'none';
             showAlert('Missing Information', 'You are missing one or more forms of information!\n' +
                                              'Double check if you did not fill in a class or hour field, or if you did not select a banner.'
             );
             return;
         } else if (!hours.includes(classHour)) {
             // Alert if the user didn't input the hour in the correct format
+            spinner.style.display = 'none';
             showAlert('Incorrect Hour Format', 'The hour must be in the above format! Please use the format listed in the \"e.g\" above.');
             return;
         }

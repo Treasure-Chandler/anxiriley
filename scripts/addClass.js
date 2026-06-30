@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const wrongCodeAlertBtn = document.getElementById('wrongCodeAlertBtn');
     const addClassError = document.getElementById('addClassError');
     const maxClasses = document.getElementById('maxClasses');
+    const success = document.getElementById('success');
 
     /**
     * Adds the class code to the corresponding hour depending on the student's input
@@ -121,6 +122,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Update the class code depending on the hour
             await addHour(enteredCode);
 
+            // Hide spinner to notify the student
+            spinner.style.display = 'none';
+
+            // Notify user of success and finally redirect them back to the home page
+            success.style.display = 'block';
+            setTimeout(() => {
+                success.style.display = 'none';
+                location.href = 'home.html';
+            }, 3000);
         } catch (error) {
             spinner.style.display = 'none';
             addClassError.showModal();
