@@ -5,12 +5,62 @@
  * along with all of the other main features of the extension.
  */
 
+import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';
+
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', async () => {
     const classCodeBox = document.getElementById('latestClassCodeBox');
     const classCodeDisplay = document.getElementById('latestClassCode');
     const classCodeOkBtn = document.getElementById('latestClassCodeOK');
     const db = firebase.firestore();
+
+    /**
+     * Shows alerts with a specific title and message
+     * 
+     * @param {string} title        Alert title 
+     * @param {string} message      Alert message
+     */
+    function showAlert(title, message) {
+        const alert = document.getElementById('universalCCAlert');
+        document.getElementById('universalCCAlertTitle').textContent = title;
+        document.getElementById('universalCCAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
+        alert.showModal();
+    }
+
+    /**
+     * Disable or enable all interactive features based on connection status
+     * 
+     * @param {boolean} disable     Whether to disable features
+     */
+    function setFeaturesDisabled(disable) {
+        const buttons = ['settings', 'classAdd', 'latestClassCodeOK'];
+        buttons.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = disable;
+        });
+    }
+
+    /* Check internet connection */
+    let offline = !isBrowserOnline();
+
+    if (offline) {
+        showAlert('Offline', 'You are currently offline! Some features may not work. Please check your internet connection.');
+        setFeaturesDisabled(true);
+    }
+
+    // Alert the user if they have gone back online or if they have been disconnected
+    monitorConnectionStatus(
+        () => {
+            offline = false;
+            showAlert('Back Online', 'Your internet connection has been restored!');
+            setFeaturesDisabled(false);
+        },
+        () => {
+            offline = true;
+            showAlert('Disconnected', 'You have lost your internet connection.');
+            setFeaturesDisabled(true);
+        }
+    );
 
     // Clear the lastest class code to prevent mixups
     function clearStoredClassCode() {

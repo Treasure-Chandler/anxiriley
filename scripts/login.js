@@ -109,22 +109,68 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
+    /**
+     * Disable or enable all interactive features based on connection status
+     * 
+     * @param {boolean} disable     Whether to disable features
+     */
+    function setFeaturesDisabled(disable) {
+        const buttons = [
+            'signUpButton',
+            'logInButton',
+            'suButton',
+            'liButton',
+            'closeSignUpButton',
+            'closeLogInButton',
+            'alreadyUser',
+            'forgotPasswordButton',
+            'closeForgotPasswordButton',
+            'forgotPasswordForm'
+        ];
+
+        const inputs = [
+            'signUpEmail',
+            'signUpPassword',
+            'name',
+            'isStudent',
+            'isTeacher',
+            'logInEmail',
+            'logInPassword',
+            'stayLoggedIn',
+            'resetEmail'
+        ];
+
+        buttons.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = disable;
+        });
+
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = disable;
+        });
+    }
+
     /* Check internet connection */
-    const offline = !isBrowserOnline();
+    let offline = !isBrowserOnline();
 
     if (offline) {
         showAlert('Offline', 'You are currently offline! Some features may not work. Please check your internet connection.');
-
-        // Show login even if offline
-        body.style.display = 'block';
-        body.classList.add('loaded');
-        return;
+        setFeaturesDisabled(true);
     }
 
     // Alert the user if they have gone back online or if they have been disconnected
     monitorConnectionStatus(
-        () => showAlert('Back Online', 'Your internet connection has been restored!'),
-        () => showAlert('Disconnected', 'You have lost your internet connection.')
+        () => {
+            offline = false;
+            showAlert('Back Online', 'Your internet connection has been restored!');
+            setFeaturesDisabled(false);
+        },
+        () => {
+            offline = true;
+            showAlert('Disconnected', 'You have lost your internet connection.');
+            setFeaturesDisabled(true);
+        }
     );
 
     // Show sign up form and overlay when the sign up button is clicked

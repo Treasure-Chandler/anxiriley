@@ -60,21 +60,18 @@
             <!-- Button to submit a new class code -->
             <button disabled type="button" class="add-class-btn" id="addClass">Join Class</button>
 
-            <!-- Alert for entering an incorrect code -->
-            <dialog closedby="closerequest" class="wrong-code-alert" id="wrongCodeAlert">
-                <h2>Incorrect Code</h2>
-                <p>Class not found! Check to see if you have typed in the code correctly.</p>
-                <button class="ok" id="wrongCodeAlertBtn">OK</button>
+            <!-- Universal alert dialog for addClass page -->
+            <dialog closedby="closerequest" class="wrong-code-alert" id="universalAddClassAlert">
+                <h2 id="addClassAlertTitle"></h2>
+                <p id="addClassAlertMessage"></p>
+                <button class="ok" id="addClassAlertOK">OK</button>
             </dialog>
 
-            <!-- Alert for other errors -->
+            <!-- Additional error alert -->
             <dialog closedby="closerequest" class="wrong-code-alert" id="addClassError">
-                <h2>Joining Error</h2>
-                <p>
-                    Something went wrong while joining the class. Please try again.<br>
-                    If the errors persist, please contact support.
-                </p>
-                <button class="ok" id="wrongCodeAlertBtn">OK</button>
+                <h2 id="addClassErrorTitle"></h2>
+                <p id="addClassErrorMessage"></p>
+                <button class="ok" id="addClassErrorOK">OK</button>
             </dialog>
 
             <!-- Loading icon -->

@@ -10,6 +10,8 @@ import {
     numOfStudentClasses
 } from './utils/userInfo.js';
 
+import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';
+
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', async () => {
     // Declare components
@@ -20,11 +22,63 @@ document.addEventListener('DOMContentLoaded', async () => {
     const classCodeInput = document.getElementById('classCode');
     const addClassBtn = document.getElementById('addClass');
     const spinner = document.getElementById('spinner');
-    const wrongCodeAlert = document.getElementById('wrongCodeAlert');
-    const wrongCodeAlertBtn = document.getElementById('wrongCodeAlertBtn');
-    const addClassError = document.getElementById('addClassError');
     const maxClasses = document.getElementById('maxClasses');
     const success = document.getElementById('success');
+
+    /**
+     * Shows alerts with a specific title and message
+     * 
+     * @param {string} title        Alert title 
+     * @param {string} message      Alert message
+     */
+    function showAlert(title, message) {
+        const alert = document.getElementById('universalAddClassAlert');
+        document.getElementById('addClassAlertTitle').textContent = title;
+        document.getElementById('addClassAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
+        alert.showModal();
+    }
+
+    /**
+     * Disable or enable all interactive features based on connection status
+     * 
+     * @param {boolean} disable     Whether to disable features
+     */
+    function setFeaturesDisabled(disable) {
+        const buttons = ['back', 'settings', 'addClass'];
+        const inputs = ['classCode'];
+        
+        buttons.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = disable;
+        });
+
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = disable;
+        });
+    }
+
+    /* Check internet connection */
+    let offline = !isBrowserOnline();
+
+    if (offline) {
+        showAlert('Offline', 'You are currently offline! Some features may not work. Please check your internet connection.');
+        setFeaturesDisabled(true);
+    }
+
+    // Alert the user if they have gone back online or if they have been disconnected
+    monitorConnectionStatus(
+        () => {
+            offline = false;
+            showAlert('Back Online', 'Your internet connection has been restored!');
+            setFeaturesDisabled(false);
+        },
+        () => {
+            offline = true;
+            showAlert('Disconnected', 'You have lost your internet connection.');
+            setFeaturesDisabled(true);
+        }
+    );
 
     /**
     * Adds the class code to the corresponding hour depending on the student's input
@@ -70,13 +124,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         location.href = 'settings.html';
     });
 
-    // Close the wrong code alert
-    if (wrongCodeAlertBtn && wrongCodeAlert) {
-        wrongCodeAlertBtn.addEventListener('click', () => {
-            wrongCodeAlert.close();
-        });
-    }
-
     // Automatically toggle the enabling/disabling of the "submit" button
     classCodeInput.addEventListener("input", () => {
         if (classCodeInput.value.length >= 6) {
@@ -97,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!codeExists) {
             // Check if the entered code exists in the list of codes
             spinner.style.display = 'none';
-            wrongCodeAlert.showModal();
+            showAlert('Incorrect Code', 'Class not found! Check to see if you have typed in the code correctly.');
             return;
         } else if (currentClassCount >= 7) {
             // If the student's classes are maxed out
@@ -133,7 +180,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }, 3000);
         } catch (error) {
             spinner.style.display = 'none';
-            addClassError.showModal();
+            showAlert('Joining Error', 'Something went wrong while joining the class. Please try again.\nIf the errors persist, please contact support.');
             return;
         }
     });

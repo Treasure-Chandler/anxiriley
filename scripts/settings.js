@@ -20,6 +20,8 @@ import {
     setLangPref
 } from './utils/userInfo.js';
 
+import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';
+
 /**
  * Shows sign up/log in/forgot password alerts with a specific title and message depending on the condition
  * 
@@ -80,6 +82,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const needPwAlert = document.getElementById('needPasswordAlert');
     const universalAlert = document.getElementById('universalAlert');
     const okBtn = document.getElementById('universalAlertOK');
+
+    /**
+     * Disable or enable all interactive features based on connection status
+     * 
+     * @param {boolean} disable     Whether to disable features
+     */
+    function setFeaturesDisabled(disable) {
+        const buttons = ['signOut', 'deleteAccount'];
+        buttons.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = disable;
+        });
+    }
+
+    /* Check internet connection */
+    let offline = !isBrowserOnline();
+
+    if (offline) {
+        showAlert('Offline', 'You are currently offline! Some features may not work. Please check your internet connection.');
+        setFeaturesDisabled(true);
+    }
+
+    // Alert the user if they have gone back online or if they have been disconnected
+    monitorConnectionStatus(
+        () => {
+            offline = false;
+            showAlert('Back Online', 'Your internet connection has been restored!');
+            setFeaturesDisabled(false);
+        },
+        () => {
+            offline = true;
+            showAlert('Disconnected', 'You have lost your internet connection.');
+            setFeaturesDisabled(true);
+        }
+    );
 
     // Close the universal alert when OK is clicked
     okBtn.addEventListener('click', () => {

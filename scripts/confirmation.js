@@ -5,8 +5,55 @@
  * and redirecting them back to the login page (so the user can actually log in to their account).
  */
 
+import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';
+
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
+    /**
+     * Shows alerts with a specific title and message
+     * 
+     * @param {string} title        Alert title 
+     * @param {string} message      Alert message
+     */
+    function showAlert(title, message) {
+        alert(`${title}\n\n${message}`);
+    }
+
+    /**
+     * Disable or enable all interactive features based on connection status
+     * 
+     * @param {boolean} disable     Whether to disable features
+     */
+    function setFeaturesDisabled(disable) {
+        const buttons = ['continue'];
+        buttons.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = disable;
+        });
+    }
+
+    /* Check internet connection */
+    let offline = !isBrowserOnline();
+
+    if (offline) {
+        showAlert('Offline', 'You are currently offline! Some features may not work. Please check your internet connection.');
+        setFeaturesDisabled(true);
+    }
+
+    // Alert the user if they have gone back online or if they have been disconnected
+    monitorConnectionStatus(
+        () => {
+            offline = false;
+            showAlert('Back Online', 'Your internet connection has been restored!');
+            setFeaturesDisabled(false);
+        },
+        () => {
+            offline = true;
+            showAlert('Disconnected', 'You have lost your internet connection.');
+            setFeaturesDisabled(true);
+        }
+    );
+
     // Declare components
     const replaceName = document.getElementById('replacePlaceholderName');
     const replacedName = localStorage.getItem('tempUserName');

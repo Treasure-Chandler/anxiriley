@@ -18,6 +18,8 @@ import {
     setGeneratedCode
 } from './utils/classUtils.js';
 
+import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';
+
 // When the page is loaded, execute these events
 document.addEventListener('DOMContentLoaded', () => {
     // Declare components
@@ -48,6 +50,55 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('universalCCAlertMessage').innerHTML = message.replace(/\n/g, '<br>');
         alert.showModal();
     }
+
+    /**
+     * Disable or enable all interactive features based on connection status
+     * 
+     * @param {boolean} disable     Whether to disable features
+     */
+    function setFeaturesDisabled(disable) {
+        const buttons = ['back', 'addClass'];
+        const inputs = ['className', 'classHour'];
+        const bannerButtonsToDisable = document.querySelectorAll('.banner-item');
+        
+        buttons.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = disable;
+        });
+
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = disable;
+        });
+
+        bannerButtonsToDisable.forEach(btn => {
+            btn.disabled = disable;
+            btn.style.pointerEvents = disable ? 'none' : 'auto';
+            btn.style.opacity = disable ? '0.5' : '1';
+        });
+    }
+
+    /* Check internet connection */
+    let offline = !isBrowserOnline();
+
+    if (offline) {
+        showAlert('Offline', 'You are currently offline! Some features may not work. Please check your internet connection.');
+        setFeaturesDisabled(true);
+    }
+
+    // Alert the user if they have gone back online or if they have been disconnected
+    monitorConnectionStatus(
+        () => {
+            offline = false;
+            showAlert('Back Online', 'Your internet connection has been restored!');
+            setFeaturesDisabled(false);
+        },
+        () => {
+            offline = true;
+            showAlert('Disconnected', 'You have lost your internet connection.');
+            setFeaturesDisabled(true);
+        }
+    );
 
     /**
      * Generates a respective code for the class.
