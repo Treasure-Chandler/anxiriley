@@ -14,9 +14,7 @@ import {
     setSignedInLang,
     setTeacherIconURL
 } from './utils/userInfo.js';
-
 import { classData, setClassData, setAllClassData } from './utils/classUtils.js';
-
 import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';
 
 // When the page is loaded, execute these events
@@ -517,7 +515,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const email = document.getElementById('logInEmail').value;
         const password = document.getElementById('logInPassword').value;
 
-        /* Custom alert events section */
+        /* Custom alert events */
         // If one or both of the fields are empty
         if (!email || !password) {
             credAlert.showModal();
@@ -529,7 +527,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return;
             }
         }
-        /* End of custom alert events section */
 
         // Hide the log in popup and show the spinner before any data creation
         logInForm.style.display = 'none';
@@ -754,7 +751,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let nameField = userRole === 'Student' ? 'Student Name' : 'Teacher Name';
 
                 // Get Firestore document for the user
-                const docRef = firebase.firestore().collection(collectionName).doc(uid);
+                const docRef = db.collection(collectionName).doc(uid);
                 const docSnap = await docRef.get();
 
                 if (docSnap.exists) {

@@ -1,8 +1,9 @@
 /**
  * @author Treasure Chandler
  * 
- * This allows full functionality of the confirmation page, which includes replacing the placeholder [name] with the user's name,
- * and redirecting them back to the login page (so the user can actually log in to their account).
+ * This allows full functionality of the confirmation page, which includes replacing the placeholder
+ * [name] with the user's name, and redirecting them back to the login page (so the user can actually log
+ * in to their account).
  */
 
 import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';

@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     );
 
-    // Clear the lastest class code to prevent mixups
+    // Preemptively clear the lastest class code to prevent mixups
     function clearStoredClassCode() {
         localStorage.removeItem('latestClassCode');
         localStorage.removeItem('latestClassName');
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Display the class code in the popup
+    // Display the class code in the popup once the teacher has created a class
     if (classCodeDisplay) {
         classCodeDisplay.textContent = localStorage.getItem('latestClassCode') || 'No class code yet';
     }

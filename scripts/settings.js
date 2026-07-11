@@ -19,11 +19,10 @@ import {
     setUserRole,
     setLangPref
 } from './utils/userInfo.js';
-
 import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';
 
 /**
- * Shows sign up/log in/forgot password alerts with a specific title and message depending on the condition
+ * Shows alerts with a specific title and message
  * 
  * @param {string} title        Alert title 
  * @param {string} message      Alert message

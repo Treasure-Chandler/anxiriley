@@ -1,15 +1,12 @@
 /**
  * @author Treasure Chandler
  * 
- * This page is only accessible for student accounts. This allows full functionality of the add classes page, which houses the
- * features of the student being able to join a new class by using a generated class code by their teacher.
+ * This page is only accessible for student accounts. This allows full functionality of the add classes page,
+ * which houses the features of the student being able to join a new class by using a generated class code by
+ * their teacher.
  */
 
-import {
-    setNumOfStudentClasses,
-    numOfStudentClasses
-} from './utils/userInfo.js';
-
+import { setNumOfStudentClasses, numOfStudentClasses } from './utils/userInfo.js';
 import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';
 
 // When the page is loaded, execute these events
@@ -180,7 +177,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             }, 3000);
         } catch (error) {
             spinner.style.display = 'none';
-            showAlert('Joining Error', 'Something went wrong while joining the class. Please try again.\nIf the errors persist, please contact support.');
+            showAlert('Joining Error', 'Something went wrong while joining the class. Please try again.' +
+                    '\nIf the errors persist, please contact support.');
             return;
         }
     });

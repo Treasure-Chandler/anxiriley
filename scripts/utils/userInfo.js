@@ -1,8 +1,8 @@
 /**
  * @author Treasure Chandler
  * 
- * This includes functions necessary for retrieving specific user data such as their number of classes, name, role,
- * and language preference.
+ * This includes functions/variables necessary for retrieving specific user data such as their number of
+ * classes, name, role, and language preference.
  */
 
 export let numOfStudentClasses = null;

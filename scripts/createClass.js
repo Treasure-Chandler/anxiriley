@@ -1,23 +1,18 @@
 /**
  * @author Treasure Chandler
  * 
- * This page is only accessible for teacher accounts. This allows full functionality of the create classes page, which houses the
- * features of the teacher being able to choose the name of their class, what hour of the day their class takes place, and a
- * decorative banner image for their class.
+ * This page is only accessible for teacher accounts. This allows full functionality of the create classes page,
+ * which houses the features of the teacher being able to choose the name of their class, what hour of the day
+ * their class takes place, and a default decorative banner image for their class.
  */
 
-import {
-    setNumOfTeacherClasses,
-    numOfTeacherClasses
-} from './utils/userInfo.js';
-
+import { setNumOfTeacherClasses, numOfTeacherClasses } from './utils/userInfo.js';
 import {
     allClassData,
     isClassMade,
     setAllClassData,
     setGeneratedCode
 } from './utils/classUtils.js';
-
 import { isBrowserOnline, monitorConnectionStatus } from './utils/connectionUtils.js';
 
 // When the page is loaded, execute these events
@@ -229,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         createBtn.disabled = true;
         
+        // Class creation
         try {
             isClassMade(true);
 
@@ -249,8 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Update the class code depending on the hour
             await addHour();
-
-            // Create the class's new row in the collection
 
             /* 
              * Ensure we have the teacher's name and icon since it sometimes returns null;
@@ -285,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Teacher Mood': ''
             };
 
+            // Add the new class in Firestore
             await db.collection('classData').doc(generatedClassCode).set(newClassData);
 
             // Store the new class row by the first character of the hour input
