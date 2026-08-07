@@ -82,6 +82,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const universalAlert = document.getElementById('universalAlert');
     const okBtn = document.getElementById('universalAlertOK');
 
+    // Delete all the user's data from Firestore along with deleting their account
+    async function deleteUserFirestoreData(db, uid, role) {
+        const profileCollection = role === 'Student' ? 'students' : 'teachers';
+        const classCollection = role === 'Student' ? 'studentClasses' : 'teacherClasses';
+
+        const deletions = [
+            db.collection(profileCollection).doc(uid).delete(),
+            db.collection(classCollection).doc(uid).delete()
+        ];
+
+        await Promise.allSettled(deletions);
+    }
+
     /**
      * Disable or enable all interactive features based on connection status
      * 
@@ -136,7 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Deletes the user's account
-    // TODO: Fix account deletion error
     document.getElementById('deleteAccount').addEventListener('click', async function () {
         // Declare variables
         const currentUser = auth.currentUser;
@@ -177,8 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Reauthenticate the user for successful account deletion
                 await currentUser.reauthenticateWithCredential(credential);
 
-                // Delete Firestore document
-                await db.collection(collectionName).doc(uid).delete();
+                // Delete Firestore documents
+                await deleteUserFirestoreData(db, uid, role);
 
                 // Delete Firebase account
                 await currentUser.delete();
@@ -195,11 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Show the success message immediately
                 showAlert('Account Deleted', 'Your account has been successfully deleted.');
 
-                // Keep the alert open for 3 seconds, then close and redirect to login
+                // Keep the alert open for 5 seconds, then close and redirect to login
                 setTimeout(() => {
                     universalAlert.close();
                     window.location.replace('login.html');
-                }, 3000);
+                }, 5000);
             } catch (reauthError) {
                 showAlert('Error', 'There was a problem with deleting your account. Please try again.\n' +
                                     'If it persists, contact support.');
