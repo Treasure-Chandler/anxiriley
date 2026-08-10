@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const spinner = document.getElementById('spinner');
     const maxClasses = document.getElementById('maxClasses');
     const success = document.getElementById('success');
+    const addClassAlert = document.getElementById('universalAddClassAlert');
+    const addClassAlertOK = document.getElementById('addClassAlertOK');
 
     /**
      * Shows alerts with a specific title and message
@@ -111,6 +113,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         listOfCodes = (await db.collection('classData').get()).docs.map(doc => ({ id: doc.id, ...doc.data() }));
     });
 
+    // Close the alert dialog when OK is clicked
+    addClassAlertOK.addEventListener('click', () => {
+        addClassAlert.close();
+    });
+
     // Navigate back to the home screen
     document.getElementById('back').addEventListener('click', function () {
         location.href = 'home.html';
@@ -134,6 +141,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     addClassBtn.addEventListener("click", async () => {
         spinner.style.display = 'flex';
         const enteredCode = classCodeInput.value.trim();
+        classCodeInput.value = '';
+        addClassBtn.disabled = true;
         const updatedClassCount = currentClassCount + 1;
 
         // Input validation
