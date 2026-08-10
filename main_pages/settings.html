@@ -90,13 +90,11 @@
                 </form>
             </dialog>
 
-            <dialog closedby="closerequest" class="settings-alert" id="needPasswordAlert">
-                <form method="dialog">
-                    <h2>Password Needed</h2>
-                    <p>Your password is required to delete your account.</p>
-                    <button class="btns ok" value="cancel">OK</button>
-                </form>
-            </dialog>
+            <!-- Loading icon -->
+            <div id="spinner" style="display:none; flex-direction: column; align-items: center; justify-content: center;">
+                <div class="spinner"></div>
+                <p class="spinner-text">Working on things in the background, please wait...</p>
+            </div>
         </main>
     </body>
 </html>

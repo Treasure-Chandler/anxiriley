@@ -149,6 +149,33 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
+    /* The following methods will clear any text in any fields in the popups */
+    function clearSignUpFields() {
+        const fields = ['signUpEmail', 'signUpPassword', 'name'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+
+        const studentRadio = document.getElementById('isStudent');
+        const teacherRadio = document.getElementById('isTeacher');
+        if (studentRadio) studentRadio.checked = false;
+        if (teacherRadio) teacherRadio.checked = false;
+    }
+
+    function clearLoginFields() {
+        const fields = ['logInEmail', 'logInPassword'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+    }
+
+    function clearForgotPasswordFields() {
+        const resetEmail = document.getElementById('resetEmail');
+        if (resetEmail) resetEmail.value = '';
+    }
+
     /* Check internet connection */
     let offline = !isBrowserOnline();
 
@@ -214,6 +241,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             blackOverlay.style.pointerEvents = 'none';
             signUpForm.style.visibility = 'hidden';
             signUpForm.style.display = 'none';
+            clearSignUpFields();
         }, 600);
     });
 
@@ -283,6 +311,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             blackOverlay.style.pointerEvents = 'none';
             logInForm.style.visibility = 'hidden';
             logInForm.style.display = 'none';
+            clearLoginFields();
         }, 600);
     });
 
@@ -326,6 +355,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         setTimeout(() => {
             forgotPasswordForm.style.visibility = 'hidden';
             forgotPasswordForm.style.display = 'none';
+            clearForgotPasswordFields();
         }, 600);
 
         // Then, show the log in form again

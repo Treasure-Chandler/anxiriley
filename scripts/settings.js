@@ -62,6 +62,9 @@ function getPasswordFromUser() {
         function onSubmit() {
             const password = passwordInput.value.trim();
             if (!password) {
+                passwordPrompt.close();
+                cleanup();
+                resolve(null);
                 return;
             }
             passwordPrompt.close();
@@ -78,7 +81,6 @@ function getPasswordFromUser() {
 document.addEventListener('DOMContentLoaded', () => {
     // Declare alerts
     const confirmDeletionAlert = document.getElementById('confirmAlert');
-    const needPwAlert = document.getElementById('needPasswordAlert');
     const universalAlert = document.getElementById('universalAlert');
     const okBtn = document.getElementById('universalAlertOK');
 
@@ -130,6 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     );
 
+    const spinner = document.getElementById('spinner');
+
     // Close the universal alert when OK is clicked
     okBtn.addEventListener('click', () => {
         universalAlert.close();
@@ -163,8 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Close confirm alert
         noBtn.addEventListener('click', function () {
             confirmDeletionAlert.close();
-            return;
-        });
+        }, { once: true });
 
         // Otherwise, start the deletion process
         yesBtn.addEventListener('click', async function () {
@@ -174,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show password dialog and wait for input
             const password = await getPasswordFromUser();
             if (!password) {
-                needPwAlert.showModal();
+                showAlert('Password Needed', 'Your password is required to delete your account.');
                 return;
             }
 
@@ -184,7 +187,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const credential = firebase.auth.EmailAuthProvider.credential(email, password);
                 const uid = currentUser.uid;
                 const role = localStorage.getItem('userRole');
-                const collectionName = role === 'Student' ? 'students' : 'teachers';
+
+                spinner.style.display = 'flex';
+                setFeaturesDisabled(true);
 
                 // Reauthenticate the user for successful account deletion
                 await currentUser.reauthenticateWithCredential(credential);
@@ -204,8 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 setNumOfStudentClasses(null);
                 setNumOfTeacherClasses(null);
 
+                spinner.style.display = 'none';
+                setFeaturesDisabled(false);
+
                 // Show the success message immediately
-                showAlert('Account Deleted', 'Your account has been successfully deleted.');
+                showAlert('Account Deleted', 'Your account has been successfully deleted.\n' +
+                            'You will be redirected back to the login page shortly.');
 
                 // Keep the alert open for 5 seconds, then close and redirect to login
                 setTimeout(() => {
@@ -213,10 +222,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.replace('login.html');
                 }, 5000);
             } catch (reauthError) {
-                showAlert('Error', 'There was a problem with deleting your account. Please try again.\n' +
-                                    'If it persists, contact support.');
-                return;
+                spinner.style.display = 'none';
+                setFeaturesDisabled(false);
+
+                if (reauthError && reauthError.code === 'auth/wrong-password') {
+                    showAlert('Incorrect Password', 'The password you entered is incorrect. Please try again.');
+                } else {
+                    showAlert('Error', 'There was a problem with deleting your account. Please try again.\n' +
+                                        'If it persists, contact support.');
+                }
             }
-        });
+        }, { once: true });
     });
 });
