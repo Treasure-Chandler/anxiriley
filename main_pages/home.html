@@ -39,6 +39,11 @@
                 <button id="classAdd"></button>
             </div>
 
+            <!-- The list of user's joined classes -->
+            <section class="joined-classes">
+                <div id="classList" class="class-list" aria-live="polite"></div>
+            </section>
+
             <!-- Home universal alert template-->
             <dialog closedby="closerequest" class="create-class-alert" id="universalCCAlert">
                 <h2 id="universalCCAlertTitle"></h2>
@@ -66,7 +71,13 @@
                 <img src="/assets/homeselected.png" width="120" height="120" id="home">
                 <button id="calmDown"></button>
                 <button id="stats"></button>
-            </footer>     
+            </footer>
+
+            <!-- Loading icon -->
+            <div id="spinner" style="display: none; flex-direction: column;">
+                <div class="spinner"></div>
+                <p class="spinner-text">Working on things in the background, please wait...</p>
+            </div>
         </main>
     </body>
 </html>

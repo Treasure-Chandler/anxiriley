@@ -13,13 +13,14 @@
     background-size: 75px 75px;
     border: none;
     cursor: pointer;
-    float: right;
-    margin-right: 20px;
-    margin-top: 58px;
     height: 75px;
-    right: 10px;
+    margin: 0;
+    position: absolute;
+    right: 20px;
+    top: 58px;
     transition: background-image 0.3s ease-in-out;
     width: 75px;
+    z-index: 2;
 }
 
 .settings-btn:hover {
@@ -117,6 +118,121 @@
 
 #classAdd:hover {
     background-image: url(/assets/addclasshover.png);
+}
+
+/* Joined class cards */
+.joined-classes {
+    box-sizing: border-box;
+    left: 50%;
+    max-height: calc(100vh - 345px);
+    max-width: 1000px;
+    overflow-y: auto;
+    padding: 0 20px 20px;
+    position: fixed;
+    top: 155px;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+}
+
+.class-list {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.class-card {
+    background: rgba(255, 255, 255, 0.92);
+    border: 2px solid #000000;
+    border-radius: 8px;
+    height: 190px;
+    overflow: hidden;
+    position: relative;
+}
+
+.class-banner {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+}
+
+.class-details {
+    bottom: 0;
+    font-family: "Poppins", sans-serif;
+    padding: 12px 15px 14px;
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.class-details h2 {
+    background: rgba(224, 224, 224, 0.5);
+    color: #000000;
+    display: table;
+    font-size: 26px;
+    margin: 0 0 8px;
+    padding: 2px 6px;
+}
+
+.class-details p {
+    background: rgba(224, 224, 224, 0.5);
+    color: #000000;
+    display: table;
+    font-size: 16px;
+    margin: 4px 0 0;
+    padding: 2px 6px;
+}
+
+/* Default text for no classes yet */
+.class-list-empty {
+    color: #000000;
+    font-family: "Poppins", sans-serif;
+    font-size: 36px;
+    margin: 90px 0 0;
+    text-align: center;
+}
+
+/* Styling the loading icon */
+#spinner {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    z-index: 10;
+}
+
+.spinner {
+    animation: spin 0.8s linear infinite;
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    height: 60px;
+    margin-bottom: 5px;
+    width: 60px;
+}
+
+.spinner-text {
+    background-color: #fafafa;
+    border-radius: 10px;
+    color: #333333;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.3rem;
+    font-style: normal;
+    padding: 10px;
+    text-align: center;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* Styling alerts and the OK button */

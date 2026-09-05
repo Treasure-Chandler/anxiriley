@@ -12,7 +12,75 @@ document.addEventListener('DOMContentLoaded', async () => {
     const classCodeBox = document.getElementById('latestClassCodeBox');
     const classCodeDisplay = document.getElementById('latestClassCode');
     const classCodeOkBtn = document.getElementById('latestClassCodeOK');
+    const classList = document.getElementById('classList');
+    const spinner = document.getElementById('spinner');
     const db = firebase.firestore();
+
+    spinner.style.display = 'flex';
+
+    // Render the list of the user's classes
+    function renderClassList(classes) {
+        classList.replaceChildren();
+
+        // Default message for no classes
+        if (!classes.length) {
+            const emptyState = document.createElement('p');
+            emptyState.className = 'class-list-empty';
+            emptyState.textContent = 'Click the + to join a class!';
+            classList.appendChild(emptyState);
+            return;
+        }
+
+        // Grab the data from firestore to load each class, along with default values if nothing's loaded
+        classes.forEach(classData => {
+            const classCard = document.createElement('article');
+            classCard.className = 'class-card';
+
+            const banner = document.createElement('img');
+            banner.className = 'class-banner';
+            banner.src = classData['Class Banner'] || '../assets/Banners/banner_rhs.png';
+            banner.alt = `${classData['Class Title'] || 'Class'} banner`;
+            banner.addEventListener('error', () => {
+                banner.src = '../assets/Banners/banner_rhs.png';
+            }, { once: true });
+
+            const details = document.createElement('div');
+            details.className = 'class-details';
+
+            const title = document.createElement('h2');
+            title.textContent = classData['Class Title'] || 'Untitled class';
+
+            const teacher = document.createElement('p');
+            teacher.textContent = `${classData['Teacher Name'] || 'Unknown'}`;
+
+            const hour = document.createElement('p');
+            hour.textContent = `${classData['Class Hour'] || 'Not assigned'}`;
+
+            details.append(title, teacher, hour);
+            classCard.append(banner, details);
+            classList.appendChild(classCard);
+        });
+    }
+
+    // Load the classes on the page once all the data is grabbed and rendered
+    async function loadJoinedClasses(user) {
+        const teacherDoc = await db.collection('teachers').doc(user.uid).get();
+        const classCollection = teacherDoc.exists ? 'teacherClasses' : 'studentClasses';
+        const classSlots = await db.collection(classCollection).doc(user.uid).get();
+        const classCodes = [];
+
+        if (classSlots.exists) {
+            for (let classNumber = 1; classNumber <= 7; classNumber += 1) {
+                const classCode = classSlots.data()[`Class ${classNumber}`];
+                if (classCode && classCode !== 'x') classCodes.push(classCode);
+            }
+        }
+
+        const classSnapshots = await Promise.all(
+            classCodes.map(classCode => db.collection('classData').doc(classCode).get())
+        );
+        renderClassList(classSnapshots.filter(snapshot => snapshot.exists).map(snapshot => snapshot.data()));
+    }
 
     /**
      * Shows alerts with a specific title and message
@@ -91,7 +159,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Wait for the firebase auth state for the below code to work
     firebase.auth().onAuthStateChanged(async (user) => {
-        if (!user) return;
+        if (!user) {
+            spinner.style.display = 'none';
+            return;
+        }
+
+        // Load the user's joined classes
+        try {
+            await loadJoinedClasses(user);
+        } catch (error) {
+            renderClassList([]);
+            showAlert('Class Loading Error', 'Unable to load your classes right now. Please try again later.');
+        } finally {
+            spinner.style.display = 'none';
+        }
 
         /* Role dependent conditions for adding a class */
         // Try to fetch from the "teachers" collection for starters
