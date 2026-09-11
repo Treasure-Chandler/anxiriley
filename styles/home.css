@@ -124,29 +124,37 @@
 .joined-classes {
     box-sizing: border-box;
     left: 50%;
-    max-height: calc(100vh - 345px);
-    max-width: 1000px;
-    overflow-y: auto;
+    max-width: none;
+    overflow: visible;
     padding: 0 20px 20px;
     position: fixed;
-    top: 155px;
+    top: 143px;
     transform: translateX(-50%);
-    width: calc(100% - 40px);
+    width: 100vw;
 }
 
 .class-list {
-    display: grid;
+    display: flex;
     gap: 16px;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
 }
 
 .class-card {
     background: rgba(255, 255, 255, 0.92);
     border: 2px solid #000000;
     border-radius: 8px;
+    box-sizing: border-box;
+    flex: 0 0 calc(25% - 12px);
     height: 190px;
     overflow: hidden;
     position: relative;
+}
+
+.class-card:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    transform: scale(1.0010);
 }
 
 .class-banner {
@@ -192,6 +200,35 @@
     font-size: 36px;
     margin: 90px 0 0;
     text-align: center;
+}
+
+@media only screen and (max-width: 800px) {
+    .class-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .class-card {
+        width: auto;
+    }
+
+    .class-card:nth-child(7) {
+        grid-column: 1 / -1;
+        justify-self: center;
+        width: calc(50% - 8px);
+    }
+}
+
+@media only screen and (max-width: 520px) {
+    .class-list {
+        grid-template-columns: 1fr;
+    }
+
+    .class-card:nth-child(7) {
+        grid-column: auto;
+        justify-self: stretch;
+        width: auto;
+    }
 }
 
 /* Styling the loading icon */
