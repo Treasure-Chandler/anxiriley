@@ -85,12 +85,12 @@ document.addEventListener('DOMContentLoaded', () => {
     monitorConnectionStatus(
         () => {
             offline = false;
-            showAlert('Back Online', 'Your internet connection has been restored!');
+            showAlert('Back Online', 'Your internet connection has been restored!\n' + 'Refresh the page just in case everything is still functional.');
             setFeaturesDisabled(false);
         },
         () => {
             offline = true;
-            showAlert('Disconnected', 'You have lost your internet connection.');
+            showAlert('Disconnected', 'You have lost your internet connection.\n' + 'Some features may not work if you do not reconnect.');
             setFeaturesDisabled(true);
         }
     );
