@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     monitorConnectionStatus(
         () => {
             offline = false;
-            showAlert('Back Online', 'Your internet connection has been restored!\n' + 'Refresh the page just in case everything is still functional.');
+            showAlert('Back Online', 'Your internet connection has been restored!\n' + 'Refresh the page just to make sure everything is still functional.');
             setFeaturesDisabled(false);
         },
         () => {
