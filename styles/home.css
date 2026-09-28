@@ -17,24 +17,26 @@
     margin: 0;
     position: absolute;
     right: 20px;
-    top: 58px;
-    transition: background-image 0.3s ease-in-out;
+    top: 70px;
+    transition: background-image 0.3s ease-in-out, transform 0.2s ease;
     width: 75px;
     z-index: 2;
 }
 
 .settings-btn:hover {
     background-image: url(/assets/settingshover.png);
+    transform: translateY(-3px);
 }
 
 /* Styling for the actual menu buttons */
 #home {
     cursor: pointer;
-    transition: filter 0.3s ease-in-out;
+    transition: filter 0.3s ease-in-out, transform 0.2s ease;
 }
 
 #home:hover {
-    filter: brightness(0.7);
+    filter: brightness(0.8);
+    transform: translateY(-3px);
 }
 
 #calmDown {
@@ -47,12 +49,13 @@
     cursor: pointer;
     margin-top: 18px;
     height: 90px;
-    transition: filter 0.3s ease-in-out;
+    transition: filter 0.3s ease-in-out, transform 0.2s ease;
     width: 90px;
 }
 
 #calmDown:hover {
-    filter: brightness(2.1);
+    filter: brightness(1.8);
+    transform: translateY(-3px);
 }
 
 #stats {
@@ -64,12 +67,13 @@
     border: none;
     cursor: pointer;
     height: 120px;
-    transition: filter 0.3s ease-in-out;
+    transition: filter 0.3s ease-in-out, transform 0.2s ease;
     width: 120px;
 }
 
 #stats:hover {
-    filter: brightness(2.1);
+    filter: brightness(1.8);
+    transform: translateY(-3px);
 }
 
 /* Div that houses the inbox and add class buttons */
@@ -93,12 +97,13 @@
     cursor: pointer;
     height: 90px;
     margin-left: 5px;
-    transition: filter 0.3s ease-in-out;
+    transition: filter 0.3s ease-in-out, transform 0.2s ease;
     width: 90px;
 }
 
 #inbox:hover {
-    filter: brightness(1.45);
+    filter: brightness(1.25);
+    transform: translateY(-3px);
 }
 
 /* Add class button */
@@ -112,12 +117,13 @@
     cursor: pointer;
     height: 90px;
     margin-right: 20px;
-    transition: background-image 0.3s ease-in-out;
+    transition: background-image 0.3s ease-in-out, transform 0.2s ease;
     width: 90px;
 }
 
 #classAdd:hover {
     background-image: url(/assets/addclasshover.png);
+    transform: translateY(-3px);
 }
 
 /* Joined class cards */
@@ -150,11 +156,12 @@
     height: 190px;
     overflow: hidden;
     position: relative;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .class-card:hover {
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-    transform: scale(1.0010);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
+    transform: translateY(-3px);
 }
 
 .class-banner {

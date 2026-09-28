@@ -72,7 +72,7 @@
                         <img src="../assets/popup.png" width="190" height="190">
 
                         <input type="text" placeholder="First, enter your first and last name..." name="firstAndLastName" id="name" required>
-                        <input type="text" placeholder="Then, enter your email..." name="email" id="signUpEmail" required>
+                        <input type="email" placeholder="Then, enter your email..." name="email" id="signUpEmail" required>
                         <input type="password" placeholder="Then, enter your password..." name="psw" id="signUpPassword" required>
 
                         <div style="align-items: center; display: inline-block;">
@@ -99,7 +99,7 @@
                         <button type="button" class="close" id="closeLogInButton"></button>
                         <img src="../assets/popup.png" width="190" height="190">
 
-                        <input type="text" placeholder="First, enter your email..." name="email" id="logInEmail" required>
+                        <input type="email" placeholder="First, enter your email..." name="email" id="logInEmail" required>
                         <input type="password" placeholder="Then, enter your password..." name="psw" id="logInPassword" required>
 
                         <div style="align-items: center; display: inline-block; margin-bottom: 30px; margin-top: 20px;">
@@ -123,7 +123,7 @@
 
                         <label class="forgot-psw-hint">Enter your account's email to send a password reset link!</label>
 
-                        <input type="text" id="resetEmail" placeholder="Enter your email..." name="email">
+                        <input type="email" id="resetEmail" placeholder="Enter your email..." name="email" required>
                         <button type="submit" class="forgot-psw-button">Send Password Reset Email</button>
                     </form>
                 </div>
@@ -149,7 +149,7 @@
 
             <dialog closedby="closerequest" class="login-alert" id="resetSuccessAlert">
                 <h2>Email Sent</h2>
-                <p>Password reset email has been sent!</p>
+                <p id="resetSuccessMessage" style="white-space: pre-line;">Password reset email has been sent!</p>
             </dialog>
 
             <!-- Loading icon -->

@@ -163,6 +163,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         try {
+            const studentClassesDoc = await db
+                .collection('studentClasses')
+                .doc(user.uid)
+                .get();
+            const studentClasses = studentClassesDoc.exists ? studentClassesDoc.data() : {};
+            const alreadyInClass = Array.from({ length: 7 }, (_, index) => studentClasses[`Class ${index + 1}`])
+                .includes(enteredCode);
+
+            // If the student is already enrolled in the class
+            if (alreadyInClass) {
+                spinner.style.display = 'none';
+                showAlert('Already in Class', 'You are already enrolled in this class!');
+                return;
+            }
+
             // Update the number of the student's classes
             setNumOfStudentClasses(updatedClassCount);
             await db

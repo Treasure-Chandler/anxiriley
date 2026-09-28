@@ -681,64 +681,85 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     // Events for password reset
-    document.getElementById('forgotPasswordForm').addEventListener('submit', function (e) {
+    document.getElementById('forgotPasswordForm').addEventListener('submit', async function (e) {
 
         // Prevent form submission
         e.preventDefault();
 
-        const email = document.getElementById('resetEmail').value;
+        const email = document.getElementById('resetEmail').value.trim();
 
         if (!email) {
             showAlert('No Email', 'You must enter your email!');
             return;
         }
 
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showAlert('Invalid Email', 'Please enter a valid email address.');
+            return;
+        }
+
         // Show spinner before starting password reset operation
         spinner.style.display = 'flex';
 
-        firebase.auth().sendPasswordResetEmail(email)
-            .then(() => {
-                // Hide spinner when done
+        try {
+            const signInMethods = await firebase.auth().fetchSignInMethodsForEmail(email);
+
+            if (signInMethods.length === 0) {
                 spinner.style.display = 'none';
-
-                // Email successfully sent
-                resetSuccess.showModal();
-
-                // Wait 3 seconds before hiding the form and alert
-                setTimeout(() => {
-                    const forgotPasswordForm = document.getElementById('forgotPassword');
-                    const resetSuccess = document.getElementById('resetSuccessAlert');
-
-                    // Start fading out black overlay, form, and alert
-                    blackOverlay.style.opacity = 0;
-                    forgotPasswordForm.style.opacity = 0;
-                    resetSuccess.style.opacity = 0;
-
-                    setTimeout(() => {
-                        forgotPasswordForm.style.display = 'none';
-                        forgotPasswordForm.style.visibility = 'hidden';
-
-                        document.getElementById('resetSuccessAlert').close();
-
-                        blackOverlay.style.visibility = 'hidden';
-                        blackOverlay.style.pointerEvents = 'none';
-
-                        resetSuccess.style.display = 'none';
-                        resetSuccess.style.visibility = 'hidden';
-                    }, 600);
-                }, 3000);
-            })
-            .catch(() => {
-                // Error sending the email
-                spinner.style.display = 'none';
-                blackOverlay.style.display = 'block';
-                blackOverlay.style.visibility = 'visible';
-                blackOverlay.style.pointerEvents = 'auto';
-                
-                showAlert('Error', 'An error has occurred. You can try retyping your email.\n' +
-                          'If the error persists, please contact us for support.');
+                showAlert('Email Not Registered', 'There is no Firebase account registered with this email address.' + 
+                            '\nYou will need to make an account with this email first!');
                 return;
-            });
+            }
+
+            await firebase.auth().sendPasswordResetEmail(email);
+
+            // Hide spinner when done
+            spinner.style.display = 'none';
+
+            // Email successfully sent
+            document.getElementById('resetSuccessMessage').textContent =
+                `Password reset email has been sent to ${email}!\nIf you do not see an email in your primary inbox, check your spam/junk folder.`;
+            resetSuccess.showModal();
+
+            // Wait 5 seconds before hiding the form and alert
+            setTimeout(() => {
+                const forgotPasswordForm = document.getElementById('forgotPassword');
+                const resetSuccess = document.getElementById('resetSuccessAlert');
+
+                // Start fading out black overlay, form, and alert
+                blackOverlay.style.opacity = 0;
+                forgotPasswordForm.style.opacity = 0;
+                resetSuccess.style.opacity = 0;
+
+                setTimeout(() => {
+                    forgotPasswordForm.style.display = 'none';
+                    forgotPasswordForm.style.visibility = 'hidden';
+
+                    document.getElementById('resetSuccessAlert').close();
+
+                    blackOverlay.style.visibility = 'hidden';
+                    blackOverlay.style.pointerEvents = 'none';
+
+                    resetSuccess.style.display = 'none';
+                    resetSuccess.style.visibility = 'hidden';
+                }, 600);
+            }, 5000);
+        } catch (error) {
+            spinner.style.display = 'none';
+            blackOverlay.style.display = 'block';
+            blackOverlay.style.visibility = 'visible';
+            blackOverlay.style.pointerEvents = 'auto';
+
+            switch (error.code) {
+                case 'auth/invalid-email':
+                    showAlert('Invalid Email', 'Please enter a valid email address.');
+                    break;
+                default:
+                    showAlert('Unable to Send Email', 'We could not send the password reset email. Please check the address and try again.' +
+                                '\nIf you continue to get this error, please contact support.');
+                    break;
+            }
+        }
     });
 
     // Automatically redirect to the home screen if details are remembered

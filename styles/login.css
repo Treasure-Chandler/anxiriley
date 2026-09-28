@@ -280,7 +280,7 @@
 }
 
 /* Styling the input fields */
-.signup-container input[type=text], .signup-container input[type=password] {
+.signup-container input[type=text], .signup-container input[type=email], .signup-container input[type=password] {
     background: #f0f0f3;
     border: none;
     border-radius: 5px;
@@ -291,12 +291,12 @@
     width: 90%;
 }
 
-.signup-container input[type=text]::placeholder, .signup-container input[type=password]::placeholder {
+.signup-container input[type=text]::placeholder, .signup-container input[type=email]::placeholder .signup-container input[type=password]::placeholder {
     color: #817d80;
 }
 
 /* Change the design of the inputs when they are clicked on */
-.signup-container input[type=text]:focus, .signup-container input[type=password]:focus {
+.signup-container input[type=text]:focus, .signup-container input[type=email]:focus, .signup-container input[type=password]:focus {
     background: #e0e0e0;
     outline: none;
 }
@@ -373,7 +373,7 @@
 }
 
 /* Styling the input fields */
-.login-container input[type=text], .login-container input[type=password] {
+.login-container input[type=email], .login-container input[type=password] {
     background: #f0f0f3;
     border: none;
     border-radius: 5px;
@@ -384,12 +384,12 @@
     width: 90%;
 }
 
-.login-container input[type=text]::placeholder, .login-container input[type=password]::placeholder {
+.login-container input[type=email]::placeholder, .login-container input[type=password]::placeholder {
     color: #817d80;
 }
 
 /* Change the design of the inputs when they are clicked on */
-.login-container input[type=text]:focus, .login-container input[type=password]:focus {
+.login-container input[type=email]:focus, .login-container input[type=password]:focus {
     background: #e0e0e0;
     outline: none;
 }
@@ -573,7 +573,7 @@
 }
 
 /* Styling the input fields */
-.forgot-password-container input[type=text] {
+.forgot-password-container input[type=email] {
     background: #f0f0f3;
     border: none;
     border-radius: 5px;
@@ -584,12 +584,12 @@
     width: 90%;
 }
 
-.forgot-password-container input[type=text]::placeholder {
+.forgot-password-container input[type=email]::placeholder {
     color: #817d80;
 }
 
 /* Change the design of the inputs when they are clicked on */
-.forgot-password-container input[type=text]:focus {
+.forgot-password-container input[type=email]:focus {
     background: #e0e0e0;
     outline: none;
 }
