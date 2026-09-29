@@ -59,12 +59,12 @@
     left: 10px;
     position: absolute;
     top: 0.8rem;
-    transition: filter 0.3s ease-in-out;
+    transition: filter 0.3s ease-in-out, transform 0.2s ease;
     width: 75px;
 }
 
 #back:hover {
-    filter: brightness(0.8);
+    transform: translateY(-3px);
 }
 
 /* Settings button */
@@ -83,12 +83,13 @@
     position: absolute;
     right: 10px;
     top: 0.8rem;
-    transition: background-image 0.3s ease-in-out;
+    transition: background-image 0.3s ease-in-out, transform 0.2s ease;
     width: 75px;
 }
 
 .settings-btn:hover {
     background-image: url(/assets/settingshover.png);
+    transform: translateY(-3px);
 }
 
 /* "Let's get started" text */

@@ -7,7 +7,6 @@
 /* Styling the settings alert popups and the "OK" button */
 .btns {
     background-color: #c7bd3a;
-    /* Base background color - not actually shown on the page */
     border: none;
     border-radius: 15px;
     color: #000000;

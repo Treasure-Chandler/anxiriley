@@ -76,33 +76,30 @@
 /* Help tooltip text */
 .help-tooltip-img .help-tooltip-text {
     background-color: #f5f5f5;
+    bottom: 100%;
     border: 5px solid #4a90e2;
     border-radius: 10px;
     color: #000000;
     font-size: 1.27em;
     height: 210px;
+    margin-left: 60px;
+    opacity: 0;
     padding: 10px;
+    position: absolute;
+    transition: opacity 0.6s, transform 0.2s ease;
     width: 180px;
     visibility: hidden;
-
-    /* Position the actual tooltip text */
-    bottom: 100%;
-    margin-left: 60px;
-    position: absolute;
     z-index: 1;
-
-    /* Make the tooptip fade in */
-    opacity: 0;
-    transition: opacity 0.6s;
 }
 
 /* Show the tooltip when the user hovers over it with the mouse */
 .help-tooltip-img {
-    transition: background-image 0.3s ease-in-out;
+    transition: background-image 0.3s ease-in-out, transform 0.2s ease;
 }
 
 .help-tooltip-img:hover {
     background-image: url(/assets/helphover.png);
+    transform: translateY(-3px);
 }
 
 .help-tooltip-img:hover .help-tooltip-text {
@@ -161,12 +158,13 @@
     display: inline-flex;
     height: 75px;
     width: 75px;
-    transition: background-image 0.3s ease-in-out;
+    transition: background-image 0.3s ease-in-out, transform 0.2s ease;
     z-index: 1000;
 }
 
 #translate-settings:hover {
     background-image: url(/assets/settingshover.png);
+    transform: translateY(-3px);
 }
 
 /* Black background image that will appear when either form is opened */
@@ -185,8 +183,7 @@
     z-index: 10000;
 }
 
-/* Sign Up form Section */
-/* Adding the "X" button */
+/* Adding the "X" button to all forms */
 .close {
     background-color: transparent;
     background-image: url(/assets/close.png);
@@ -199,15 +196,17 @@
     position: absolute;
     right: 20px;
     top: 14px;
-    transition: background-image 0.3s ease-in-out;
+    transition: background-image 0.3s ease-in-out, transform 0.2s ease;
     width: 60px;
     z-index: 1000;
 }
 
 .close:hover {
     background-image: url(/assets/closehover.png);
+    transform: translateY(-3px);
 }
 
+/* Sign Up form Section */
 /* Style the labels accompanying the radio buttons */
 .radioes {
     -moz-user-select: none;
@@ -344,23 +343,6 @@
 /* End of the Sign Up form Section*/
 
 /* Log In form Section */
-/* Adding the "X" button */
-.close {
-    background-color: transparent;
-    background-image: url(/assets/close.png);
-    background-repeat: no-repeat;
-    background-size: cover;
-    border: none;
-    cursor: pointer;
-    display: block;
-    height: 60px;
-    position: absolute;
-    right: 20px;
-    top: 14px;
-    width: 60px;
-    z-index: 1000;
-}
-
 /* Add styling to the form container */
 .login-container {
     align-items: center;
@@ -532,23 +514,6 @@
 /* End of the Log In form Section */
 
 /* Forgot Password form Section */
-/* Adding the "X" button */
-.close {
-    background-color: transparent;
-    background-image: url(/assets/close.png);
-    background-repeat: no-repeat;
-    background-size: cover;
-    border: none;
-    cursor: pointer;
-    display: block;
-    height: 60px;
-    position: absolute;
-    right: 20px;
-    top: 14px;
-    width: 60px;
-    z-index: 1000;
-}
-
 /* Add styling to the form container */
 .forgot-password-container {
     align-items: center;
