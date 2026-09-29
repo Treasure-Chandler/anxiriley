@@ -50,6 +50,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             const title = document.createElement('h2');
             title.textContent = classData['Class Title'] || 'Untitled class';
 
+            const classCode = classData['Class Code'];
+            if (classCode) {
+                classCard.setAttribute('role', 'link');
+                classCard.tabIndex = 0;
+                classCard.setAttribute('aria-label', `Open ${title.textContent}`);
+
+                const openClassPage = () => {
+                    location.href = `classPage.html?code=${encodeURIComponent(classCode)}`;
+                };
+
+                classCard.addEventListener('click', openClassPage);
+                classCard.addEventListener('keydown', event => {
+                    if (event.key === 'Enter') openClassPage();
+                });
+            }
+
             const teacher = document.createElement('p');
             teacher.textContent = `${classData['Teacher Name'] || 'Unknown'}`;
 

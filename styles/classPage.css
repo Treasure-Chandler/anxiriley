@@ -1,0 +1,111 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: #e9edf0 url('/assets/lightmodewithwildcathome.png') center / cover fixed no-repeat;
+    color: #171b20;
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.class-page {
+    margin: 0 auto;
+    max-width: 960px;
+    min-height: 100vh;
+    padding: 110px 24px 40px;
+    position: relative;
+}
+
+.back-button {
+    background: transparent url('/Assets/back.png') center / 75px 75px no-repeat;
+    border: 0;
+    cursor: pointer;
+    height: 75px;
+    left: 24px;
+    position: absolute;
+    top: 20px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    width: 75px;
+}
+
+.back-button:hover {
+    filter: brightness(0.8);
+    transform: translateX(-3px);
+}
+
+.class-status {
+    background: rgba(255, 255, 255, 0.94);
+    border: 2px solid #171b20;
+    border-radius: 8px;
+    margin: 70px auto 0;
+    max-width: 560px;
+    padding: 24px;
+    text-align: center;
+}
+
+.class-detail {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #171b20;
+    border-radius: 8px;
+    margin: 20px auto 0;
+    max-width: 760px;
+    overflow: hidden;
+}
+
+.class-detail[hidden] {
+    display: none;
+}
+
+.class-banner {
+    display: block;
+    max-height: 340px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.class-content {
+    padding: 24px clamp(20px, 5vw, 40px) 32px;
+}
+
+.class-hour {
+    color: #3a42bd;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+}
+
+.class-content h1 {
+    font-size: 32px;
+    margin: 0 0 12px;
+    overflow-wrap: anywhere;
+}
+
+.teacher-name,
+.class-code {
+    font-size: 17px;
+    margin: 8px 0;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+    .class-page {
+        padding: 90px 16px 24px;
+    }
+
+    .back-button {
+        left: 12px;
+        top: 10px;
+    }
+
+    .class-content h1 {
+        font-size: 26px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .back-button {
+        transition: none;
+    }
+}
