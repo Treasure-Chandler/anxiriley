@@ -38,10 +38,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const banner = document.createElement('img');
             banner.className = 'class-banner';
-            banner.src = classData['Class Banner'] || '../assets/Banners/banner_rhs.png';
+            banner.src = classData['Class Banner'] || '../Assets/Banners/rhsplaceholderbanner.png';
             banner.alt = `${classData['Class Title'] || 'Class'} banner`;
             banner.addEventListener('error', () => {
-                banner.src = '../assets/Banners/banner_rhs.png';
+                banner.src = '../Assets/Banners/rhsplaceholderbanner.png';
             }, { once: true });
 
             const details = document.createElement('div');
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 location.href = 'createClass.html';
             });
         } else {
-            // If the user is a studnet, always hide the class code dialog
+            // If the user is a student, always hide the class code dialog
             if (classCodeBox) {
                 classCodeBox.style.display = 'none';
             }

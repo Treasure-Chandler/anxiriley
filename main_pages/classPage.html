@@ -1,26 +1,45 @@
+<!--
+    Made by Treasure Chandler
+
+    The class page the student will be navigated to from the home page. This is used as a dynamic page,
+	where its contents will change depending on what class the student navigates to, so no two elements
+	will be the same (depending on what the teacher configured for the class page's design)
+-->
+
 <!DOCTYPE html>
 <html lang="en" translate="no">
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Class Details</title>
+		<!-- This title will change depending on the class title the teacher set -->
+		<title>Class Page</title>
 
+		<!-- Firebase setup -->
 		<script src="../scripts/lib/firebase-app-compat.js"></script>
 		<script src="../scripts/lib/firebase-auth-compat.js"></script>
 		<script src="../scripts/lib/firebase-firestore-compat.js"></script>
 		<script src="../scripts/firebase-init.js"></script>
+
 		<script type="module" src="../scripts/classPage.js"></script>
 
 		<link rel="stylesheet" href="../styles/classPage.css">
 		<link rel="icon" href="../assets/anxirileyicon.png">
+
+		<!-- "Poppins" font from Google Fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 	</head>
 	<body>
-		<main class="class-page">
-			<button class="back-button" id="back" type="button" aria-label="Back to home"></button>
-			<p class="class-status" id="classStatus" role="status">Loading class...</p>
+		<main>
+			<!-- Settings button -->
+            <button class="settings-btn" id="settings"></button>
+
+			<!-- Button to navigate back to the home page -->
+            <button id="back"></button>
+
+			<p class="class-status" id="classStatus" role="status" hidden></p>
+
 			<article class="class-detail" id="classDetail" hidden>
 				<img class="class-banner" id="classBanner" alt="">
 				<div class="class-content">
@@ -29,7 +48,19 @@
 					<p class="teacher-name" id="teacherName"></p>
 					<p class="class-code" id="classCode"></p>
 				</div>
+
+			<!-- 2 menu buttons (there is no home button to account for the back button) -->
+            <footer>
+                <button id="calmDown"></button>
+                <button id="stats"></button>
+            </footer>
 			</article>
+
+            <!-- Loading icon -->
+            <div id="spinner" style="display: none; flex-direction: column;">
+                <div class="spinner"></div>
+                <p class="spinner-text">Working on things in the background, please wait...</p>
+            </div>
 		</main>
 	</body>
 </html>

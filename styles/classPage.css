@@ -1,38 +1,41 @@
-* {
-    box-sizing: border-box;
-}
+/* 
+    Made by Treasure Chandler
 
-body {
-    background: #e9edf0 url('/assets/lightmodewithwildcathome.png') center / cover fixed no-repeat;
-    color: #171b20;
-    font-family: "Poppins", sans-serif;
-    margin: 0;
-    min-height: 100vh;
-}
+    This is the CSS file that will style the class page.
+*/
 
-.class-page {
-    margin: 0 auto;
-    max-width: 960px;
-    min-height: 100vh;
-    padding: 110px 24px 40px;
-    position: relative;
-}
-
-.back-button {
-    background: transparent url('/Assets/back.png') center / 75px 75px no-repeat;
-    border: 0;
+#back, .settings-btn {
+    background-color: transparent;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 75px 75px;
+    border: none;
     cursor: pointer;
     height: 75px;
-    left: 24px;
-    position: absolute;
-    top: 20px;
-    transition: transform 0.2s ease, filter 0.2s ease;
+    position: fixed;
+    top: 70px;
+    transition: background-image 0.3s ease-in-out, filter 0.3s ease-in-out, transform 0.2s ease;
     width: 75px;
+    z-index: 2;
 }
 
-.back-button:hover {
-    filter: brightness(0.8);
-    transform: translateX(-3px);
+#back {
+    background-image: url('/Assets/back.png');
+    left: 30px;
+}
+
+#back:hover {
+    transform: translateY(-3px);
+}
+
+.settings-btn {
+    background-image: url('/assets/settings.png');
+    right: 30px;
+}
+
+.settings-btn:hover {
+    background-image: url('/assets/settingshover.png');
+    transform: translateY(-3px);
 }
 
 .class-status {
@@ -43,6 +46,43 @@ body {
     max-width: 560px;
     padding: 24px;
     text-align: center;
+}
+
+#spinner {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    z-index: 10;
+}
+
+.spinner {
+    animation: spin 0.8s linear infinite;
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    height: 60px;
+    margin-bottom: 5px;
+    width: 60px;
+}
+
+.spinner-text {
+    background-color: #fafafa;
+    border-radius: 8px;
+    color: #333333;
+    padding: 10px;
+    text-align: center;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .class-detail {
@@ -94,9 +134,12 @@ body {
         padding: 90px 16px 24px;
     }
 
-    .back-button {
-        left: 12px;
-        top: 10px;
+    #back {
+        left: 20px;
+    }
+
+    .settings-btn {
+        right: 20px;
     }
 
     .class-content h1 {
@@ -104,8 +147,20 @@ body {
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .back-button {
-        transition: none;
-    }
+/* Background image */
+body {
+    background-image: url(/assets/lightmodewithwildcathome.png);
+    background-size: 100vw 100vh;
+    background-repeat: no-repeat;
+}
+
+/* Footer that houses the home menu buttons */
+footer {
+    align-items: center;
+    bottom: 0;
+    display: flex;
+    gap: 12em;
+    justify-content: center;
+    position: fixed;
+    width: 100%;
 }
